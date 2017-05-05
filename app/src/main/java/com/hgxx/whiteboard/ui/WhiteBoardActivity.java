@@ -1,4 +1,4 @@
-package com.hgxx.whiteboard;
+package com.hgxx.whiteboard.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,10 +8,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
-import com.hgxx.whiteboard.constants.Sock;
+import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.views.drawview.DrawView;
+import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,32 +23,19 @@ import java.net.Socket;
 public class WhiteBoardActivity extends AppCompatActivity {
 
     private DrawView wb;
-    private Socket socket;
     private SocketClient socketClient;
     private int connectionId = -1;
-
-
-    public synchronized void setSocketIfNoSocket() throws IOException {
-        if(socket==null){
-            socket = new Socket(Sock.serverIP, Sock.serverPort);
-        }
-    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         wb = new DrawView(this);
-//        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//        RelativeLayout.LayoutParams Params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//        RelativeLayout rl = new RelativeLayout(this);
-//        rl.setLayoutParams(layoutParams);
-//        rl.addView(wb);
 
-//        wb.setLayoutParams(layoutParams);
 
         setContentView(wb);
 
+        final DrawViewController drawView= new DrawViewController(wb);
         //clear btn
         Button clear = new Button(this);
         clear.setText("Clear");
@@ -55,7 +43,7 @@ public class WhiteBoardActivity extends AppCompatActivity {
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wb.clear();
+                drawView.clear();
                 socketClient.sendEvent(SocketClient.EVENT_SIG, "clear");
             }
         });
@@ -85,21 +73,12 @@ public class WhiteBoardActivity extends AppCompatActivity {
 
 
 
-        //socket test
-//        MovePoint p = new MovePoint(10, 20);
-//        p.setFrameHeight(100);
-//        p.setStrokeWidth(200);
-//        p.setStrokeWidth(3);
-//        p.setColor("#ff0000");
-//        p.setIndex(1);
-//        p.setTimestamp(System.currentTimeMillis());
-//        sendPoint(p);
 
 
         sendObj(SocketClient.EVENT_SIG, "server");
 
 
-//        sendString("server\n");
+
 
 
         wb.setOnMoveListener(new DrawView.OnMoveListener() {
@@ -112,8 +91,8 @@ public class WhiteBoardActivity extends AppCompatActivity {
             public void onMove(float x, float y) {
                 //TODO send path
                 MovePoint mp = new MovePoint(x, y);
-                mp.setFrameWidth(wb.getCurWidth());
-                mp.setFrameHeight(wb.getCurHeight());
+                mp.setFrameWidth(drawView.getWidth());
+                mp.setFrameHeight(drawView.getHeight());
                 sendObj(SocketClient.EVENT_PATH, mp.toString());
             }
 
@@ -127,7 +106,7 @@ public class WhiteBoardActivity extends AppCompatActivity {
 
     private synchronized void sendObj(String eventName, Object... datas){
         if(socketClient==null){
-            socketClient = new SocketClient();
+            socketClient = SocketClient.getInstance();
             socketClient.setEventListener(SocketClient.EVENT_CONNECTION, new SocketClient.EventListener() {
                 @Override
                 public void onEvent(Object... args) {
@@ -146,35 +125,7 @@ public class WhiteBoardActivity extends AppCompatActivity {
 
         socketClient.sendEvent(eventName, datas);
     }
-//
-//    private void sendPoint(MovePoint mp){
-//        JSONObject pointJson = obj2json(mp);
-//        System.out.println("send point: " + String.valueOf(mp.getX()) + String.valueOf(mp.getY()));
-//        sendString(pointJson.toString()+"\n");
-//    }
-//
-//    private synchronized void sendString(final String str) {
-//        new Thread(){
-//            @Override
-//            public void run() {
-//                try {
-//                    setSocketIfNoSocket();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//                if(TextUtils.isEmpty(str))return;
-//                OutputStream os=null;
-//                try {
-//                    if(socket!=null){
-//                        os = socket.getOutputStream();
-//                        os.write(str.getBytes());
-//                    }
-//                }catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }.start();
-//    }
+
 
 
 

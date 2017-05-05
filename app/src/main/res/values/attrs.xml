@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DrawView">
+        <attr name="needCircle" format="boolean"/>
+        <attr name="paintWidth" format="dimension"/>
+        <attr name="paintColor" format="string"/>
+    </declare-styleable>
+</resources>

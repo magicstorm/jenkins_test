@@ -1,18 +1,11 @@
 package com.hgxx.whiteboard.network;
 
-import com.hgxx.whiteboard.WhiteBoardActivity;
-import com.hgxx.whiteboard.constants.Sock;
-import com.hgxx.whiteboard.models.ChatObject;
-import com.hgxx.whiteboard.utils.JsonUtils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.hgxx.whiteboard.network.constants.Sock;
 
 import java.net.URISyntaxException;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import io.socket.emitter.Emitter.Listener;
 
 /**
@@ -25,18 +18,29 @@ public class SocketClient {
     public static final String EVENT_DATA = "data";
     public static final String EVENT_CONNECTION = "connection";
     public static final String EVENT_PATH = "path";
+    public static final String EVENT_PRESENTATION = "presentation";
 
 
     private String serverUri;
     private Socket socket;
 
-    public SocketClient(){
+    private static SocketClient socketClient;
+    private SocketClient(){
         try {
-            serverUri = Sock.protocol + "://" + Sock.serverIP + ":" + String.valueOf(Sock.serverPort);
-            socket = IO.socket(serverUri);
+            if(socket==null){
+                serverUri = Sock.protocol + "://" + Sock.serverIP + ":" + String.valueOf(Sock.serverPort);
+                socket = IO.socket(serverUri);
+            }
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+    }
+
+    public static synchronized SocketClient getInstance(){
+        if(socketClient==null){
+            socketClient = new SocketClient();
+        }
+        return socketClient;
     }
 
     public interface EventListener{

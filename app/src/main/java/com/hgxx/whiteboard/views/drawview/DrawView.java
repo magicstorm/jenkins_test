@@ -1,18 +1,19 @@
 package com.hgxx.whiteboard.views.drawview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.util.TypedValue;
-import android.view.Gravity;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
+
+import com.hgxx.whiteboard.R;
 
 /**
  * Created by ly on 27/04/2017.
@@ -35,11 +36,43 @@ public class DrawView extends View{
     private int curWidth;
     private int curHeight;
 
+    private boolean needCircle = true;
+
     public DrawView(Context c) {
-        super(c);
+        this(c, null);
         context=c;
+    }
+
+    public DrawView(Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public DrawView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
         mPath = new Path();
         mBitmapPaint = new Paint(Paint.DITHER_FLAG);
+        if(needCircle){
+            initCircle();
+        }
+        initPaint();
+        getAttributes(context, attrs, defStyleAttr);
+    }
+
+    private void getAttributes(Context context, AttributeSet attrs, int defStyleAttr){
+        TypedArray customAttrs = context.obtainStyledAttributes(attrs, R.styleable.DrawView, defStyleAttr, 0);
+        String paintColor = customAttrs.getString(R.styleable.DrawView_paintColor);
+        int paintWidth = (int)customAttrs.getDimension(R.styleable.DrawView_paintWidth,0);
+        boolean needCircle = customAttrs.getBoolean(R.styleable.DrawView_needCircle, true);
+        if(!TextUtils.isEmpty(paintColor)){
+            setPaintColor(paintColor);
+        }
+        if(paintWidth!=0){
+            setStrokeWidth(paintWidth);
+        }
+        setNeedCircle(needCircle);
+    }
+
+    private void initCircle(){
         circlePaint = new Paint();
         circlePath = new Path();
         circlePaint.setAntiAlias(true);
@@ -47,7 +80,6 @@ public class DrawView extends View{
         circlePaint.setStyle(Paint.Style.STROKE);
         circlePaint.setStrokeJoin(Paint.Join.MITER);
         circlePaint.setStrokeWidth(4f);
-        initPaint();
     }
 
     private void initPaint() {
@@ -61,7 +93,6 @@ public class DrawView extends View{
         mPaint.setStrokeWidth(12);
     }
 
-
 //    public interface OnClearScreen{
 //        void onClearScreen();
 //    }
@@ -74,10 +105,7 @@ public class DrawView extends View{
     public void clear(){
         mPath.reset();
 
-        if(mBitmap!=null&&!mBitmap.isRecycled()) {
-            mBitmap.recycle();
-            mBitmap = null;
-        }
+
         mBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
 
@@ -89,10 +117,7 @@ public class DrawView extends View{
         super.onSizeChanged(w, h, oldw, oldh);
 
 
-        if(mBitmap!=null&&!mBitmap.isRecycled()){
-            mBitmap.recycle();
-            mBitmap=null;
-        }
+
         mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
 
@@ -113,7 +138,9 @@ public class DrawView extends View{
 
         canvas.drawBitmap( mBitmap, 0, 0, mBitmapPaint);
         canvas.drawPath( mPath, mPaint);
-        canvas.drawPath( circlePath,  circlePaint);
+        if(needCircle){
+            canvas.drawPath( circlePath,  circlePaint);
+        }
     }
 
     private float mX, mY;
@@ -134,14 +161,18 @@ public class DrawView extends View{
             mX = x;
             mY = y;
 
-            circlePath.reset();
-            circlePath.addCircle(mX, mY, 30, Path.Direction.CW);
+            if(needCircle){
+                circlePath.reset();
+                circlePath.addCircle(mX, mY, 30, Path.Direction.CW);
+            }
         }
     }
 
     private void touch_up() {
         mPath.lineTo(mX, mY);
-        circlePath.reset();
+        if(needCircle){
+            circlePath.reset();
+        }
         // commit the path to our offscreen
         mCanvas.drawPath(mPath, mPaint);
         // kill this so we don't double draw
@@ -161,7 +192,14 @@ public class DrawView extends View{
         this.onMoveListener = onMoveListener;
     }
 
-
+    public synchronized void refresh(){
+        long curTime = System.currentTimeMillis();
+        long deltaTime =  curTime - lastRefreshTime;
+        if(deltaTime>= MIN_REFRESH_INTERVAL){
+            invalidate();
+            lastRefreshTime = System.currentTimeMillis();
+        }
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -170,44 +208,69 @@ public class DrawView extends View{
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                onMoveListener.onMoveStart();
-                onMoveListener.onMove(x, y);
-                touch_start(x, y);
-                invalidate();
+                if(onMoveListener!=null){
+                    onMoveListener.onMoveStart();
+                    onMoveListener.onMove(x, y);
+                }
+                startDraw(x, y);
                 break;
             case MotionEvent.ACTION_MOVE:
-                onMoveListener.onMove(x, y);
-                touch_move(x, y);
-                invalidate();
+                if(onMoveListener!=null){
+                    onMoveListener.onMove(x, y);
+                }
+                drawMove(x, y);
                 break;
             case MotionEvent.ACTION_UP:
-                onMoveListener.onMove(x, y);
-                onMoveListener.onMoveEnd();
-                touch_up();
-                invalidate();
+                if(onMoveListener!=null){
+                    onMoveListener.onMove(x, y);
+                    onMoveListener.onMoveEnd();
+                }
+                drawEnd();
                 break;
         }
         return true;
     }
 
+    public void drawEnd() {
+        touch_up();
+        invalidate();
+    }
+
+    public void drawMove(float x, float y) {
+        touch_move(x, y);
+        refresh();
+    }
+
+    public void startDraw(float x, float y) {
+        touch_start(x, y);
+    }
+
+    public void setStrokeWidth(float strokeWidth){
+        if(strokeWidth==0)return;
+        mPaint.setStrokeWidth(strokeWidth);
+    }
+
     public void setPaintColor(String colorString){
-        mPaint.setColor(Color.parseColor(colorString));
+        if(!TextUtils.isEmpty(colorString)&&!colorString.equals("null")){
+            mPaint.setColor(Color.parseColor(colorString));
+        }
+    }
+
+
+    public boolean isNeedCircle() {
+        return needCircle;
+    }
+
+    public void setNeedCircle(boolean needCircle) {
+        this.needCircle = needCircle;
     }
 
     public int getCurWidth() {
         return curWidth;
     }
 
-    public void setCurWidth(int curWidth) {
-        this.curWidth = curWidth;
-    }
-
     public int getCurHeight() {
         return curHeight;
-    }
-
-    public void setCurHeight(int curHeight) {
-        this.curHeight = curHeight;
     }
 
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hgxx.whiteboard.WhiteBoardActivity">
+    tools:context="com.hgxx.whiteboard.ui.WhiteBoardActivity">
 
     <com.hgxx.whiteboard.views.drawview.DrawView
         android:id="@+id/whiteboard"
