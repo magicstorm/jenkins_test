@@ -37,6 +37,7 @@ public class DrawView extends View{
     private int curHeight;
 
     private boolean needCircle = true;
+    private boolean drawable = true;
 
     public DrawView(Context c) {
         this(c, null);
@@ -63,6 +64,9 @@ public class DrawView extends View{
         String paintColor = customAttrs.getString(R.styleable.DrawView_paintColor);
         int paintWidth = (int)customAttrs.getDimension(R.styleable.DrawView_paintWidth,0);
         boolean needCircle = customAttrs.getBoolean(R.styleable.DrawView_needCircle, true);
+        boolean drawable = customAttrs.getBoolean(R.styleable.DrawView_drawable, true);
+
+
         if(!TextUtils.isEmpty(paintColor)){
             setPaintColor(paintColor);
         }
@@ -70,6 +74,7 @@ public class DrawView extends View{
             setStrokeWidth(paintWidth);
         }
         setNeedCircle(needCircle);
+        setDrawable(drawable);
     }
 
     private void initCircle(){
@@ -86,7 +91,7 @@ public class DrawView extends View{
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
-        mPaint.setColor(Color.GREEN);
+        mPaint.setColor(Color.BLACK);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -118,11 +123,13 @@ public class DrawView extends View{
 
 
 
-        mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);
+        if(w>0&&h>0){
+            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCanvas = new Canvas(mBitmap);
 
-        curWidth = w;
-        curHeight = h;
+            curWidth = w;
+            curHeight = h;
+        }
     }
 
     @Override
@@ -203,6 +210,7 @@ public class DrawView extends View{
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(!drawable)return super.onTouchEvent(event);
         float x = event.getX();
         float y = event.getY();
 
@@ -273,5 +281,11 @@ public class DrawView extends View{
         return curHeight;
     }
 
+    public boolean isDrawable() {
+        return drawable;
+    }
 
+    public void setDrawable(boolean drawable) {
+        this.drawable = drawable;
+    }
 }

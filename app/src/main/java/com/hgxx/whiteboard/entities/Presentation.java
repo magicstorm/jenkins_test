@@ -1,5 +1,6 @@
 package com.hgxx.whiteboard.entities;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -34,8 +35,9 @@ public class Presentation {
     String presentationName;
     String url;
     WeakReference<SocketClient> socketClientWeakReference;
-    int presentationCount = 11;
+    int presentationCount = 5;
     List<Bitmap> presentationBitmaps = Arrays.asList(new Bitmap[presentationCount]);
+    int totalHeight = 0;
 
     public Presentation(){
         this(null);
@@ -46,10 +48,10 @@ public class Presentation {
     }
 
     public Presentation(String presentationName, String url){
+        this.presentationName = presentationName;
         this.url = url;
         setSocketClient(SocketClient.getInstance());
     }
-
 
     public interface OnScrollStatChange{
         void onScrollStatChange(ScrollStat scrollStat);
@@ -105,6 +107,18 @@ public class Presentation {
         return totalOb;
     }
 
+    public int computePresentationHeight(Context context){
+        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+        float height = 0;
+        for(int i=0;i<presentationCount;i++){
+            Bitmap bm = presentationBitmaps.get(i);
+            height += bm.getHeight()*screenWidth/(float)bm.getWidth();
+        }
+        this.totalHeight = (int)height;
+        return totalHeight;
+    }
+
+
     private static class MainHandler extends Handler{
         public MainHandler(){
             super(Looper.getMainLooper());
@@ -129,27 +143,51 @@ public class Presentation {
 
 
 
-    public void listenPresentationChange(){
+    public void listenPresentationChange(Context context){
         SocketClient socketClient = socketClientWeakReference.get();
         if(socketClient!=null&&socketClient.isConnected()){
-            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION, new PresentationListener(getPresentationName()));
+            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION, new PresentationListener(context, getPresentationName()));
         }
     }
 
     class PresentationListener implements SocketClient.EventListener {
         ArrayList<String> presentationNames = new ArrayList<>();
+        Context mContext;
 
-        public PresentationListener(String name){
+        public PresentationListener(Context context, String name){
             presentationNames.add(name);
+            this.mContext = context;
         }
         @Override
         public void onEvent(Object... args) {
             Gson gson = new Gson();
-            Presentation presentation = gson.fromJson((String)args[0], Presentation.class);
-            if(presentationNames.contains(presentation.getPresentationName())&&
-                    !getScrollStat().equals(presentation.getScrollStat())){
-                setScrollStat(presentation.getScrollStat());
+            ScrollStat scrollStat = gson.fromJson((String)args[0], ScrollStat.class);
+            boolean isChanged = false;
+
+            if(isScrollStatChanged(scrollStat)){
+                scrollStat.computeLocalScrollStat(totalHeight);
+                isChanged = true;
             }
+            if(isDisplayChanged(scrollStat)){
+                scrollStat.getDisplay().computeLocalDisplaySize(mContext);
+                isChanged = true;
+            }
+
+
+
+            if(isChanged){
+                setScrollStat(scrollStat);
+            }
+        }
+
+        private boolean isScrollStatChanged(ScrollStat scrollStat) {
+            return presentationNames.contains(scrollStat.getPresentationName().trim())&&
+                    ((getScrollStat()==null)||!getScrollStat().equals(scrollStat));
+        }
+
+        private boolean isDisplayChanged(ScrollStat scrollStat){
+            return presentationNames.contains(scrollStat.getPresentationName().trim())&&
+                    ((getScrollStat()==null)||!getScrollStat().getDisplay().equals(scrollStat.getDisplay()));
         }
     }
 
@@ -186,5 +224,29 @@ public class Presentation {
 
     public void setPresentationName(String presentationName) {
         this.presentationName = presentationName;
+    }
+
+    public int getPresentationCount() {
+        return presentationCount;
+    }
+
+    public void setPresentationCount(int presentationCount) {
+        this.presentationCount = presentationCount;
+    }
+
+    public List<Bitmap> getPresentationBitmaps() {
+        return presentationBitmaps;
+    }
+
+    public void setPresentationBitmaps(List<Bitmap> presentationBitmaps) {
+        this.presentationBitmaps = presentationBitmaps;
+    }
+
+    public int getTotalHeight() {
+        return totalHeight;
+    }
+
+    public void setTotalHeight(int totalHeight) {
+        this.totalHeight = totalHeight;
     }
 }

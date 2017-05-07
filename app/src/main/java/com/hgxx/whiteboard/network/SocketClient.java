@@ -19,6 +19,7 @@ public class SocketClient {
     public static final String EVENT_CONNECTION = "connection";
     public static final String EVENT_PATH = "path";
     public static final String EVENT_PRESENTATION = "presentation";
+    public static final String EVENT_PRESENTATION_INIT = "presentation_init";
 
 
     private String serverUri;

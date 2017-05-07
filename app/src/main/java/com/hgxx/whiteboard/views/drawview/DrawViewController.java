@@ -34,6 +34,10 @@ public class DrawViewController {
         mDv.drawEnd();
     }
 
+    public void setDrawable(boolean drawable){
+        mDv.setDrawable(drawable);
+    }
+
     public void startDraw(float x, float y){
         mDv.startDraw(x, y);
     }

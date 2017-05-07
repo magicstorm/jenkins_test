@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Presentation;
+import com.hgxx.whiteboard.entities.ScrollStat;
 
 import rx.Observable;
 import rx.Observer;
@@ -27,30 +28,34 @@ public class TestActivity extends Activity{
 
         Presentation ps = new Presentation();
         ps.setPresentationName("test");
-        Observable<Integer> ob = ps.getPresentationImages(null);
-        ob.subscribe(new Observer<Integer>() {
-            @Override
-            public void onCompleted() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(WhiteBoardApplication.getContext(), "complete", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
 
-            @Override
-            public void onError(Throwable e) {
 
-            }
 
-            @Override
-            public void onNext(Integer integer) {
 
-            }
-        });
-
-        System.out.println("fuck");
+//        Observable<Integer> ob = ps.getPresentationImages(null);
+//        ob.subscribe(new Observer<Integer>() {
+//            @Override
+//            public void onCompleted() {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(WhiteBoardApplication.getContext(), "complete", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//
+//            }
+//
+//            @Override
+//            public void onNext(Integer integer) {
+//
+//            }
+//        });
+//
+//        System.out.println("fuck");
 
     }
 }

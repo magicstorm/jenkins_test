@@ -4,5 +4,6 @@
         <attr name="needCircle" format="boolean"/>
         <attr name="paintWidth" format="dimension"/>
         <attr name="paintColor" format="string"/>
+        <attr name="drawable" format="boolean"/>
     </declare-styleable>
 </resources>

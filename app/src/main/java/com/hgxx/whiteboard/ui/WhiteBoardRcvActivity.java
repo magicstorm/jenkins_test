@@ -4,12 +4,25 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.hgxx.whiteboard.R;
+import com.hgxx.whiteboard.WhiteBoardApplication;
+import com.hgxx.whiteboard.entities.Display;
+import com.hgxx.whiteboard.entities.Presentation;
+import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.network.SocketClient;
+import com.hgxx.whiteboard.network.constants.Web;
+import com.hgxx.whiteboard.utils.ViewHelpers;
 import com.hgxx.whiteboard.views.drawview.DrawView;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
@@ -19,6 +32,11 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import rx.Observable;
+import rx.Observer;
 
 /**
  * Created by ly on 27/04/2017.
@@ -35,7 +53,10 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     private SocketClient socketClient;
     private DrawViewController drawView;
     private ScrollView scrollView;
+    private LinearLayout scrollLl;
+    private Presentation presentation;
 
+    private HashMap<String, ArrayList<ImageView>> presentations;
 
     public synchronized void setMoveStart(boolean moveStart) {
         this.moveStart = moveStart;
@@ -47,42 +68,151 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         setContentView(R.layout.activity_white_board_rcv);
         findViews();
         drawView = new DrawViewController(wrb);
-
-        //test code
-//        new Thread(){
-//            @Override
-//            public void run() {
-//                wrb.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                    @Override
-//                    public void onGlobalLayout() {
-//                        wrb.touch_start(0, 0);
-//                        wrb.touch_move(500, 500);
-//                        wrb.touch_up();
-//
-//                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(WhiteBoardRcvActivity.this, "清屏", Toast.LENGTH_SHORT);
-//                                wrb.clear();
-//                            }
-//                        }, 3000);
-//                    }
-//                });
-//            }
-//        }.start();
+        drawView.setDrawable(false);
 
         sendObj(SocketClient.EVENT_SIG, "client");
+
+        initDatas();
+        initViews();
     }
+
+    private void initDatas(){
+        presentation = new Presentation("test");
+        presentations = new HashMap<>();
+
+    }
+
+    public static class ImageDownloaded implements Presentation.OnPresentationDownloadedComplete{
+        HashMap<String, ArrayList<ImageView>> presentations;
+        Presentation presentation;
+
+        public ImageDownloaded(HashMap<String, ArrayList<ImageView>> presentations, Presentation presentation){
+            this.presentations = presentations;
+            this.presentation = presentation;
+        }
+
+        @Override
+        public void onPresentationDownloadComplete(int index) {
+            ArrayList<ImageView> imageViews = presentations.get(presentation.getPresentationName());
+            if(imageViews.size()>index){
+                imageViews.get(index).setImageBitmap(presentation.getPresentationBitmaps().get(index));
+            }
+        }
+    }
+
+    private void initViews(){
+        scrollView.setVerticalScrollBarEnabled(false);
+        scrollView.setHorizontalScrollBarEnabled(false);
+        presentations.put(presentation.getPresentationName(), new ArrayList<ImageView>());
+        initImageViews(presentation.getPresentationCount());
+        Observable<Integer> ob = presentation.getPresentationImages(new ImageDownloaded(presentations, presentation));
+        ob.subscribe(new Observer<Integer>() {
+            @Override
+            public void onCompleted() {
+//                presentation.computePresentationHeight(WhiteBoardApplication.getContext());
+
+                if(scrollView.getViewTreeObserver().isAlive()){
+                    scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            if(presentation!=null){
+                                presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
+                            }
+                        }
+                    });
+                }
+                else{
+                    if(presentation!=null){
+                        presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
+                    }
+                }
+
+
+                presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {
+//                    int i = 0;
+                    @Override
+                    public void onScrollStatChange(ScrollStat scrollStat) {
+//                        System.out.println(
+//                                "滚动变化" + String.valueOf(i) + ": " +
+//                                        "currentHeight=" + scrollStat.getCurrentHeight() +
+//                                        "|totalHeight=" + scrollStat.getTotalHeight()
+//                        );
+                        scrollView.scrollTo(0, (int)scrollStat.getCurrentHeight());
+//                        adjustDisplayArea(scrollStat.getDisplay());
+//                        i++;
+                    }
+                });
+
+
+                presentation.listenPresentationChange(WhiteBoardApplication.getContext());
+
+
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WhiteBoardApplication.getContext(), "complete", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+
+            }
+        });
+    }
+
+    private void adjustDisplayArea(final Display display){
+        int sw = getResources().getDisplayMetrics().widthPixels;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for(int i=0;i<scrollView.getChildCount();i++){
+                    scrollView.getChildAt(i).getLayoutParams().width = (int)display.getDisplayWidth();
+                    scrollView.getChildAt(i).invalidate();
+                }
+                scrollView.getLayoutParams().width = (int)display.getDisplayWidth();
+                scrollView.invalidate();
+            }
+        });
+    }
+
 
     private void findViews(){
         wrb = (DrawView)findViewById(R.id.drawRcvView);
         scrollView = (ScrollView)findViewById(R.id.sv);
+        scrollLl = (LinearLayout) findViewById(R.id.ll);
     }
+
+    private void initImageViews(int count){
+        for(int i=0;i<count;i++){
+            ImageView imageView = new ImageView(this);
+            LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            imageView.setLayoutParams(ivParams);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+            imageView.setAdjustViewBounds(true);
+            scrollLl.addView(imageView);
+            presentations.get(presentation.getPresentationName()).add(imageView);
+        }
+    }
+
 
 
 
 
     private synchronized void sendObj(String eventName, Object... datas){
+        initSocketClient();
+        socketClient.sendEvent(eventName, datas);
+    }
+
+    private void initSocketClient() {
         if(socketClient ==null){
             socketClient = SocketClient.getInstance();
             socketClient.setEventListener(SocketClient.EVENT_SIG, new SocketClient.EventListener() {
@@ -124,6 +254,20 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                 }
             });
 
+//            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION, new SocketClient.EventListener() {
+//                @Override
+//                public void onEvent(Object... args) {
+//                }
+//            });
+
+//
+//            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION_INIT, new SocketClient.EventListener() {
+//                @Override
+//                public void onEvent(Object... args) {
+//
+//                }
+//            });
+
             socketClient.setEventListener(SocketClient.EVENT_PATH, new SocketClient.EventListener() {
                 @Override
                 public void onEvent(Object... args) {
@@ -142,20 +286,21 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                         float fw = Float.valueOf(jsonObject.getString("frameWidth"));
                         float fh = Float.valueOf(jsonObject.getString("frameHeight"));
 
-                        float wi = w * getResources().getDisplayMetrics().widthPixels / fw;
-                        float he = h * getResources().getDisplayMetrics().heightPixels / fh;
+                        float wi = w * drawView.getWidth() / fw;
+                        float he = h * drawView.getHeight() / fh;
 
                         final MovePoint mp = new MovePoint(wi, he);
-                        if(jsonObject.has("strokWidth")&&!TextUtils.isEmpty(jsonObject.getString("stokeWidth"))&&!jsonObject.getString("strokeWidth").equals("null")){
+
+                        if(isJsonFieldNotNull(jsonObject, "strokeWidth")){
 
                             float rawWidth = Float.valueOf(jsonObject.getString("strokeWidth"));
 
-                            float strokeWidth =  rawWidth * getResources().getDisplayMetrics().widthPixels / fw;
+                            float strokeWidth =  rawWidth * drawView.getWidth() / fw;
                             drawView.setStrokeWidth(strokeWidth);
-                        };
+                        }
 
-                        if(jsonObject.has("color")){
-                            String color = jsonObject.getString("color");
+                        if(isJsonFieldNotNull(jsonObject, "paintColor")){
+                            String color = jsonObject.getString("paintColor");
 
                             drawView.setPaintColor(color);
                         }
@@ -165,6 +310,8 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+//                                int w = wrb.getCurWidth();
+//                                int h = wrb.getCurHeight();
                                 if (drawView.isMoving()) {
     //                                            System.out.println("movestart");
                                     drawView.setMoving(false);
@@ -198,8 +345,10 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         if(!socketClient.isConnected()){
             socketClient.connect();
         }
+    }
 
-        socketClient.sendEvent(eventName, datas);
+    private boolean isJsonFieldNotNull(JSONObject jsonObject, String key) throws JSONException {
+        return jsonObject.has(key)&&!TextUtils.isEmpty(jsonObject.getString(key))&&!jsonObject.getString(key).equals("null");
     }
 
 
