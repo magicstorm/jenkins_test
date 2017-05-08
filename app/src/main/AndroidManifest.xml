@@ -8,18 +8,29 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".ui.HomePageActivity">
+
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        >
+        <activity android:name=".ui.HomePageActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="screenSize|keyboardHidden|orientation"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.WhiteBoardActivity">
+        <activity android:name=".ui.WhiteBoardActivity"
+            android:screenOrientation="landscape"
+            >
         </activity>
-        <activity android:name=".ui.WhiteBoardRcvActivity">
+        <activity android:name=".ui.WhiteBoardRcvActivity"
+            android:configChanges="screenSize|keyboardHidden|orientation"
+            android:screenOrientation="landscape"
+            >
         </activity>
 
         <activity android:name=".ui.TestActivity">

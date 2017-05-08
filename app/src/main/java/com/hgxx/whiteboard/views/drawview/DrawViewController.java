@@ -34,6 +34,17 @@ public class DrawViewController {
         mDv.drawEnd();
     }
 
+    public void setWidth(int width){
+        if(mDv==null)return;
+        mDv.setCurWidth(width);
+    }
+
+    public void setHeight(int height){
+        if(mDv==null)return;
+        mDv.setCurHeight(height);
+    }
+
+
     public void setDrawable(boolean drawable){
         mDv.setDrawable(drawable);
     }

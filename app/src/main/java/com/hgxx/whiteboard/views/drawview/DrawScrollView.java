@@ -10,26 +10,21 @@ import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ScrollView;
 
 import com.hgxx.whiteboard.R;
 
 /**
- * Created by ly on 27/04/2017.
+ * Created by ly on 08/05/2017.
  */
 
-public class DrawView extends View{
-
-
-    public static final int MIN_REFRESH_INTERVAL = 30;
+public class DrawScrollView extends ScrollView {
+     public static final int MIN_REFRESH_INTERVAL = 30;
     private long lastRefreshTime;
 
     private Bitmap mBitmap;
     private Canvas mCanvas;
-    private Path    mPath;
+    private Path mPath;
     private Paint mBitmapPaint;
     Context context;
     private Paint circlePaint;
@@ -41,15 +36,15 @@ public class DrawView extends View{
     private boolean needCircle = true;
     private boolean drawable = true;
 
-    public DrawView(Context c) {
+    public DrawScrollView(Context c) {
         this(c, null);
     }
 
-    public DrawView(Context context, @Nullable AttributeSet attrs) {
+    public DrawScrollView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public DrawView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public DrawScrollView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         this.context=context;
@@ -140,8 +135,8 @@ public class DrawView extends View{
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
         canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
         canvas.drawPath(mPath, mPaint);
         if(needCircle){
@@ -192,7 +187,7 @@ public class DrawView extends View{
             mCanvas.drawPath(mPath, mPaint);
         }
         // kill this so we don't double draw
-        mPath.reset();
+//        mPath.reset();
     }
 
 
@@ -217,36 +212,36 @@ public class DrawView extends View{
         }
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if(!drawable)return super.onTouchEvent(event);
-        float x = event.getX();
-        float y = event.getY();
-
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if(onMoveListener!=null){
-                    onMoveListener.onMoveStart();
-                    onMoveListener.onMove(x, y);
-                }
-                startDraw(x, y);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                if(onMoveListener!=null){
-                    onMoveListener.onMove(x, y);
-                }
-                drawMove(x, y);
-                break;
-            case MotionEvent.ACTION_UP:
-                if(onMoveListener!=null){
-                    onMoveListener.onMove(x, y);
-                    onMoveListener.onMoveEnd();
-                }
-                drawEnd();
-                break;
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        if(!drawable)return super.onTouchEvent(event);
+//        float x = event.getX();
+//        float y = event.getY();
+//
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                if(onMoveListener!=null){
+//                    onMoveListener.onMoveStart();
+//                    onMoveListener.onMove(x, y);
+//                }
+//                startDraw(x, y);
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                if(onMoveListener!=null){
+//                    onMoveListener.onMove(x, y);
+//                }
+//                drawMove(x, y);
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                if(onMoveListener!=null){
+//                    onMoveListener.onMove(x, y);
+//                    onMoveListener.onMoveEnd();
+//                }
+//                drawEnd();
+//                break;
+//        }
+//        return true;
+//    }
 
     public void drawEnd() {
         touch_up();

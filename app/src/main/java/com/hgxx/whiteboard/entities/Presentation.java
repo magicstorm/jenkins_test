@@ -38,6 +38,7 @@ public class Presentation {
     int presentationCount = 5;
     List<Bitmap> presentationBitmaps = Arrays.asList(new Bitmap[presentationCount]);
     int totalHeight = 0;
+    int totalWidth = 0;
 
     public Presentation(){
         this(null);
@@ -248,5 +249,13 @@ public class Presentation {
 
     public void setTotalHeight(int totalHeight) {
         this.totalHeight = totalHeight;
+    }
+
+    public int getTotalWidth() {
+        return totalWidth;
+    }
+
+    public void setTotalWidth(int totalWidth) {
+        this.totalWidth = totalWidth;
     }
 }

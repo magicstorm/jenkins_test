@@ -70,16 +70,18 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         drawView = new DrawViewController(wrb);
         drawView.setDrawable(false);
 
-        sendObj(SocketClient.EVENT_SIG, "client");
-
         initDatas();
-        initViews();
+        initSocketClient();
+
+        sendObj(SocketClient.EVENT_SIG, "client");
+        sendObj(SocketClient.EVENT_PRESENTATION_REQUEST, "test");
+
+//        initViews();
     }
 
     private void initDatas(){
         presentation = new Presentation("test");
         presentations = new HashMap<>();
-
     }
 
     public static class ImageDownloaded implements Presentation.OnPresentationDownloadedComplete{
@@ -100,7 +102,14 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         }
     }
 
-    private void initViews(){
+    private void initViews(Display display){
+
+        adjustDisplayArea(display.computeLocalDisplaySize(WhiteBoardApplication.getContext()));
+
+        drawView.setWidth((int)display.getDisplayWidth());
+        drawView.setHeight((int)display.getDisplayHeight());
+
+
         scrollView.setVerticalScrollBarEnabled(false);
         scrollView.setHorizontalScrollBarEnabled(false);
         presentations.put(presentation.getPresentationName(), new ArrayList<ImageView>());
@@ -117,6 +126,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                         public void onGlobalLayout() {
                             if(presentation!=null){
                                 presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
+                                presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
                             }
                         }
                     });
@@ -124,6 +134,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                 else{
                     if(presentation!=null){
                         presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
+                        presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
                     }
                 }
 
@@ -146,14 +157,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
                 presentation.listenPresentationChange(WhiteBoardApplication.getContext());
 
-
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(WhiteBoardApplication.getContext(), "complete", Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
 
             @Override
@@ -170,17 +173,17 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
     private void adjustDisplayArea(final Display display){
         int sw = getResources().getDisplayMetrics().widthPixels;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for(int i=0;i<scrollView.getChildCount();i++){
-                    scrollView.getChildAt(i).getLayoutParams().width = (int)display.getDisplayWidth();
-                    scrollView.getChildAt(i).invalidate();
-                }
-                scrollView.getLayoutParams().width = (int)display.getDisplayWidth();
-                scrollView.invalidate();
-            }
-        });
+        int sh = getResources().getDisplayMetrics().heightPixels;
+//                for(int i=0;i<scrollView.getChildCount();i++){
+//                    scrollView.getChildAt(i).getLayoutParams().width = (int)display.getDisplayWidth();
+//                    scrollView.getChildAt(i).invalidate();
+//                }
+        int ww = (int)display.getDisplayWidth();
+
+        presentation.setTotalHeight((int)display.getDisplayHeight());
+        scrollView.getLayoutParams().width = (int)display.getDisplayWidth();
+        presentation.setTotalWidth((int)display.getDisplayWidth());
+        scrollView.invalidate();
     }
 
 
@@ -215,6 +218,22 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     private void initSocketClient() {
         if(socketClient ==null){
             socketClient = SocketClient.getInstance();
+
+            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION_INIT, new SocketClient.EventListener() {
+                @Override
+                public void onEvent(Object... args) {
+                    Gson gson = new Gson();
+                    final ScrollStat scrollStat = gson.fromJson((args[0]).toString(), ScrollStat.class);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initViews(scrollStat.getDisplay());
+                        }
+                    });
+                }
+            });
+
+
             socketClient.setEventListener(SocketClient.EVENT_SIG, new SocketClient.EventListener() {
 
                 @Override

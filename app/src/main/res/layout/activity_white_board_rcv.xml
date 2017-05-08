@@ -6,6 +6,7 @@
         android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:fillViewport="true"
         >
         <FrameLayout
@@ -16,9 +17,8 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-
-
             </LinearLayout>
+
             <com.hgxx.whiteboard.views.drawview.DrawView
                 android:id="@+id/drawRcvView"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -26,6 +26,7 @@
                 android:layout_height="match_parent"
                 app:needCircle="false"
             />
+
         </FrameLayout>
 
     </ScrollView>
