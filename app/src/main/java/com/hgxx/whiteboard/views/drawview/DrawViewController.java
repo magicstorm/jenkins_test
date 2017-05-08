@@ -8,9 +8,9 @@ import com.hgxx.whiteboard.views.drawview.DrawView;
 
 public class DrawViewController {
     private boolean isMoving = false;
-    private DrawView mDv;
+    private DrawLayout mDv;
 
-    public DrawViewController(DrawView dv){
+    public DrawViewController(DrawLayout dv){
         mDv = dv;
     }
 
@@ -37,11 +37,17 @@ public class DrawViewController {
     public void setWidth(int width){
         if(mDv==null)return;
         mDv.setCurWidth(width);
+        mDv.getLayoutParams().width = width;
+    }
+
+    public void scrollTo(int scrollTop){
+        mDv.layout(mDv.getLeft(), -scrollTop, mDv.getRight(), mDv.getHeight()-scrollTop);
     }
 
     public void setHeight(int height){
         if(mDv==null)return;
         mDv.setCurHeight(height);
+        mDv.getLayoutParams().height = height;
     }
 
 

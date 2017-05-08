@@ -6,6 +6,6 @@ package com.hgxx.whiteboard.network.constants;
 
 public class Sock {
     public static String protocol = "http";
-    public static String serverIP = "192.168.8.114";
+    public static String serverIP = "10.0.0.146";
     public static int serverPort = 17010;
 }

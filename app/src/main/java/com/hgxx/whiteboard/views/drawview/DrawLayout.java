@@ -7,10 +7,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.icu.util.Measure;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.ScrollView;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.hgxx.whiteboard.R;
 
@@ -18,8 +20,8 @@ import com.hgxx.whiteboard.R;
  * Created by ly on 08/05/2017.
  */
 
-public class DrawScrollView extends ScrollView {
-    public static final int MIN_REFRESH_INTERVAL = 30;
+public class DrawLayout extends RelativeLayout {
+     public static final int MIN_REFRESH_INTERVAL = 30;
     private long lastRefreshTime;
 
     private Bitmap mBitmap;
@@ -36,16 +38,19 @@ public class DrawScrollView extends ScrollView {
     private boolean needCircle = true;
     private boolean drawable = true;
 
-    public DrawScrollView(Context c) {
+    public DrawLayout(Context c) {
         this(c, null);
     }
 
-    public DrawScrollView(Context context, @Nullable AttributeSet attrs) {
+    public DrawLayout(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public DrawScrollView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public DrawLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas(mBitmap);
 
         this.context=context;
         mPath = new Path();
@@ -129,7 +134,11 @@ public class DrawScrollView extends ScrollView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int ms = MeasureSpec.makeMeasureSpec(5000, MeasureSpec.EXACTLY);
+
+
+        setMeasuredDimension(widthMeasureSpec, ms);
         curWidth = MeasureSpec.getSize(widthMeasureSpec);
         curHeight = MeasureSpec.getSize(heightMeasureSpec);
     }

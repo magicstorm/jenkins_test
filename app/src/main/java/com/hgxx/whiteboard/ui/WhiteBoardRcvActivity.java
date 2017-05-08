@@ -23,6 +23,8 @@ import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.utils.ViewHelpers;
+import com.hgxx.whiteboard.views.drawview.DrawLayout;
+import com.hgxx.whiteboard.views.drawview.DrawScrollView;
 import com.hgxx.whiteboard.views.drawview.DrawView;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
@@ -57,6 +59,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     private Presentation presentation;
 
     private HashMap<String, ArrayList<ImageView>> presentations;
+    private DrawLayout drawLayout;
 
     public synchronized void setMoveStart(boolean moveStart) {
         this.moveStart = moveStart;
@@ -67,7 +70,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_white_board_rcv);
         findViews();
-        drawView = new DrawViewController(wrb);
+        drawView = new DrawViewController(drawLayout);
         drawView.setDrawable(false);
 
         initDatas();
@@ -127,6 +130,8 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                             if(presentation!=null){
                                 presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
                                 presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
+                                drawView.setWidth(presentation.getTotalWidth());
+                                drawView.setHeight(presentation.getTotalHeight());
                             }
                         }
                     });
@@ -135,6 +140,8 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                     if(presentation!=null){
                         presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
                         presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
+                        drawView.setWidth(presentation.getTotalWidth());
+                        drawView.setHeight(presentation.getTotalHeight());
                     }
                 }
 
@@ -148,7 +155,16 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 //                                        "currentHeight=" + scrollStat.getCurrentHeight() +
 //                                        "|totalHeight=" + scrollStat.getTotalHeight()
 //                        );
-                        scrollView.scrollTo(0, (int)scrollStat.getCurrentHeight());
+                        final int scrollTop = (int) scrollStat.getCurrentHeight();
+                        scrollView.scrollTo(0, scrollTop);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                drawView.scrollTo(scrollTop);
+                            }
+                        });
+
 //                        adjustDisplayArea(scrollStat.getDisplay());
 //                        i++;
                     }
@@ -188,9 +204,9 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
 
     private void findViews(){
-        wrb = (DrawView)findViewById(R.id.drawRcvView);
         scrollView = (ScrollView)findViewById(R.id.sv);
         scrollLl = (LinearLayout) findViewById(R.id.ll);
+        drawLayout = (DrawLayout)findViewById(R.id.drawRcvView);
     }
 
     private void initImageViews(int count){
