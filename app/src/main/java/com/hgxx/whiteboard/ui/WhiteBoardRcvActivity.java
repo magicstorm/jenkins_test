@@ -229,10 +229,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         }
     }
 
-
-
-
-
     private synchronized void sendObj(String eventName, Object... datas){
         initSocketClient();
         socketClient.sendEvent(eventName, datas);
@@ -290,6 +286,15 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                             }
                         });
                     }
+                    else if(str.contains("undo")){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                drawView.cancel(-1);
+                            }
+                        });
+                    }
+
 
 
                     System.out.println(args[0].toString());

@@ -25,7 +25,6 @@
          android:layout_alignLeft="@id/sv"
          android:layout_alignRight="@id/sv"
         android:id="@+id/drawRcvView"
-        android:background="#99999999"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </com.hgxx.whiteboard.views.drawview.DrawLayout>

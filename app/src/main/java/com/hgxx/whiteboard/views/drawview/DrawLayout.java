@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import com.hgxx.whiteboard.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ly on 08/05/2017.
@@ -38,8 +39,7 @@ public class DrawLayout extends RelativeLayout {
     private boolean drawable = true;
 
 
-    private ArrayList<PathObject> paths = new ArrayList<>();
-    private ArrayList<PathObject> currentPath = new ArrayList<>();
+    private List<PathObject> paths = new ArrayList<>();
     private String mPaintColor = "#000000";
     private float mStrokeWidth = 12;
 
@@ -156,12 +156,6 @@ public class DrawLayout extends RelativeLayout {
         curHeight = MeasureSpec.getSize(heightMeasureSpec);
     }
 
-    public void measure(){
-        int msHeight = MeasureSpec.makeMeasureSpec(curHeight, MeasureSpec.EXACTLY);
-        int msWidth = MeasureSpec.makeMeasureSpec(curWidth, MeasureSpec.EXACTLY);
-        this.measure(msWidth, msHeight);
-        setMeasuredDimension(msWidth, msHeight);
-    }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
@@ -236,6 +230,18 @@ public class DrawLayout extends RelativeLayout {
         mPath = new Path();
 //        mPath.reset();
     }
+
+    public void touch_cancel(int cancelIndex){
+        if(paths.size()<=cancelIndex&&cancelIndex>=0)return;
+        if(cancelIndex==-1){
+            paths = paths.subList(0, paths.size()-1);
+        }
+        else if(cancelIndex>0){
+            paths = paths.subList(0, cancelIndex);
+        }
+        invalidate();
+    }
+
 
 
     public interface OnMoveListener{

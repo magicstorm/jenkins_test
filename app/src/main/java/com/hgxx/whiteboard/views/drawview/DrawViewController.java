@@ -50,9 +50,8 @@ public class DrawViewController {
         mDv.getLayoutParams().height = height;
     }
 
-    public void refresh(){
-        mDv.measure();
-        mDv.invalidate();
+    public void cancel(int cancelIndex){
+        mDv.touch_cancel(cancelIndex);
     }
 
 
