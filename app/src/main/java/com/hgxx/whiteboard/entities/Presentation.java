@@ -41,7 +41,6 @@ public class Presentation {
     String url;
     WeakReference<SocketClient> socketClientWeakReference;
     int presentationCount = 50;
-    List<Bitmap> presentationBitmaps = Arrays.asList(new Bitmap[presentationCount]);
     int totalHeight = 0;
     int totalWidth = 0;
 
@@ -69,106 +68,8 @@ public class Presentation {
         this.onScrollStatChangeListener = onScrollStatChangeListener;
     }
 
-    public interface OnPresentationDownloadedComplete{
-        void onPresentationDownloadComplete(int index);
-    }
-
-    public Observable<Integer> getPresentationImages(final OnPresentationDownloadedComplete onPresentationDownloadedComplete){
-        WebClient.PresentationService presentationService = WebClient.getInstance().getPresentationService();
-
-        Observable<Integer> totalOb = null;
-        Random rd = new Random();
-        for(int i=0;i<presentationCount;i++){
-
-            final ReplaySubject<Integer> sub = ReplaySubject.create();
-
-            final int index = i;
-            final Observable<ResponseBody> presentationImageObservable = presentationService.getPresentationImage(presentationName, "api_"+String.valueOf(i+1)+".png");
 
 
-
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    presentationImageObservable.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<ResponseBody>() {
-                        @Override
-                        public void onCompleted() {
-                            sub.onCompleted();
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            sub.onError(e);
-                        }
-
-                        @Override
-                        public void onNext(ResponseBody response) {
-                            InputStream inputStream = response.byteStream();
-                            Bitmap bm = BitmapFactory.decodeStream(inputStream);
-                            int w = bm.getWidth();
-                            int h = bm.getHeight();
-                            float ratio = h/(float)w;
-
-                            Bitmap newBm = ImageUtils.resizeBitmapnorec(bm, (int)(totalWidth/2f), (int)(totalWidth*ratio/2f));
-                            totalHeight = (int)(totalWidth*ratio*getPresentationCount());
-                            try {
-                                inputStream.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            presentationBitmaps.set(index, newBm);
-                            new MainHandler().post(new PresentationDownloadedHandler(onPresentationDownloadedComplete, index));
-                            sub.onNext(index);
-                        }
-                    });
-                }
-            }, (int)(rd.nextFloat()*1000));
-
-
-            if(totalOb==null){
-                totalOb = sub.asObservable();
-            }
-            else{
-                totalOb = Observable.merge(totalOb, sub);
-            }
-        }
-        return totalOb;
-    }
-
-    public int computePresentationHeight(Context context){
-        int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-        float height = 0;
-        for(int i=0;i<presentationCount;i++){
-            Bitmap bm = presentationBitmaps.get(i);
-            height += bm.getHeight()*screenWidth/(float)bm.getWidth();
-        }
-        this.totalHeight = (int)height;
-        return totalHeight;
-    }
-
-
-    private static class MainHandler extends Handler{
-        public MainHandler(){
-            super(Looper.getMainLooper());
-        }
-    }
-
-    private static class PresentationDownloadedHandler implements Runnable {
-        OnPresentationDownloadedComplete onPresentationDownloadedComplete;
-        int index = 0;
-        public PresentationDownloadedHandler(OnPresentationDownloadedComplete onPresentationDownloadedComplete, int index){
-            this.onPresentationDownloadedComplete = onPresentationDownloadedComplete;
-            this.index = index;
-        }
-        @Override
-        public void run(){
-            if(onPresentationDownloadedComplete!=null){
-                onPresentationDownloadedComplete.onPresentationDownloadComplete(index);
-            }
-        }
-
-    }
 
 
 
@@ -263,13 +164,6 @@ public class Presentation {
         this.presentationCount = presentationCount;
     }
 
-    public List<Bitmap> getPresentationBitmaps() {
-        return presentationBitmaps;
-    }
-
-    public void setPresentationBitmaps(List<Bitmap> presentationBitmaps) {
-        this.presentationBitmaps = presentationBitmaps;
-    }
 
     public int getTotalHeight() {
         return totalHeight;

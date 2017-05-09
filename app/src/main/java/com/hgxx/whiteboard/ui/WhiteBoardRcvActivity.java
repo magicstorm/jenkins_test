@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.WhiteBoardApplication;
@@ -87,23 +88,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         presentations = new HashMap<>();
     }
 
-    public static class ImageDownloaded implements Presentation.OnPresentationDownloadedComplete{
-        HashMap<String, ArrayList<ImageView>> presentations;
-        Presentation presentation;
-
-        public ImageDownloaded(HashMap<String, ArrayList<ImageView>> presentations, Presentation presentation){
-            this.presentations = presentations;
-            this.presentation = presentation;
-        }
-
-        @Override
-        public void onPresentationDownloadComplete(int index) {
-            ArrayList<ImageView> imageViews = presentations.get(presentation.getPresentationName());
-            if(imageViews.size()>index){
-                imageViews.get(index).setImageBitmap(presentation.getPresentationBitmaps().get(index));
-            }
-        }
-    }
 
     private void initViews(Display display){
 
@@ -111,57 +95,42 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
         drawView.setWidth((int)display.getDisplayWidth());
         drawView.setHeight((int)display.getDisplayHeight());
+        drawView.clear();
 
 
         scrollView.setVerticalScrollBarEnabled(false);
         scrollView.setHorizontalScrollBarEnabled(false);
         presentations.put(presentation.getPresentationName(), new ArrayList<ImageView>());
-        initImageViews(presentation.getPresentationCount());
-        Observable<Integer> ob = presentation.getPresentationImages(new ImageDownloaded(presentations, presentation));
-        ob.subscribe(new Observer<Integer>() {
-            @Override
-            public void onCompleted() {
-//                presentation.computePresentationHeight(WhiteBoardApplication.getContext());
+        initImageViews(presentation.getPresentationCount(), drawView.getWidth());
 
-                if(scrollView.getViewTreeObserver().isAlive()){
-                    scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            if(presentation!=null){
-                                presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
-                                presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
-                                drawView.setWidth(presentation.getTotalWidth());
-                                drawView.setHeight(presentation.getTotalHeight());
-                            }
-                        }
-                    });
-                }
-                else{
+
+        if(scrollView.getViewTreeObserver().isAlive()){
+            scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                                                   @Override
+                                                                   public void onGlobalLayout() {
                     if(presentation!=null){
                         presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
                         presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
                         drawView.setWidth(presentation.getTotalWidth());
                         drawView.setHeight(presentation.getTotalHeight());
                     }
-                }
-
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        drawView.refresh();
-//                    }
-//                });
+        }
+    });
+        }
+        else{
+            if(presentation!=null){
+                presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
+                presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
+                drawView.setWidth(presentation.getTotalWidth());
+                drawView.setHeight(presentation.getTotalHeight());
+            }
+        }
 
 
                 presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {
 //                    int i = 0;
                     @Override
                     public void onScrollStatChange(ScrollStat scrollStat) {
-//                        System.out.println(
-//                                "滚动变化" + String.valueOf(i) + ": " +
-//                                        "currentHeight=" + scrollStat.getCurrentHeight() +
-//                                        "|totalHeight=" + scrollStat.getTotalHeight()
-//                        );
                         final int scrollTop = (int) scrollStat.getCurrentHeight();
                         scrollView.scrollTo(0, scrollTop);
 
@@ -172,36 +141,18 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                             }
                         });
 
-//                        adjustDisplayArea(scrollStat.getDisplay());
-//                        i++;
                     }
                 });
 
 
                 presentation.listenPresentationChange(WhiteBoardApplication.getContext());
 
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer integer) {
-
-            }
-        });
     }
 
     private void adjustDisplayArea(final Display display){
-        int sw = getResources().getDisplayMetrics().widthPixels;
-        int sh = getResources().getDisplayMetrics().heightPixels;
-//                for(int i=0;i<scrollView.getChildCount();i++){
-//                    scrollView.getChildAt(i).getLayoutParams().width = (int)display.getDisplayWidth();
-//                    scrollView.getChildAt(i).invalidate();
-//                }
-        int ww = (int)display.getDisplayWidth();
+//        int sw = getResources().getDisplayMetrics().widthPixels;
+//        int sh = getResources().getDisplayMetrics().heightPixels;
+//        int ww = (int)display.getDisplayWidth();
 
         presentation.setTotalHeight((int)display.getDisplayHeight());
         scrollView.getLayoutParams().width = (int)display.getDisplayWidth();
@@ -216,12 +167,17 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         drawLayout = (DrawLayout)findViewById(R.id.drawRcvView);
     }
 
-    private void initImageViews(int count){
+    private void initImageViews(int count, int width){
+        scrollLl.removeAllViews();
         for(int i=0;i<count;i++){
             ImageView imageView = new ImageView(this);
-            LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
             imageView.setLayoutParams(ivParams);
             imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+
+            Glide.with(this).load(Web.protocol+"://"+Web.address+":"+"8889/" + presentation.getPresentationName()+ "/api_"+String.valueOf(i+1)+".png").fitCenter().into(imageView);
+
 
             imageView.setAdjustViewBounds(true);
             scrollLl.addView(imageView);
@@ -301,29 +257,13 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                 }
             });
 
-//            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION, new SocketClient.EventListener() {
-//                @Override
-//                public void onEvent(Object... args) {
-//                }
-//            });
-
-//
-//            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION_INIT, new SocketClient.EventListener() {
-//                @Override
-//                public void onEvent(Object... args) {
-//
-//                }
-//            });
 
             socketClient.setEventListener(SocketClient.EVENT_PATH, new SocketClient.EventListener() {
                 @Override
                 public void onEvent(Object... args) {
                     try {
-//                        String str = args[0].toString();
-//                        JSONObject jsonObject = null;
-    //                            System.out.println("\nstring is: " + str);
+
                         JSONObject jsonObject = new JSONObject((String)args[0]);
-//                        jsonObject = new JSONObject(str);
                         if (jsonObject == null) {
                             return;
                         }
@@ -396,36 +336,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
     private boolean isJsonFieldNotNull(JSONObject jsonObject, String key) throws JSONException {
         return jsonObject.has(key)&&!TextUtils.isEmpty(jsonObject.getString(key))&&!jsonObject.getString(key).equals("null");
-    }
-
-
-    public synchronized void setSocketIfNoSocket() throws IOException {
-        if(socket ==null){
-            socket = new Socket(Sock.serverIP, Sock.serverPort);
-        }
-    }
-
-    private synchronized void sendString(final String str) {
-        new Thread(){
-            @Override
-            public void run() {
-                try {
-                    setSocketIfNoSocket();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if(TextUtils.isEmpty(str))return;
-                OutputStream os=null;
-                try {
-                    if(socket !=null){
-                        os = socket.getOutputStream();
-                        os.write(str.getBytes());
-                    }
-                }catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
     }
 
 

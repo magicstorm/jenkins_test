@@ -168,6 +168,8 @@ public class DrawLayout extends RelativeLayout {
             mPaint.setStrokeWidth(pathObject.strokeWidth);
             canvas.drawPath(pathObject.path, mPaint);
             pathObject.path.isEmpty();
+
+
         }
 
 
@@ -205,6 +207,8 @@ public class DrawLayout extends RelativeLayout {
         }
     }
 
+
+
     private void touch_up() {
 
         mPath.lineTo(mX, mY);
@@ -212,13 +216,6 @@ public class DrawLayout extends RelativeLayout {
             circlePath.reset();
         }
         // commit the path to our offscreen
-
-//        Bitmap tmpBm = Bitmap.createBitmap(mBitmap);
-//        Canvas tmpCanva = new Canvas(tmpBm);
-//        tmpCanva.drawPath(mPath, mPaint);
-//        mCanvas = tmpCanva;
-//        mBitmap = tmpBm;
-
 //        if(mCanvas!=null){
 //            mCanvas.drawPath(mPath, mPaint);
 //        }
@@ -242,8 +239,6 @@ public class DrawLayout extends RelativeLayout {
         }
         invalidate();
     }
-
-
 
     public interface OnMoveListener{
         void onMoveStart();
@@ -296,6 +291,8 @@ public class DrawLayout extends RelativeLayout {
 //        }
 //        return true;
 //    }
+
+
 
     public void drawEnd() {
         touch_up();
