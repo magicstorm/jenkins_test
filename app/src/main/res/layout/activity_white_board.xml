@@ -1,16 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.hgxx.whiteboard.ui.WhiteBoardActivity">
-
-    <com.hgxx.whiteboard.views.drawview.DrawView
-        android:id="@+id/whiteboard"
-        android:layout_width="match_parent"
+    >
+    <LinearLayout
+        android:id="@+id/menu_frame"
+        android:layout_width="80dp"
         android:layout_height="match_parent"
-        />
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical"
+        >
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            >
+
+        </FrameLayout>
+        <LinearLayout
+            android:id="@+id/menu"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            >
+
+
+        </LinearLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            ></FrameLayout>
+
+    </LinearLayout>
+    <ScrollView
+        android:layout_toRightOf="@id/menu_frame"
+        android:id="@+id/sv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:fillViewport="true"
+        >
+
+            <LinearLayout
+                android:id="@+id/ll"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </LinearLayout>
+
+
+    </ScrollView>
+    <com.hgxx.whiteboard.views.drawview.DrawLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_alignLeft="@id/sv"
+        android:layout_alignRight="@id/sv"
+        android:id="@+id/drawRcvView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </com.hgxx.whiteboard.views.drawview.DrawLayout>
+
 
 
 </RelativeLayout>
+

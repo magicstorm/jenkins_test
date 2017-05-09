@@ -167,6 +167,7 @@ public class DrawLayout extends RelativeLayout {
             mPaint.setColor(Color.parseColor(pathObject.color));
             mPaint.setStrokeWidth(pathObject.strokeWidth);
             canvas.drawPath(pathObject.path, mPaint);
+            pathObject.path.isEmpty();
         }
 
 

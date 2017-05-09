@@ -6,15 +6,20 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.network.WebClient;
+import com.hgxx.whiteboard.utils.ImageUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import okhttp3.ResponseBody;
 import rx.Observable;
@@ -35,7 +40,7 @@ public class Presentation {
     String presentationName;
     String url;
     WeakReference<SocketClient> socketClientWeakReference;
-    int presentationCount = 5;
+    int presentationCount = 50;
     List<Bitmap> presentationBitmaps = Arrays.asList(new Bitmap[presentationCount]);
     int totalHeight = 0;
     int totalWidth = 0;
@@ -51,7 +56,7 @@ public class Presentation {
     public Presentation(String presentationName, String url){
         this.presentationName = presentationName;
         this.url = url;
-        setSocketClient(SocketClient.getInstance());
+                setSocketClient(SocketClient.getInstance());
     }
 
     public interface OnScrollStatChange{
@@ -72,31 +77,54 @@ public class Presentation {
         WebClient.PresentationService presentationService = WebClient.getInstance().getPresentationService();
 
         Observable<Integer> totalOb = null;
+        Random rd = new Random();
         for(int i=0;i<presentationCount;i++){
 
             final ReplaySubject<Integer> sub = ReplaySubject.create();
 
             final int index = i;
-            Observable<ResponseBody> presentationImageObservable = presentationService.getPresentationImage(presentationName, "api_"+String.valueOf(i+1)+".png");
-            presentationImageObservable.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<ResponseBody>() {
-                @Override
-                public void onCompleted() {
-                    sub.onCompleted();
-                }
+            final Observable<ResponseBody> presentationImageObservable = presentationService.getPresentationImage(presentationName, "api_"+String.valueOf(i+1)+".png");
 
-                @Override
-                public void onError(Throwable e) {
-                    sub.onError(e);
-                }
 
+
+            new Handler().postDelayed(new Runnable() {
                 @Override
-                public void onNext(ResponseBody response) {
-                    InputStream inputStream = response.byteStream();
-                    presentationBitmaps.set(index, BitmapFactory.decodeStream(inputStream));
-                    new MainHandler().post(new PresentationDownloadedHandler(onPresentationDownloadedComplete, index));
-                    sub.onNext(index);
+                public void run() {
+                    presentationImageObservable.subscribeOn(Schedulers.io()).observeOn(Schedulers.io()).subscribe(new Observer<ResponseBody>() {
+                        @Override
+                        public void onCompleted() {
+                            sub.onCompleted();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            sub.onError(e);
+                        }
+
+                        @Override
+                        public void onNext(ResponseBody response) {
+                            InputStream inputStream = response.byteStream();
+                            Bitmap bm = BitmapFactory.decodeStream(inputStream);
+                            int w = bm.getWidth();
+                            int h = bm.getHeight();
+                            float ratio = h/(float)w;
+
+                            Bitmap newBm = ImageUtils.resizeBitmapnorec(bm, (int)(totalWidth/2f), (int)(totalWidth*ratio/2f));
+                            totalHeight = (int)(totalWidth*ratio*getPresentationCount());
+                            try {
+                                inputStream.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            presentationBitmaps.set(index, newBm);
+                            new MainHandler().post(new PresentationDownloadedHandler(onPresentationDownloadedComplete, index));
+                            sub.onNext(index);
+                        }
+                    });
                 }
-            });
+            }, (int)(rd.nextFloat()*1000));
+
 
             if(totalOb==null){
                 totalOb = sub.asObservable();
