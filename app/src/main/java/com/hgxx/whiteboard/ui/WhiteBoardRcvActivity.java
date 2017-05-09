@@ -145,6 +145,13 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                     }
                 }
 
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        drawView.refresh();
+//                    }
+//                });
+
 
                 presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {
 //                    int i = 0;

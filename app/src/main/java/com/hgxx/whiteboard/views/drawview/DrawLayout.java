@@ -2,19 +2,18 @@ package com.hgxx.whiteboard.views.drawview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.icu.util.Measure;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.hgxx.whiteboard.R;
+
+import java.util.ArrayList;
 
 /**
  * Created by ly on 08/05/2017.
@@ -24,8 +23,8 @@ public class DrawLayout extends RelativeLayout {
      public static final int MIN_REFRESH_INTERVAL = 30;
     private long lastRefreshTime;
 
-    private Bitmap mBitmap;
-    private Canvas mCanvas;
+//    private Bitmap mBitmap;
+//    private Canvas mCanvas;
     private Path mPath;
     private Paint mBitmapPaint;
     Context context;
@@ -38,6 +37,19 @@ public class DrawLayout extends RelativeLayout {
     private boolean needCircle = true;
     private boolean drawable = true;
 
+
+    private ArrayList<PathObject> paths = new ArrayList<>();
+    private ArrayList<PathObject> currentPath = new ArrayList<>();
+    private String mPaintColor = "#000000";
+    private float mStrokeWidth = 12;
+
+    class PathObject {
+        Path path;
+        String color;
+        float strokeWidth;
+    }
+
+
     public DrawLayout(Context c) {
         this(c, null);
     }
@@ -49,8 +61,8 @@ public class DrawLayout extends RelativeLayout {
     public DrawLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);
+//        mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+//        mCanvas = new Canvas(mBitmap);
 
         this.context=context;
         mPath = new Path();
@@ -113,9 +125,9 @@ public class DrawLayout extends RelativeLayout {
 //    }
 
     public void clear(){
+        paths.clear();
         mPath.reset();
-        mBitmap = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-        mCanvas = new Canvas(mBitmap);
+        //TODO clear
         invalidate();
     }
 
@@ -127,27 +139,47 @@ public class DrawLayout extends RelativeLayout {
             curWidth = w;
             curHeight = h;
 
-            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-            mCanvas = new Canvas(mBitmap);
+//            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+//            mCanvas = new Canvas(mBitmap);
         }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int ms = MeasureSpec.makeMeasureSpec(5000, MeasureSpec.EXACTLY);
+        int msHeight = MeasureSpec.makeMeasureSpec(500000, MeasureSpec.EXACTLY);
+        int msWidth = MeasureSpec.makeMeasureSpec(curWidth, MeasureSpec.EXACTLY);
 
 
-        setMeasuredDimension(widthMeasureSpec, ms);
+        setMeasuredDimension(msWidth, msHeight);
         curWidth = MeasureSpec.getSize(widthMeasureSpec);
         curHeight = MeasureSpec.getSize(heightMeasureSpec);
+    }
+
+    public void measure(){
+        int msHeight = MeasureSpec.makeMeasureSpec(curHeight, MeasureSpec.EXACTLY);
+        int msWidth = MeasureSpec.makeMeasureSpec(curWidth, MeasureSpec.EXACTLY);
+        this.measure(msWidth, msHeight);
+        setMeasuredDimension(msWidth, msHeight);
     }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        canvas.drawBitmap(mBitmap, 0, 0, mBitmapPaint);
+
+
+        for(int i=0;i<paths.size();i++){
+            PathObject pathObject = paths.get(i);
+            mPaint.setColor(Color.parseColor(pathObject.color));
+            mPaint.setStrokeWidth(pathObject.strokeWidth);
+            canvas.drawPath(pathObject.path, mPaint);
+        }
+
+
+        mPaint.setColor(Color.parseColor(mPaintColor));
+        mPaint.setStrokeWidth(mStrokeWidth);
         canvas.drawPath(mPath, mPaint);
+
         if(needCircle){
             canvas.drawPath( circlePath,  circlePaint);
         }
@@ -157,7 +189,7 @@ public class DrawLayout extends RelativeLayout {
     private static final float TOUCH_TOLERANCE = 4;
 
     private void touch_start(float x, float y) {
-        mPath.reset();
+//        mPath.reset();
         mPath.moveTo(x, y);
         mX = x;
         mY = y;
@@ -192,11 +224,17 @@ public class DrawLayout extends RelativeLayout {
 //        mCanvas = tmpCanva;
 //        mBitmap = tmpBm;
 
-        if(mCanvas!=null){
-            mCanvas.drawPath(mPath, mPaint);
-        }
+//        if(mCanvas!=null){
+//            mCanvas.drawPath(mPath, mPaint);
+//        }
         // kill this so we don't double draw
-        mPath.reset();
+        PathObject po = new PathObject();
+        po.color = mPaintColor;
+        po.path = mPath;
+        po.strokeWidth = mStrokeWidth;
+        paths.add(po);
+        mPath = new Path();
+//        mPath.reset();
     }
 
 
@@ -268,10 +306,12 @@ public class DrawLayout extends RelativeLayout {
 
     public void setStrokeWidth(float strokeWidth){
         if(strokeWidth==0)return;
+        mStrokeWidth = strokeWidth;
         mPaint.setStrokeWidth(strokeWidth);
     }
 
     public void setPaintColor(String colorString){
+        mPaintColor = colorString;
         if(!TextUtils.isEmpty(colorString)&&!colorString.equals("null")){
             mPaint.setColor(Color.parseColor(colorString));
         }
