@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -21,7 +22,18 @@ import java.util.List;
  */
 
 public class DrawLayout extends RelativeLayout {
-     public static final int MIN_REFRESH_INTERVAL = 30;
+
+    private String drawType = DRAW_TYPE_LINE;
+    public static final String DRAW_TYPE_LINE = "line";
+    public static final String DRAW_TYPE_OVAL = "oval";
+    public static final String DRAW_TYPE_RECT = "rect";
+    public static final String[] DRAW_TYPES = new String[]{
+        DRAW_TYPE_LINE,
+        DRAW_TYPE_OVAL,
+        DRAW_TYPE_RECT
+    };
+
+    public static final int MIN_REFRESH_INTERVAL = 30;
     private long lastRefreshTime;
 
 //    private Bitmap mBitmap;
@@ -47,6 +59,17 @@ public class DrawLayout extends RelativeLayout {
         Path path;
         String color;
         float strokeWidth;
+        boolean drawDot = false;
+        Point dot;
+    }
+
+    class Point{
+        float x;
+        float y;
+        Point (float x, float y){
+            this.x = x;
+            this.y = y;
+        }
     }
 
 
@@ -167,9 +190,9 @@ public class DrawLayout extends RelativeLayout {
             mPaint.setColor(Color.parseColor(pathObject.color));
             mPaint.setStrokeWidth(pathObject.strokeWidth);
             canvas.drawPath(pathObject.path, mPaint);
-            pathObject.path.isEmpty();
-
-
+            if(pathObject.drawDot){
+                canvas.drawPoint(pathObject.dot.x, pathObject.dot.y, mPaint);
+            }
         }
 
 
@@ -182,6 +205,8 @@ public class DrawLayout extends RelativeLayout {
         }
     }
 
+
+    private float startX, startY;
     private float mX, mY;
     private static final float TOUCH_TOLERANCE = 4;
 
@@ -190,15 +215,40 @@ public class DrawLayout extends RelativeLayout {
         mPath.moveTo(x, y);
         mX = x;
         mY = y;
+        startX = x;
+        startY = y;
+    }
+
+    private  RectF getRectF(float startx, float starty, float endx, float endy){
+        return new RectF(
+                Math.min(startx, endx),
+                Math.min(starty, endy),
+                Math.max(startx, endx),
+                Math.max(starty, endy)
+        );
     }
 
     private void touch_move(float x, float y) {
         float dx = Math.abs(x - mX);
         float dy = Math.abs(y - mY);
         if (dx >= TOUCH_TOLERANCE || dy >= TOUCH_TOLERANCE) {
-            mPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
+
+            switch (drawType){
+                case DRAW_TYPE_OVAL:
+                    mPath.reset();
+                    mPath.addOval(getRectF(startX, startY, x, y), Path.Direction.CCW);
+                    break;
+                case DRAW_TYPE_RECT:
+                    mPath.reset();
+                    mPath.addRect(getRectF(startX, startY, x, y), Path.Direction.CCW);
+                    break;
+                default:
+                    mPath.quadTo(mX, mY, (x + mX)/2, (y + mY)/2);
+                    break;
+            }
             mX = x;
             mY = y;
+
 
             if(needCircle){
                 circlePath.reset();
@@ -210,8 +260,16 @@ public class DrawLayout extends RelativeLayout {
 
 
     private void touch_up() {
+        switch (drawType){
+            case DRAW_TYPE_OVAL:
+                break;
+            case DRAW_TYPE_RECT:
+                break;
+            default:
+                mPath.lineTo(mX, mY);
+                break;
+        }
 
-        mPath.lineTo(mX, mY);
         if(needCircle){
             circlePath.reset();
         }
@@ -224,6 +282,12 @@ public class DrawLayout extends RelativeLayout {
         po.color = mPaintColor;
         po.path = mPath;
         po.strokeWidth = mStrokeWidth;
+
+        if(startX==mX&&startY==mY){
+            po.drawDot = true;
+            po.dot = new Point(startX, startY);
+        }
+
         paths.add(po);
         mPath = new Path();
 //        mPath.reset();
@@ -353,4 +417,13 @@ public class DrawLayout extends RelativeLayout {
     public void setDrawable(boolean drawable) {
         this.drawable = drawable;
     }
+
+    public String getDrawType() {
+        return drawType;
+    }
+
+    public void setDrawType(String drawType) {
+        this.drawType = drawType;
+    }
+
 }

@@ -288,10 +288,13 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
                         if(isJsonFieldNotNull(jsonObject, "paintColor")){
                             String color = jsonObject.getString("paintColor");
-
                             drawView.setPaintColor(color);
                         }
 
+                        if(isJsonFieldNotNull(jsonObject, "drawType")){
+                            String drawType = jsonObject.getString("drawType");
+                            drawView.setDrawType(drawType);
+                        }
 
     //                            System.out.println("x: " + String.valueOf(mp.getX()) + "y: " + String.valueOf(mp.getY()) + "\n");
                         runOnUiThread(new Runnable() {

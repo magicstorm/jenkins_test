@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 public class MovePoint {
     float frameWidth;
     float frameHeight;
+    String drawType;
 
     public MovePoint(float x, float y){
         this.x = x;
@@ -27,6 +28,14 @@ public class MovePoint {
     private float y;
     private long timestamp;
     private long index;
+
+    public String getDrawType() {
+        return drawType;
+    }
+
+    public void setDrawType(String drawType) {
+        this.drawType = drawType;
+    }
 
     public float getX() {
         return x;

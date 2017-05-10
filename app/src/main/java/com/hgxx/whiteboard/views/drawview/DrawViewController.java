@@ -2,6 +2,8 @@ package com.hgxx.whiteboard.views.drawview;
 
 import com.hgxx.whiteboard.views.drawview.DrawView;
 
+import java.util.Arrays;
+
 /**
  * Created by ly on 03/05/2017.
  */
@@ -48,6 +50,15 @@ public class DrawViewController {
         if(mDv==null)return;
         mDv.setCurHeight(height);
         mDv.getLayoutParams().height = height;
+    }
+
+    public void setDrawType(String drawType){
+        if(Arrays.asList(DrawLayout.DRAW_TYPES).contains(drawType)){
+            mDv.setDrawType(drawType);
+        }
+        else{
+            mDv.setDrawType(DrawLayout.DRAW_TYPE_LINE);
+        }
     }
 
     public void cancel(int cancelIndex){
