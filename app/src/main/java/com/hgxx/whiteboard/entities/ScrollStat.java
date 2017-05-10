@@ -3,6 +3,9 @@ package com.hgxx.whiteboard.entities;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.hgxx.whiteboard.utils.JsonUtils;
+
 /**
  * Created by ly on 04/05/2017.
  */

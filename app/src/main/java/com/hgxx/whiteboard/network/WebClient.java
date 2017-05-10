@@ -1,12 +1,9 @@
 package com.hgxx.whiteboard.network;
 
-import com.hgxx.whiteboard.entities.Presentation;
 import com.hgxx.whiteboard.network.constants.Web;
 
 
 import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.http.GET;

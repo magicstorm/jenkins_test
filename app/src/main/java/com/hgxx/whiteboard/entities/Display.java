@@ -11,6 +11,11 @@ public class Display {
     float displayWidth = 0;
     float displayHeight = 0;
 
+    public Display(float displayWidth, float displayHeight){
+        this.displayWidth = displayWidth;
+        this.displayHeight = displayHeight;
+    }
+
     public Display computeLocalDisplaySize(Context context){
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int screenWidth = displayMetrics.widthPixels;
@@ -52,5 +57,6 @@ public class Display {
         return this.getDisplayHeight() == ss.getDisplayHeight() &&
                 this.getDisplayWidth() == ss.getDisplayWidth();
     }
+
 }
 

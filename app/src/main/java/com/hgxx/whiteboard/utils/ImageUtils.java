@@ -4,111 +4,76 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
 
 import java.io.InputStream;
+
+import rx.Observable;
+import rx.Subscriber;
 
 /**
  * Created by ly on 10/12/16.
  */
 
 public class ImageUtils {
-    public enum RESIZE_MODE{
-        FIT_WIDTH, FIT_HEIGHT
+    public interface OnSizeReadyCallBack{
+        void onSizeReady(int width, int height);
+    }
+
+    public interface OnTargetReadyCallBack<T>{
+        void onTargetReady(T target);
     }
 
 
 
+    public static <T> Observable<T> getLoadImageObserve(final Context context, final String url, final ImageView iv,
+                                                                            final OnTargetReadyCallBack onTargetReadyCallBack, final OnSizeReadyCallBack onSizeReadyCallBack, final T tag){
+        return Observable.create(new Observable.OnSubscribe<T>() {
+            @Override
+            public void call(final Subscriber<? super T> subscriber) {
+                Target<GlideDrawable> target = Glide.with(context)
+                        .load(url).listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                e.printStackTrace();
+                                if(!subscriber.isUnsubscribed()){
+                                    subscriber.onError(e);
+                                }
+                                return false;
+                            }
 
-    public static Bitmap resizeBitmap(Bitmap bm, int newWidth, int newHeight){
-        int width = bm.getWidth();
-        int height = bm.getHeight();
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                if(!subscriber.isUnsubscribed()){
+                                    subscriber.onNext(tag);
+                                    subscriber.onCompleted();
+                                }
+                                return false;
+                            }
+                        }).fitCenter().into(iv);
 
-        float widthScale = (float)newWidth/width;
-        float heightScale = (float)newHeight/height;
+                if(onTargetReadyCallBack!=null){
+                    onTargetReadyCallBack.onTargetReady(target);
+                }
 
-        Matrix matrix = new Matrix();
-
-        matrix.postScale(widthScale, heightScale);
-        Bitmap newBm = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-        return newBm;
-    }
-    public static Bitmap resizeBitmapnorec(Bitmap bm, int newWidth, int newHeight){
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-
-        float widthScale = (float)newWidth/width;
-        float heightScale = (float)newHeight/height;
-
-        Matrix matrix = new Matrix();
-
-        matrix.postScale(widthScale, heightScale);
-        Bitmap newBm = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
-        return newBm;
-    }
-
-    public static Bitmap readImageFromResource(Context context, int resourceId, int width, int height, RESIZE_MODE resizeMode){
-
-        //get original size:w
-        BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-        BitmapFactory.decodeResource(context.getResources(), resourceId, opt);
-
-        //calculate scale
-        int scale = calculateScale(opt.outWidth, opt.outHeight, width, height, resizeMode);
-
-        opt.inJustDecodeBounds = false;
-        opt.inSampleSize = scale;
-
-        return BitmapFactory.decodeResource(context.getResources(), resourceId, opt);
+                if(onSizeReadyCallBack!=null){
+                    target.getSize(new SizeReadyCallback() {
+                        @Override
+                        public void onSizeReady(int width, int height) {
+                                onSizeReadyCallBack.onSizeReady(width, height);
+                        }
+                    });
+                }
+            }
+        });
     }
 
-    public static Bitmap readImageFromInputStream(InputStream inputStream, int width, int height, RESIZE_MODE resizeMode){
-
-        //get original size:w
-        BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(inputStream, null, opt);
-
-        //calculate scale
-        int scale = calculateScale(opt.outWidth, opt.outHeight, width, height, resizeMode);
-
-        opt.inJustDecodeBounds = false;
-        opt.inSampleSize = scale;
-
-        return BitmapFactory.decodeStream(inputStream, null, opt);
-    }
-
-     public static Bitmap readImageFromFile(Context context, String path, int width, int height, RESIZE_MODE resizeMode){
-
-        //get original size:w
-        BitmapFactory.Options opt = new BitmapFactory.Options();
-        opt.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, opt);
-
-        //calculate scale
-        int scale = calculateScale(opt.outWidth, opt.outHeight, width, height, resizeMode);
-
-        opt.inJustDecodeBounds = false;
-        opt.inSampleSize = scale;
-
-        return BitmapFactory.decodeFile(path, opt);
-    }
-
-    private static int calculateScale(int srcWidth, int srcHeight, int destWidth, int destHeight, RESIZE_MODE resizeMode){
-        int scale = 1;
-
-        float mscale=1.0f;
-
-        if(resizeMode== RESIZE_MODE.FIT_WIDTH){
-            mscale = (float)srcWidth/(float)destWidth;
-        }
-
-//        int heightScale = originalHeight/height;
-//        int scale = widthScale>heightScale?widthScale:heightScale;
-        scale = (int)Math.ceil(mscale);
-        return scale<1?1:scale;
-    }
 
 
 }

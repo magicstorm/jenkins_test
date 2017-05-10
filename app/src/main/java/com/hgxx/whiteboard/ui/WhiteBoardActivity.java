@@ -26,7 +26,6 @@ public class WhiteBoardActivity extends AppCompatActivity{
     private DrawLayout drawLayout;
     private DrawViewController drawView;
     private SocketClient socketClient;
-    private Integer connectionId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,20 +40,7 @@ public class WhiteBoardActivity extends AppCompatActivity{
     }
 
     private void initSocketClient() {
-        if(socketClient ==null){
-            socketClient = SocketClient.getInstance();
-            socketClient.setEventListener(SocketClient.EVENT_CONNECTION, new SocketClient.EventListener() {
-                @Override
-                public void onEvent(Object... args) {
-                    try {
-                        connectionId = Integer.valueOf(((JSONObject)args[0]).getString("id"));
-                        socketClient.sendEvent("sig", "server");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
+
         if(!socketClient.isConnected()){
             socketClient.connect();
         }

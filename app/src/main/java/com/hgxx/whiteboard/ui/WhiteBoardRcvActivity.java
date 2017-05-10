@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -19,31 +17,23 @@ import com.google.gson.Gson;
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Display;
-import com.hgxx.whiteboard.entities.Presentation;
+import com.hgxx.whiteboard.models.Presentation;
 import com.hgxx.whiteboard.entities.ScrollStat;
-import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.network.constants.Web;
-import com.hgxx.whiteboard.utils.ViewHelpers;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
-import com.hgxx.whiteboard.views.drawview.DrawScrollView;
 import com.hgxx.whiteboard.views.drawview.DrawView;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import rx.Observable;
-import rx.Observer;
 
 /**
  * Created by ly on 27/04/2017.
@@ -63,7 +53,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     private LinearLayout scrollLl;
     private Presentation presentation;
 
-    private HashMap<String, ArrayList<ImageView>> presentations;
     private ArrayList<Target<GlideDrawable>> bmTargets = new ArrayList<>();
     private DrawLayout drawLayout;
 
@@ -127,7 +116,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
     private void initDatas(){
         presentation = new Presentation("test");
-        presentations = new HashMap<>();
     }
 
 
@@ -142,7 +130,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
         scrollView.setVerticalScrollBarEnabled(false);
         scrollView.setHorizontalScrollBarEnabled(false);
-        presentations.put(presentation.getPresentationName(), new ArrayList<ImageView>());
         initImageViews(presentation.getPresentationCount(), drawView.getWidth());
 
 
@@ -227,7 +214,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
             imageView.setAdjustViewBounds(true);
             scrollLl.addView(imageView);
-            presentations.get(presentation.getPresentationName()).add(imageView);
         }
     }
 
