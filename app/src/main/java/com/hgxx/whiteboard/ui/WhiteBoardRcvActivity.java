@@ -13,6 +13,8 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.target.Target;
 import com.google.gson.Gson;
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.WhiteBoardApplication;
@@ -34,6 +36,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +64,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     private Presentation presentation;
 
     private HashMap<String, ArrayList<ImageView>> presentations;
+    private ArrayList<Target<GlideDrawable>> bmTargets = new ArrayList<>();
     private DrawLayout drawLayout;
 
     public synchronized void setMoveStart(boolean moveStart) {
@@ -82,6 +87,43 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
 //        initViews();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        callGlideTargetsLifeCycleMethod("onStart");
+    }
+
+    @Override
+    protected void onStop() {
+        callGlideTargetsLifeCycleMethod("onStop");
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        socketClient.disconnect();
+        socketClient.close();
+        callGlideTargetsLifeCycleMethod("onDestroy");
+        super.onDestroy();
+    }
+
+    private void callGlideTargetsLifeCycleMethod(String methodName){
+        try {
+            Method method = Glide.class.getDeclaredMethod(methodName);
+            method.setAccessible(true);
+            for(int i=0;i<bmTargets.size();i++){
+                method.invoke(bmTargets.get(i));
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void initDatas(){
         presentation = new Presentation("test");
@@ -176,7 +218,11 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
             imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
 
-            Glide.with(this).load(Web.protocol+"://"+Web.address+":"+"8889/" + presentation.getPresentationName()+ "/api_"+String.valueOf(i+1)+".png").fitCenter().into(imageView);
+            String url = Web.protocol+"://"+Web.address+":"+ Web.port + "/Test"+ "/api_"+String.valueOf(i+1)+".png";
+            Target<GlideDrawable> target = Glide.with(this).load(url).fitCenter().into(imageView);
+            bmTargets.add(target);
+
+
 
 
             imageView.setAdjustViewBounds(true);
@@ -342,11 +388,4 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onDestroy() {
-        socketClient.disconnect();
-        socketClient.close();
-
-        super.onDestroy();
-    }
 }

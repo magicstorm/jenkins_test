@@ -7,10 +7,7 @@ import android.text.TextUtils;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.google.gson.Gson;
 import com.hgxx.whiteboard.R;
-import com.hgxx.whiteboard.entities.MovePoint;
-import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
@@ -46,7 +43,6 @@ public class WhiteBoardActivity extends AppCompatActivity{
     private void initSocketClient() {
         if(socketClient ==null){
             socketClient = SocketClient.getInstance();
-
             socketClient.setEventListener(SocketClient.EVENT_CONNECTION, new SocketClient.EventListener() {
                 @Override
                 public void onEvent(Object... args) {
@@ -58,7 +54,6 @@ public class WhiteBoardActivity extends AppCompatActivity{
                     }
                 }
             });
-
         }
         if(!socketClient.isConnected()){
             socketClient.connect();

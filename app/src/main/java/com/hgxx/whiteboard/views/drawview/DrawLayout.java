@@ -295,8 +295,8 @@ public class DrawLayout extends RelativeLayout {
 
     public void touch_cancel(int cancelIndex){
         if(paths.size()<=cancelIndex&&cancelIndex>=0)return;
-        if(cancelIndex==-1){
-            paths = paths.subList(0, paths.size()-1);
+        if((cancelIndex==-1&&paths.size()>0)||cancelIndex==0){
+            paths.remove(paths.size()-1);
         }
         else if(cancelIndex>0){
             paths = paths.subList(0, cancelIndex);
