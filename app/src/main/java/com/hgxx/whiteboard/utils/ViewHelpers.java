@@ -108,6 +108,10 @@ public class ViewHelpers {
 		return (int)(density*demensionInDp+0.5f);
 	}
 
+	public static int dpToPixels(float demensionInDp, Context context){
+		float density = context.getResources().getDisplayMetrics().density;
+		return (int)(density*demensionInDp+0.5f);
+	}
 	/**
 	 * Measure child, no need to convert size to MeasureSpec anymore
 	 * @param child

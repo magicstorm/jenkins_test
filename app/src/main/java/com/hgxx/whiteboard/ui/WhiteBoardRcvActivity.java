@@ -23,7 +23,6 @@ import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
-import com.hgxx.whiteboard.views.drawview.DrawView;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
 import org.json.JSONException;
@@ -33,7 +32,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by ly on 27/04/2017.
@@ -41,7 +39,6 @@ import java.util.HashMap;
 
 public class WhiteBoardRcvActivity extends AppCompatActivity {
 
-    private DrawView wrb;
 
     private boolean moveStart = true;
     private int connectionId;

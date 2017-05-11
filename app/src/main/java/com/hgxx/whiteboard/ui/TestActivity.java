@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.hgxx.whiteboard.R;
-import com.hgxx.whiteboard.views.drawview.DrawView;
 
 /**
  * Created by ly on 04/05/2017.
@@ -20,11 +19,6 @@ public class TestActivity extends Activity{
 
 //        Presentation ps = new Presentation();
 //        ps.setPresentationName("test");
-        DrawView dv = (DrawView)findViewById(R.id.drawRcvView);
-
-        dv.startDraw(0, 0);
-        dv.drawMove(200, 200);
-        dv.drawEnd();
 
 
 

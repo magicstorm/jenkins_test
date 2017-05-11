@@ -1,8 +1,6 @@
 package com.hgxx.whiteboard.views.drawview;
 
-import android.os.Handler;
 
-import com.hgxx.whiteboard.views.drawview.DrawView;
 
 import java.util.Arrays;
 

@@ -10,9 +10,12 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.hgxx.whiteboard.R;
+import com.hgxx.whiteboard.utils.ToastSingle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -325,36 +328,37 @@ public class DrawLayout extends RelativeLayout {
         }
     }
 
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//        if(!drawable)return super.onTouchEvent(event);
-//        float x = event.getX();
-//        float y = event.getY();
-//
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                if(onMoveListener!=null){
-//                    onMoveListener.onMoveStart();
-//                    onMoveListener.onMove(x, y);
-//                }
-//                startDraw(x, y);
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                if(onMoveListener!=null){
-//                    onMoveListener.onMove(x, y);
-//                }
-//                drawMove(x, y);
-//                break;
-//            case MotionEvent.ACTION_UP:
-//                if(onMoveListener!=null){
-//                    onMoveListener.onMove(x, y);
-//                    onMoveListener.onMoveEnd();
-//                }
-//                drawEnd();
-//                break;
-//        }
-//        return true;
-//    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(!drawable)return super.onTouchEvent(event);
+        float x = event.getX();
+        float y = event.getY();
+        ToastSingle.showCenterToast("touch detected...", Toast.LENGTH_SHORT);
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if(onMoveListener!=null){
+                    onMoveListener.onMoveStart();
+                    onMoveListener.onMove(x, y);
+                }
+                startDraw(x, y);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if(onMoveListener!=null){
+                    onMoveListener.onMove(x, y);
+                }
+                drawMove(x, y);
+                break;
+            case MotionEvent.ACTION_UP:
+                if(onMoveListener!=null){
+                    onMoveListener.onMove(x, y);
+                    onMoveListener.onMoveEnd();
+                }
+                drawEnd();
+                break;
+        }
+        return true;
+    }
 
 
 
