@@ -2,13 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     >
     <LinearLayout
         android:id="@+id/menu_frame"
-        android:layout_width="80dp"
+        android:layout_width="@dimen/sender_side_bar_width"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:orientation="vertical"
+        android:clickable="true"
         >
         <FrameLayout
             android:layout_width="match_parent"
@@ -17,6 +19,10 @@
             >
 
         </FrameLayout>
+        <View
+            android:layout_width="match_parent"
+            android:background="#b3b3b3"
+            android:layout_height="1dp"/>
         <LinearLayout
             android:id="@+id/menu"
             android:orientation="vertical"
@@ -24,9 +30,29 @@
             android:layout_height="0dp"
             android:layout_weight="4"
             >
+            <TextView
+                android:layout_width="match_parent"
+                android:text="fucktest"
+                android:textSize="20sp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="match_parent"
+                android:text="fucktest"
+                android:textSize="20sp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="match_parent"
+                android:text="fucktest"
+                android:textSize="20sp"
+                android:layout_height="wrap_content" />
 
 
         </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#b3b3b3"
+            />
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -34,33 +60,76 @@
             ></FrameLayout>
 
     </LinearLayout>
+
+
     <ScrollView
         android:layout_toRightOf="@id/menu_frame"
         android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:background="#eeeeee"
         android:fillViewport="true"
         >
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
             <LinearLayout
                 android:id="@+id/ll"
                 android:orientation="vertical"
+                android:layout_toLeftOf="@+id/ll_scroll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:background="#ff0000"
+                    android:layout_height="@dimen/block_test_height" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:background="#00ff00"
+                    android:layout_height="@dimen/block_test_height" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:background="#0000ff"
+                    android:layout_height="@dimen/block_test_height" />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:background="#225511"
+                    android:layout_height="@dimen/block_test_height" />
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_scroll"
+                android:layout_alignParentRight="true"
+                android:orientation="vertical"
+                android:layout_width="@dimen/sender_side_bar_width"
+                android:layout_height="match_parent">
+            </LinearLayout>
+        </RelativeLayout>
 
 
     </ScrollView>
+
+
+    <FrameLayout
+        android:id="@+id/top_layer_left_bar"
+        android:layout_alignParentLeft="true"
+        android:layout_width="@dimen/sender_side_bar_width"
+        android:layout_height="match_parent"></FrameLayout>
+    <FrameLayout
+        android:id="@+id/top_layer_right_bar"
+        android:layout_alignParentRight="true"
+        android:layout_width="@dimen/sender_side_bar_width"
+        android:layout_height="match_parent"></FrameLayout>
     <com.hgxx.whiteboard.views.drawview.DrawLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_alignLeft="@id/sv"
-        android:layout_alignRight="@id/sv"
+        android:clickable="true"
+        android:layout_toLeftOf="@id/top_layer_right_bar"
+        android:layout_toRightOf="@id/top_layer_left_bar"
         android:id="@+id/drawRcvView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </com.hgxx.whiteboard.views.drawview.DrawLayout>
-
 
 
 </RelativeLayout>

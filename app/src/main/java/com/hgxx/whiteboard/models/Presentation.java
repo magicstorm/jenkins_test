@@ -161,7 +161,6 @@ public class Presentation {
         getLoadImagesObservable(context, displayWidth).subscribe(new Observer<Integer>() {
             @Override
             public void onCompleted() {
-                //TODO has totalHeightHere
                 if(onLoadPresentationCallBack!=null){
                     onLoadPresentationCallBack.onLoadPresentationCompleted();
                 }

@@ -44,6 +44,7 @@ public class HomePageActivity extends AppCompatActivity{
                     intent = new Intent(HomePageActivity.this, WhiteBoardRcvActivity.class);
                 }
                 else{
+                    intent = new Intent(HomePageActivity.this, WhiteBoardActivity.class);
                 }
 
                 HomePageActivity.this.startActivity(intent);

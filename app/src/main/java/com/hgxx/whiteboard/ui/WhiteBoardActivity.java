@@ -39,11 +39,28 @@ public class WhiteBoardActivity extends AppCompatActivity{
         initSocketClient();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     private void initSocketClient() {
 
-        if(!socketClient.isConnected()){
-            socketClient.connect();
-        }
     }
 
     private void findViews(){
@@ -52,7 +69,7 @@ public class WhiteBoardActivity extends AppCompatActivity{
         drawLayout = (DrawLayout)findViewById(R.id.drawRcvView);
     }
 
-    private boolean isJsonFieldNotNull(JSONObject jsonObject, String key) throws JSONException {
-        return jsonObject.has(key)&&!TextUtils.isEmpty(jsonObject.getString(key))&&!jsonObject.getString(key).equals("null");
-    }
+//    private boolean isJsonFieldNotNull(JSONObject jsonObject, String key) throws JSONException {
+//        return jsonObject.has(key)&&!TextUtils.isEmpty(jsonObject.getString(key))&&!jsonObject.getString(key).equals("null");
+//    }
 }
