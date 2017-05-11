@@ -1,6 +1,7 @@
 package com.hgxx.whiteboard.views;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -45,7 +46,19 @@ public class HgScrollView extends ScrollView {
     }
 
     public void addExcludedRectFs(RectF excludedRectF) {
+        if(isExcluded(excludedRectF))return;
         this.excludedRectFs.add(excludedRectF);
+    }
+
+    private boolean isExcluded(RectF newRectf){
+        boolean isExcluded = false;
+        for(RectF rectF:excludedRectFs){
+            if(rectF.contains(newRectf)){
+                isExcluded = true;
+            }
+        }
+
+        return isExcluded;
     }
 
     public void setExcludedRectFs(ArrayList<RectF> excludedRectFs) {
