@@ -169,12 +169,12 @@ public class DrawLayout extends RelativeLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int msHeight = MeasureSpec.makeMeasureSpec(500000, MeasureSpec.EXACTLY);
-        int msWidth = MeasureSpec.makeMeasureSpec(curWidth, MeasureSpec.EXACTLY);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//        int msHeight = MeasureSpec.makeMeasureSpec(500000, MeasureSpec.EXACTLY);
+//        int msWidth = MeasureSpec.makeMeasureSpec(curWidth, MeasureSpec.EXACTLY);
 
 
-        setMeasuredDimension(msWidth, msHeight);
+//        setMeasuredDimension(msWidth, msHeight);
         curWidth = MeasureSpec.getSize(widthMeasureSpec);
         curHeight = MeasureSpec.getSize(heightMeasureSpec);
     }

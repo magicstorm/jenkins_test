@@ -45,8 +45,6 @@
                 android:text="fucktest"
                 android:textSize="20sp"
                 android:layout_height="wrap_content" />
-
-
         </LinearLayout>
         <View
             android:layout_width="match_parent"
