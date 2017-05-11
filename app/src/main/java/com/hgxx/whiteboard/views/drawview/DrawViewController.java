@@ -44,10 +44,6 @@ public class DrawViewController {
         mDv.getLayoutParams().width = width;
     }
 
-    public void scrollTo(int scrollTop){
-        mDv.layout(mDv.getLeft(), -scrollTop, mDv.getRight(), mDv.getHeight()-scrollTop);
-    }
-
     public void setHeight(int height){
         if(mDv==null)return;
         mDv.setCurHeight(height);

@@ -162,14 +162,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                     public void onScrollStatChange(ScrollStat scrollStat) {
                         final int scrollTop = (int) scrollStat.getCurrentHeight();
                         scrollView.scrollTo(0, scrollTop);
-
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                drawView.scrollTo(scrollTop);
-//                            }
-//                        });
-
                     }
                 });
 
