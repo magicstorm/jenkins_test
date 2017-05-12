@@ -108,7 +108,7 @@ public class ViewHelpers {
 		return (int)(density*demensionInDp+0.5f);
 	}
 
-	public static int dpToPixels(float demensionInDp, Context context){
+	public static int dp2px(float demensionInDp, Context context){
 		float density = context.getResources().getDisplayMetrics().density;
 		return (int)(density*demensionInDp+0.5f);
 	}

@@ -57,11 +57,28 @@ public class HgScrollView extends ScrollView {
                 isExcluded = true;
             }
         }
-
         return isExcluded;
     }
 
     public void setExcludedRectFs(ArrayList<RectF> excludedRectFs) {
         this.excludedRectFs = excludedRectFs;
+    }
+
+    public interface OnScrollListener{
+        void onScrollChanged(int top, int oldt);
+    }
+
+    private OnScrollListener onScrollListener;
+
+    public void setOnScrollListener(OnScrollListener onScrollListener) {
+        this.onScrollListener = onScrollListener;
+    }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        if(onScrollListener!=null){
+            onScrollListener.onScrollChanged(t, oldt);
+        }
     }
 }

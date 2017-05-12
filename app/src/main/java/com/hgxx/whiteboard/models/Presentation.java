@@ -6,9 +6,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Path;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -18,11 +20,15 @@ import com.bumptech.glide.request.target.Target;
 import com.google.gson.Gson;
 import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Display;
+import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.network.WebClient;
 import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.utils.ImageUtils;
+import com.hgxx.whiteboard.utils.ToastSingle;
+import com.hgxx.whiteboard.views.HgScrollView;
+import com.hgxx.whiteboard.views.drawview.DrawControl;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +40,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -53,11 +60,10 @@ import rx.subjects.Subject;
 public class Presentation {
 
 
-    private ArrayList<Target<GlideDrawable>> bmTargets = new ArrayList<>();
+    private ArrayList<Target<Bitmap>> bmTargets = new ArrayList<>();
     private Integer connectionId;
     ScrollStat scrollStat;
     String presentationName;
-    String url;
     private ViewGroup presentationFrame;
     WeakReference<SocketClient> socketClientWeakReference;
     int presentationCount = 50;
@@ -70,14 +76,10 @@ public class Presentation {
     }
 
     public Presentation(String presentationName){
-        this(presentationName, null);
-    }
-
-    public Presentation(String presentationName, String url){
         this.presentationName = presentationName;
-        this.url = url;
         setSocketClient(SocketClient.getInstance());
     }
+
 
     public interface OnScrollStatChange{
         void onScrollStatChange(ScrollStat scrollStat);
@@ -153,8 +155,9 @@ public class Presentation {
 
 
     public void loadPresentation(Context context, final OnLoadPresentationCallBack onLoadPresentationCallBack){
-        int displayWidth = presentationFrame.getWidth();
+//        int displayWidth = presentationFrame.getWidth();
 
+        int displayWidth = getTotalWidth();
         presentationFrame.removeAllViews();
         totalHeight = 0;
 
@@ -189,8 +192,7 @@ public class Presentation {
 //            @Override
 //            public void call(final Subscriber<? super Integer> subscriber) {
 
-        Observable<Integer> imagesObservable = null;
-
+        ArrayList<Observable<Integer>> obArray = new ArrayList<>();
 
                 for(int i=0;i<getPresentationCount();i++){
                     final int index = i;
@@ -199,10 +201,11 @@ public class Presentation {
                     imageView.setLayoutParams(ivParams);
                     imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
+                    imageView.setAdjustViewBounds(true);
 
-                    Observable<Integer> imageObservable = ImageUtils.getLoadImageObserve(context, getPresentationUrl(i), imageView, new ImageUtils.OnTargetReadyCallBack<Target<GlideDrawable>>() {
+                    Observable<Integer> imageObservable = ImageUtils.getLoadImageObserve(context, getPresentationUrl(i), imageView, new ImageUtils.OnTargetReadyCallBack<Target<Bitmap>>() {
                                 @Override
-                                public void onTargetReady(Target<GlideDrawable> target) {
+                                public void onTargetReady(Target<Bitmap> target) {
                                     bmTargets.add(target);
                                 }
                             }, new ImageUtils.OnSizeReadyCallBack() {
@@ -213,48 +216,86 @@ public class Presentation {
                             }, i
                     );
 
-                    if(imagesObservable==null) {
-                        imagesObservable=imageObservable;
-                    } else{
-                        Observable.merge(imagesObservable, imageObservable);
-                    }
-
-                    imageView.setAdjustViewBounds(true);
+                    obArray.add(imageObservable);
                     presentationFrame.addView(imageView);
                 }
 //            }
 //        });
-        return imagesObservable;
+        return Observable.merge(obArray);
     }
 
 
     /**
      * server side
      */
+    public void initDrawMessage(final DrawControl drawControl){
+        drawControl.setDrawListener(new DrawControl.DrawListener() {
+            @Override
+            public void onDrawStart() {
+                getSocketClient().sendEvent(SocketClient.EVENT_SIG, "start");
+            }
 
-    public void initServer(float displayWidth, float displayHeight) throws IOException {
+            @Override
+            public void onDrawMove(float x, float y) {
+                MovePoint mp = new MovePoint(x, y);
+                mp.setDrawType(drawControl.getDrawType());
+                mp.setFrameHeight(scrollStat.getTotalHeight());
+                mp.setFrameWidth(getTotalWidth());
+                mp.setStrokeWidth(drawControl.getStrokeWidth());
+                getSocketClient().sendEvent(SocketClient.EVENT_PATH, mp);
+            }
+
+            @Override
+            public void onDrawEnd() {
+                getSocketClient().sendEvent(SocketClient.EVENT_SIG, "end");
+            }
+        });
+    }
+
+    public void initScrollMessage(final HgScrollView scrollView){
+        scrollStat.setTotalHeight(scrollView.getChildAt(0).getHeight());
+        scrollView.setOnScrollListener(new HgScrollView.OnScrollListener() {
+            @Override
+            public void onScrollChanged(int top, int oldt) {
+
+                scrollStat.setCurrentHeight(top);
+                scrollStat.setPresentationName(getPresentationName());
+
+                    Gson gson = new Gson();
+                    getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION, gson.toJson(scrollStat));
+//                ToastSingle.showCenterToast("top: " + top + "total: " + totalHeight, Toast.LENGTH_SHORT);
+            }
+        });
+    }
+
+
+
+    public void initServer() throws IOException {
         initServerListener();
-        initPresentation(displayWidth, displayHeight);
         connect();
+        sendInitialMessage();
+    }
+
+    public void sendInitialMessage() {
+        Gson gson = new Gson();
+        getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION_INIT, gson.toJson(this.scrollStat));
     }
 
     public void initPresentation(float displayWidth, float displayHeight) throws IOException {
-        SocketClient socketClient = getSocketClient();
 
         ScrollStat initScrollStat = new ScrollStat(getPresentationName(), 0, 0);
         initScrollStat.setDisplay(new Display(displayWidth, displayHeight));
+        this.scrollStat = initScrollStat;
 
-        Gson gson = new Gson();
-        socketClient.sendEvent(SocketClient.EVENT_PRESENTATION_INIT, gson.toJson(initScrollStat));
     }
 
 
-    public void connect() throws IOException {
+    public void connect(){
         final SocketClient socketClient = getSocketClient();
         socketClient.connect();
     }
 
-    public void initServerListener() throws IOException {
+    public void initServerListener(){
         final SocketClient socketClient = getSocketClient();
         socketClient.setEventListener(SocketClient.EVENT_CONNECTION, new SocketClient.EventListener() {
             @Override
@@ -280,12 +321,12 @@ public class Presentation {
      */
 
     public String getPresentationUrl(int i){
-        return Web.protocol+"://"+Web.address+":"+ Web.port + "/" + getPresentationName() + "/api_"+String.valueOf(i+1)+ imageExt;
+        String url = Web.protocol+"://"+Web.address+":"+ Web.port + "/" + getPresentationName() + "/api_"+String.valueOf(i+1)+ imageExt;
+        return url;
     }
 
-    private SocketClient getSocketClient() throws IOException {
+    private SocketClient getSocketClient() {
         SocketClient socketClient = socketClientWeakReference.get();
-        if(socketClient==null) throw new IOException("socket disconnected..");
         return socketClient;
     }
 
@@ -322,15 +363,6 @@ public class Presentation {
             onScrollStatChangeListener.onScrollStatChange(this.scrollStat);
         }
     }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
 
     public String getPresentationName() {
         return presentationName;
@@ -373,12 +405,21 @@ public class Presentation {
         this.presentationFrame = presentationFrame;
     }
 
+
+
     /**
      * life cycle
      */
 
-    public void onDestroy(){
+    public void onDestroy(final Context context){
         callGlideTargetsLifeCycleMethod("onDestroy");
+        new Thread(){
+            @Override
+            public void run() {
+                Glide.get(context).clearDiskCache();
+            }
+        }.start();
+
     }
 
     public void onStart(){

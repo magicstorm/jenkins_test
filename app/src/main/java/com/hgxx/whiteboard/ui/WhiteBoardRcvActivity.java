@@ -69,7 +69,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         initSocketClient();
 
         sendObj(SocketClient.EVENT_SIG, "client");
-        sendObj(SocketClient.EVENT_PRESENTATION_REQUEST, "test");
+        sendObj(SocketClient.EVENT_PRESENTATION_REQUEST, "Test");
 
 //        initViews();
     }
@@ -91,6 +91,12 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         socketClient.disconnect();
         socketClient.close();
         callGlideTargetsLifeCycleMethod("onDestroy");
+        new Thread(){
+            @Override
+            public void run() {
+                Glide.get(WhiteBoardApplication.getContext()).clearDiskCache();
+            }
+        }.start();
         super.onDestroy();
     }
 
@@ -112,7 +118,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
 
     private void initDatas(){
-        presentation = new Presentation("test");
+        presentation = new Presentation("Test");
     }
 
 

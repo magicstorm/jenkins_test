@@ -333,7 +333,7 @@ public class DrawLayout extends RelativeLayout {
         if(!drawable)return super.onTouchEvent(event);
         float x = event.getX();
         float y = event.getY();
-        ToastSingle.showCenterToast("touch detected...", Toast.LENGTH_SHORT);
+//        ToastSingle.showCenterToast("touch detected...", Toast.LENGTH_SHORT);
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -374,6 +374,10 @@ public class DrawLayout extends RelativeLayout {
 
     public void startDraw(float x, float y) {
         touch_start(x, y);
+    }
+
+    public float getmStrokeWidth() {
+        return mStrokeWidth;
     }
 
     public void setStrokeWidth(float strokeWidth){

@@ -55,8 +55,8 @@ public class ToastSingle {
             textView.setGravity(Gravity.CENTER);
             textView.setTextColor(Color.parseColor("#ffffffff"));
             textView.setTextSize(14);
-            int i = ViewHelpers.dpToPixels(12, mContext);
-            int j =ViewHelpers.dpToPixels(6, mContext);
+            int i = ViewHelpers.dp2px(12, mContext);
+            int j =ViewHelpers.dp2px(6, mContext);
             textView.setPadding(i, j, i, j);
             textView.setText(msg);
             layout.addView(textView);

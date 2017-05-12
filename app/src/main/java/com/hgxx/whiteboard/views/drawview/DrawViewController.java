@@ -8,9 +8,31 @@ import java.util.Arrays;
  * Created by ly on 03/05/2017.
  */
 
-public class DrawViewController {
+public class DrawViewController implements DrawControl{
     private boolean isMoving = false;
     private DrawLayout mDv;
+
+
+    public void setDrawListener(final DrawListener drawListener){
+        if(drawListener==null)return;
+        mDv.setOnMoveListener(new DrawLayout.OnMoveListener() {
+            @Override
+            public void onMoveStart() {
+                drawListener.onDrawStart();
+            }
+
+            @Override
+            public void onMove(float x, float y) {
+                drawListener.onDrawMove(x, y);
+            }
+
+            @Override
+            public void onMoveEnd() {
+                drawListener.onDrawEnd();
+            }
+        });
+    }
+
 
     public DrawViewController(DrawLayout dv){
         mDv = dv;
@@ -20,6 +42,7 @@ public class DrawViewController {
         if(mDv==null)return;
         mDv.clear();
     }
+
 
     public int getHeight(){
         if(mDv==null)return 0;
@@ -57,6 +80,10 @@ public class DrawViewController {
         }
     }
 
+    public String getDrawType(){
+        return mDv.getDrawType();
+    }
+
     public void cancel(int cancelIndex){
         mDv.touch_cancel(cancelIndex);
     }
@@ -76,6 +103,10 @@ public class DrawViewController {
 
     public void setStrokeWidth(float strokeWidth){
         mDv.setStrokeWidth(strokeWidth);
+    }
+
+    public float getStrokeWidth(){
+        return mDv.getmStrokeWidth();
     }
 
     public void setPaintColor(String color){

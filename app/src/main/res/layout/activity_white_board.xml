@@ -59,49 +59,55 @@
 
     </LinearLayout>
 
+    <View
+        android:id="@+id/split_left"
+        android:layout_width="1dp"
+        android:layout_toRightOf="@id/menu_frame"
+        android:background="#999999"
+        android:layout_height="match_parent"
+        />
 
     <com.hgxx.whiteboard.views.HgScrollView
-        android:layout_toRightOf="@id/menu_frame"
+        android:layout_toRightOf="@id/split_left"
         android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:background="#eeeeee"
         android:fillViewport="true"
         >
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/ll_scroll"
+
+                android:layout_alignTop="@+id/doc_ll"
+                android:layout_alignBottom="@+id/doc_ll"
+                android:layout_alignParentRight="true"
+                android:background="#ffffff"
+                android:orientation="vertical"
+                android:layout_width="@dimen/sender_side_bar_width"
+                android:layout_height="match_parent">
+            </LinearLayout>
+
+            <View
+                android:id="@+id/split_right"
+                android:layout_toLeftOf="@id/ll_scroll"
+                android:layout_alignTop="@+id/doc_ll"
+                android:layout_alignBottom="@+id/doc_ll"
+                android:layout_width="1dp"
+                android:background="#999999"
+                android:layout_height="match_parent"
+                />
+
+
             <LinearLayout
                 android:id="@+id/doc_ll"
                 android:orientation="vertical"
-                android:layout_toLeftOf="@+id/ll_scroll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:id="@+id/not_scroll_iv"
-                    android:layout_width="match_parent"
-                    android:background="#ff0000"
-                    android:layout_height="@dimen/block_test_height" />
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:background="#00ff00"
-                    android:layout_height="@dimen/block_test_height" />
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:background="#0000ff"
-                    android:layout_height="@dimen/block_test_height" />
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:background="#225511"
-                    android:layout_height="@dimen/block_test_height" />
-            </LinearLayout>
-            <LinearLayout
-                android:id="@+id/ll_scroll"
-                android:layout_alignParentRight="true"
-                android:orientation="vertical"
-                android:layout_width="@dimen/sender_side_bar_width"
+                android:layout_toLeftOf="@id/split_right"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent">
             </LinearLayout>
             <com.hgxx.whiteboard.views.drawview.DrawLayout
