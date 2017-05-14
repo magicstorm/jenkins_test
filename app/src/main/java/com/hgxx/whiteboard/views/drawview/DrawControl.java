@@ -13,4 +13,11 @@ public interface DrawControl {
     void setDrawListener(DrawListener drawListener);
     String getDrawType();
     float getStrokeWidth();
+    String getPaintColor();
+    void clear();
+    void undo();
+    void setPaintColor(String color);
+    void setStrokeWidth(float strokeWidth);
+    void setDrawType(String drawType);
+
 }

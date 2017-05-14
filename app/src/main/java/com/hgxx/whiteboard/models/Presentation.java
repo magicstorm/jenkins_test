@@ -41,6 +41,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -70,6 +71,10 @@ public class Presentation {
     int totalHeight = 0;
     int totalWidth = 0;
     private String imageExt = ".png";
+
+    private ArrayList<Integer> pagePositions = new ArrayList<>();
+    private int currentPage = 1;
+
 
     public Presentation(){
         this(null);
@@ -202,32 +207,53 @@ public class Presentation {
                     imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
                     imageView.setAdjustViewBounds(true);
-
+                    presentationFrame.addView(imageView);
                     Observable<Integer> imageObservable = ImageUtils.getLoadImageObserve(context, getPresentationUrl(i), imageView, new ImageUtils.OnTargetReadyCallBack<Target<Bitmap>>() {
                                 @Override
                                 public void onTargetReady(Target<Bitmap> target) {
                                     bmTargets.add(target);
                                 }
-                            }, new ImageUtils.OnSizeReadyCallBack() {
+                            }, new ImageUtils.OnImageLoaded<Bitmap, ImageView>() {
                                 @Override
-                                public void onSizeReady(int width, int height) {
-                                    totalHeight+=height;
+                                public void onImageLoaded(Bitmap bm, ImageView iv) {
+                                    pagePositions.add(getTotalHeight());
+                                    setTotalHeight(getTotalHeight()+calculateLayoutedImageWidth(iv));
+
                                 }
-                            }, i
+                            }, i + 1
                     );
 
                     obArray.add(imageObservable);
-                    presentationFrame.addView(imageView);
                 }
 //            }
 //        });
         return Observable.merge(obArray);
     }
 
+    private int calculateLayoutedImageWidth(ImageView iv){
+        iv.measure(0, 0);
+        return (int)(iv.getMeasuredHeight() * totalWidth/(float)iv.getMeasuredWidth());
+    }
 
     /**
      * server side
      */
+
+    public void clearPaint(){
+        getSocketClient().sendEvent("sig", "clear");
+    }
+
+    public void undoPaint(){
+        getSocketClient().sendEvent("sig", "undo");
+    }
+
+    public void sendScroll(float top){
+        scrollStat.setCurrentHeight(top);
+        scrollStat.setPresentationName(getPresentationName());
+        Gson gson = new Gson();
+        getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION, gson.toJson(scrollStat));
+    }
+
     public void initDrawMessage(final DrawControl drawControl){
         drawControl.setDrawListener(new DrawControl.DrawListener() {
             @Override
@@ -242,6 +268,8 @@ public class Presentation {
                 mp.setFrameHeight(scrollStat.getTotalHeight());
                 mp.setFrameWidth(getTotalWidth());
                 mp.setStrokeWidth(drawControl.getStrokeWidth());
+                mp.setDrawType(drawControl.getDrawType());
+                mp.setPaintColor(drawControl.getPaintColor());
                 getSocketClient().sendEvent(SocketClient.EVENT_PATH, mp);
             }
 
@@ -252,21 +280,19 @@ public class Presentation {
         });
     }
 
-    public void initScrollMessage(final HgScrollView scrollView){
-        scrollStat.setTotalHeight(scrollView.getChildAt(0).getHeight());
-        scrollView.setOnScrollListener(new HgScrollView.OnScrollListener() {
-            @Override
-            public void onScrollChanged(int top, int oldt) {
 
-                scrollStat.setCurrentHeight(top);
-                scrollStat.setPresentationName(getPresentationName());
 
-                    Gson gson = new Gson();
-                    getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION, gson.toJson(scrollStat));
-//                ToastSingle.showCenterToast("top: " + top + "total: " + totalHeight, Toast.LENGTH_SHORT);
-            }
-        });
-    }
+//    public void initScrollMessage(final HgScrollView scrollView){
+////        scrollStat.setTotalHeight(scrollView.getChildAt(0).getHeight());
+//        scrollStat.setTotalHeight(totalHeight);
+//        scrollView.setOnScrollListener(new HgScrollView.OnScrollListener() {
+//            @Override
+//            public void onScrollChanged(int top, int oldt) {
+//                sendScroll(top);
+////                ToastSingle.showCenterToast("top: " + top + "total: " + totalHeight, Toast.LENGTH_SHORT);
+//            }
+//        });
+//    }
 
 
 
@@ -319,6 +345,32 @@ public class Presentation {
     /**
      * helpers
      */
+    public int computeCurrentPage(int top, int oldt){
+        int delta = top-oldt;
+        if(delta==0)return currentPage;
+
+        int searchDir = delta>0?1:(-1);
+        int searchInterval = 1;
+
+        int currentPage = getCurrentPage();
+
+        while (currentPage>=1&&currentPage<=getPresentationCount()){
+            int nextPage = currentPage + searchInterval*searchDir;
+            if(nextPage<1||nextPage>getPresentationCount()){
+                break;
+            }
+
+            int nextTop = getPagePositions().get(nextPage-1);
+
+            if(searchDir*top>=searchDir*nextTop){
+                currentPage=nextPage;
+            } else{
+                return currentPage;
+            }
+        }
+        return currentPage;
+    }
+
 
     public String getPresentationUrl(int i){
         String url = Web.protocol+"://"+Web.address+":"+ Web.port + "/" + getPresentationName() + "/api_"+String.valueOf(i+1)+ imageExt;
@@ -387,6 +439,9 @@ public class Presentation {
 
     public void setTotalHeight(int totalHeight) {
         this.totalHeight = totalHeight;
+        if(scrollStat!=null){
+            scrollStat.setTotalHeight(totalHeight);
+        }
     }
 
     public int getTotalWidth() {
@@ -430,4 +485,19 @@ public class Presentation {
         callGlideTargetsLifeCycleMethod("onStop");
     }
 
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
+    }
+
+    public ArrayList<Integer> getPagePositions() {
+        return pagePositions;
+    }
+
+    public void setPagePositions(ArrayList<Integer> pagePositions) {
+        this.pagePositions = pagePositions;
+    }
 }

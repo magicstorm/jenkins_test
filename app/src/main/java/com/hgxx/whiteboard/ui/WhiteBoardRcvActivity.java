@@ -77,12 +77,12 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        callGlideTargetsLifeCycleMethod("onStart");
+//        callGlideTargetsLifeCycleMethod("onStart");
     }
 
     @Override
     protected void onStop() {
-        callGlideTargetsLifeCycleMethod("onStop");
+//        callGlideTargetsLifeCycleMethod("onStop");
         super.onStop();
     }
 
@@ -90,13 +90,15 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     protected void onDestroy() {
         socketClient.disconnect();
         socketClient.close();
-        callGlideTargetsLifeCycleMethod("onDestroy");
-        new Thread(){
-            @Override
-            public void run() {
-                Glide.get(WhiteBoardApplication.getContext()).clearDiskCache();
-            }
-        }.start();
+//        callGlideTargetsLifeCycleMethod("onDestroy");
+
+
+//        new Thread(){
+//            @Override
+//            public void run() {
+//                Glide.get(WhiteBoardApplication.getContext()).clearDiskCache();
+//            }
+//        }.start();
         super.onDestroy();
     }
 
@@ -201,10 +203,8 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
 
             String url = Web.protocol+"://"+Web.address+":"+ Web.port + "/Test"+ "/api_"+String.valueOf(i+1)+".png";
-            Target<GlideDrawable> target = Glide.with(this).load(url).fitCenter().into(imageView);
+            Target<GlideDrawable> target = Glide.with(WhiteBoardApplication.getContext()).load(url).fitCenter().into(imageView);
             bmTargets.add(target);
-
-
 
 
             imageView.setAdjustViewBounds(true);
@@ -300,6 +300,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                         float fw = Float.valueOf(jsonObject.getString("frameWidth"));
                         float fh = Float.valueOf(jsonObject.getString("frameHeight"));
 
+//                        int hh = drawView.getHeight();
                         float wi = w * drawView.getWidth() / fw;
                         float he = h * drawView.getHeight() / fh;
 
@@ -311,6 +312,8 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
                             float strokeWidth =  rawWidth * drawView.getWidth() / fw;
                             drawView.setStrokeWidth(strokeWidth);
+
+//                            System.out.println("totalHeight: " + fw + "|strokeWidth: " + rawWidth);
                         }
 
                         if(isJsonFieldNotNull(jsonObject, "paintColor")){

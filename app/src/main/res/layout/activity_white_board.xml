@@ -12,13 +12,29 @@
         android:orientation="vertical"
         android:clickable="true"
         >
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             >
+            <TextView
+                android:id="@+id/page_number_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/grey_round_rect"
+                android:text="1/50"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:padding="5dp"
+                />
 
-        </FrameLayout>
+
+
+        </RelativeLayout>
         <View
             android:layout_width="match_parent"
             android:background="#b3b3b3"
@@ -26,25 +42,92 @@
         <LinearLayout
             android:id="@+id/menu"
             android:orientation="vertical"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="4"
+            android:layout_weight="5"
             >
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:text="fucktest"
-                android:textSize="20sp"
-                android:layout_height="wrap_content" />
-            <TextView
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <TextView
+                    android:id="@+id/presentation_btn"
+                    style="@style/whiteBoardMenuBtn"
+                    android:text="选择课件"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:text="fucktest"
-                android:textSize="20sp"
-                android:layout_height="wrap_content" />
-            <TextView
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <TextView
+                    android:id="@+id/color_btn"
+                    style="@style/whiteBoardMenuBtn"
+                    android:text="画笔颜色"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:text="fucktest"
-                android:textSize="20sp"
-                android:layout_height="wrap_content" />
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <TextView
+                    android:id="@+id/stroke_width_btn"
+                    style="@style/whiteBoardMenuBtn"
+                    android:text="线条粗细"
+                    />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <TextView
+                    android:id="@+id/undo_btn"
+                    style="@style/whiteBoardMenuBtn"
+                    android:text="撤销"
+                    />
+
+            </LinearLayout>
+             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <TextView
+                    android:id="@+id/clear_btn"
+                    style="@style/whiteBoardMenuBtn"
+                    android:text="清屏"
+                    />
+
+            </LinearLayout>
+             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <TextView
+                    android:id="@+id/draw_type_btn"
+                    style="@style/whiteBoardMenuBtn"
+                    android:text="画笔类型"
+                    />
+
+            </LinearLayout>
+
+
         </LinearLayout>
         <View
             android:layout_width="match_parent"
@@ -88,8 +171,11 @@
                 android:layout_alignParentRight="true"
                 android:background="#ffffff"
                 android:orientation="vertical"
+                android:gravity="center_horizontal"
                 android:layout_width="@dimen/sender_side_bar_width"
                 android:layout_height="match_parent">
+
+
             </LinearLayout>
 
             <View
@@ -128,7 +214,119 @@
 
 
 
+    <com.hgxx.whiteboard.views.menu.ColorPanel
+        android:id="@+id/color_panel"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:layout_width="500dp"
+        android:background="#cc999999"
+        android:padding="8dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="56dp">
+    </com.hgxx.whiteboard.views.menu.ColorPanel>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:id="@+id/width_panel"
+        android:background="#f21717"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:id="@+id/stroke_width_1"
+            style="@style/whiteBoardStrokeWidthText"
+            android:text="1点"
+            />
+        <TextView
+            android:id="@+id/stroke_width_5"
+            style="@style/whiteBoardStrokeWidthText"
+            android:text="5点"
+            />
+        <TextView
+            android:id="@+id/stroke_width_10"
+            style="@style/whiteBoardStrokeWidthText"
+            android:text="10点"
+            />
+        <TextView
+            android:id="@+id/stroke_width_15"
+            style="@style/whiteBoardStrokeWidthText"
+            android:text="15点"
+            />
+        <TextView
+            android:id="@+id/stroke_width_20"
+            style="@style/whiteBoardStrokeWidthText"
+            android:text="20点"
+            />
+        <TextView
+            android:id="@+id/stroke_width_25"
+            style="@style/whiteBoardStrokeWidthText"
+            android:text="25点"
+            />
+    </LinearLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/shape_panel"
+        android:background="#f21717"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:id="@+id/shape_line_btn"
+            style="@style/whiteBoardStrokeWidthText"
+            android:clickable="true"
+            android:tag="line"
+            android:text="线条"
+            />
+        <TextView
+            android:id="@+id/shape_oval_btn"
+            style="@style/whiteBoardStrokeWidthText"
+            android:clickable="true"
+            android:tag="oval"
+            android:text="椭圆"
+            />
+        <TextView
+            android:id="@+id/shape_rect_btn"
+            style="@style/whiteBoardStrokeWidthText"
+            android:clickable="true"
+            android:tag="rect"
+            android:text="长方形"
+            />
+
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/page_to_go"
+            android:layout_width="50dp"
+            android:gravity="center"
+            android:hint="page"
+            android:background="@drawable/round_rect_frame"
+            android:textSize="14sp"
+            android:layout_height="30dp" />
+        <TextView
+            android:id="@+id/page_btn"
+            android:layout_width="30dp"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/grey_oval_sel"
+            android:clickable="true"
+            android:textColor="#ffffff"
+            android:text="Go"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_height="30dp" />
+
+    </LinearLayout>
 </RelativeLayout>
 

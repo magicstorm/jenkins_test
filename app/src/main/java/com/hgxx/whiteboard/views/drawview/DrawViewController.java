@@ -38,6 +38,11 @@ public class DrawViewController implements DrawControl{
         mDv = dv;
     }
 
+    public void undo(){
+        if(mDv==null)return;
+        mDv.touch_cancel(-1);
+    }
+
     public void clear(){
         if(mDv==null)return;
         mDv.clear();
@@ -107,6 +112,11 @@ public class DrawViewController implements DrawControl{
 
     public float getStrokeWidth(){
         return mDv.getmStrokeWidth();
+    }
+
+    @Override
+    public String getPaintColor() {
+        return mDv.getPaintColor();
     }
 
     public void setPaintColor(String color){

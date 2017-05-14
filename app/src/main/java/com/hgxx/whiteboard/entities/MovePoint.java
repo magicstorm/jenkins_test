@@ -20,7 +20,7 @@ public class MovePoint {
         timestamp = System.currentTimeMillis();
     }
 
-    private String color;
+    private String paintColor;
     private float strokeWidth;
 
 
@@ -84,13 +84,7 @@ public class MovePoint {
         this.frameHeight = frameHeight;
     }
 
-    public String getColor() {
-        return color;
-    }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
 
     public float getStrokeWidth() {
         return strokeWidth;
@@ -99,6 +93,15 @@ public class MovePoint {
     public void setStrokeWidth(float strokeWidth) {
         this.strokeWidth = strokeWidth;
     }
+
+    public String getPaintColor() {
+        return paintColor;
+    }
+
+    public void setPaintColor(String paintColor) {
+        this.paintColor = paintColor;
+    }
+
 
     @Override
     public String toString(){

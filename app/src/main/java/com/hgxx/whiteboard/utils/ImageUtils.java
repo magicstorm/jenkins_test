@@ -34,9 +34,19 @@ public class ImageUtils {
         void onTargetReady(T target);
     }
 
+    public interface OnImageLoaded<T, E>{
+        void onImageLoaded(T bm , E iv);
+    }
+
+    public static <T> Observable<T> getLoadImageObserve(Context context, String url, ImageView iv,
+                                                        OnTargetReadyCallBack onTargetReadyCallBack, OnImageLoaded onImageLoaded, T tag){
+        return getLoadImageObserve(context, url, iv, onTargetReadyCallBack, null, onImageLoaded, tag);
+
+    }
+
 
     public static <T> Observable<T> getLoadImageObserve(final Context context, final String url, final ImageView iv,
-                                                                            final OnTargetReadyCallBack onTargetReadyCallBack, final OnSizeReadyCallBack onSizeReadyCallBack, final T tag){
+                                                                            final OnTargetReadyCallBack onTargetReadyCallBack, final OnSizeReadyCallBack onSizeReadyCallBack, final OnImageLoaded onImageLoaded, final T tag){
 
         return Observable.create(new Observable.OnSubscribe<T>() {
             @Override
@@ -46,6 +56,9 @@ public class ImageUtils {
                             @Override
                             public void onResourceReady(Bitmap bm, GlideAnimation<? super Bitmap> glideAnimation) {
                                 iv.setImageBitmap(bm);
+                                if(onImageLoaded!=null){
+                                    onImageLoaded.onImageLoaded(bm, iv);
+                                }
                                 if(!subscriber.isUnsubscribed()){
                                     subscriber.onNext(tag);
                                     subscriber.onCompleted();

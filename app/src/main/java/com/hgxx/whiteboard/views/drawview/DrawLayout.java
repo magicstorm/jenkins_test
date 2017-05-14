@@ -434,4 +434,8 @@ public class DrawLayout extends RelativeLayout {
         this.drawType = drawType;
     }
 
+    public String getPaintColor() {
+        return mPaintColor;
+    }
+
 }
