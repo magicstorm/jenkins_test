@@ -17,6 +17,7 @@ import com.google.gson.Gson;
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Display;
+import com.hgxx.whiteboard.entities.Signal;
 import com.hgxx.whiteboard.models.Presentation;
 import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.entities.MovePoint;
@@ -68,8 +69,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         initDatas();
         initSocketClient();
 
-        sendObj(SocketClient.EVENT_SIG, "client");
-        sendObj(SocketClient.EVENT_PRESENTATION_REQUEST, "Test");
 
 //        initViews();
     }
@@ -148,8 +147,8 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                         drawView.setWidth(presentation.getTotalWidth());
                         drawView.setHeight(presentation.getTotalHeight());
                     }
-        }
-    });
+                }
+            });
         }
         else{
             if(presentation!=null){
@@ -161,17 +160,17 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         }
 
 
-                presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {
-//                    int i = 0;
-                    @Override
-                    public void onScrollStatChange(ScrollStat scrollStat) {
-                        final int scrollTop = (int) scrollStat.getCurrentHeight();
-                        scrollView.scrollTo(0, scrollTop);
-                    }
-                });
+        presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {
+                                           //                    int i = 0;
+                                           @Override
+                                           public void onScrollStatChange(ScrollStat scrollStat) {
+                final int scrollTop = (int) scrollStat.getCurrentHeight();
+                scrollView.scrollTo(0, scrollTop);
+                }
+        });
 
 
-                presentation.listenPresentationChange(WhiteBoardApplication.getContext());
+        presentation.listenPresentationChange(WhiteBoardApplication.getContext());
 
     }
 
@@ -212,164 +211,52 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         }
     }
 
-    private synchronized void sendObj(String eventName, Object... datas){
-        initSocketClient();
-        socketClient.sendEvent(eventName, datas);
-    }
+
 
     private void initSocketClient() {
-        if(socketClient ==null){
-            socketClient = SocketClient.getInstance();
+        presentation.initClient(new Presentation.EventObserver() {
+            @Override
+            public void onPresentationInit(ScrollStat scrollStat) {
+                initViews(scrollStat.getDisplay());
+            }
 
-            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION_INIT, new SocketClient.EventListener() {
-                @Override
-                public void onEvent(Object... args) {
-                    Gson gson = new Gson();
-                    final ScrollStat scrollStat = gson.fromJson((args[0]).toString(), ScrollStat.class);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            initViews(scrollStat.getDisplay());
-                        }
-                    });
+            @Override
+            public void onReceiveSignal(String str) {
+                if (str.contains("end")) {
+                    drawView.drawEnd();
                 }
-            });
-
-
-            socketClient.setEventListener(SocketClient.EVENT_SIG, new SocketClient.EventListener() {
-
-                @Override
-                public void onEvent(Object... args) {
-                    String str = (String)args[0];
-                    if (str.contains("end")) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-//                                        System.out.println("moveend");
-//                                        System.out.println("\n\n\n\n\n");
-                                drawView.drawEnd();
-                            }
-                        });
-                    }
-                    else if(str.contains("start")){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-//                                        System.out.println("movestart");
-//                                        System.out.println("\n\n\n\n\n");
-                                drawView.setMoving(true);
-                            }
-                        });
-                    }
-                    else if(str.contains("clear")){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                drawView.clear();
-                            }
-                        });
-                    }
-                    else if(str.contains("undo")){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                drawView.cancel(-1);
-                            }
-                        });
-                    }
-
-
-
-                    System.out.println(args[0].toString());
+                else if(str.contains("start")){
+                    drawView.setMoving(true);
                 }
-            });
-
-
-            socketClient.setEventListener(SocketClient.EVENT_PATH, new SocketClient.EventListener() {
-                @Override
-                public void onEvent(Object... args) {
-                    try {
-
-                        JSONObject jsonObject = new JSONObject((String)args[0]);
-                        if (jsonObject == null) {
-                            return;
-                        }
-
-                        float w = Float.valueOf(jsonObject.getString("x"));
-                        float h = Float.valueOf(jsonObject.getString("y"));
-                        float fw = Float.valueOf(jsonObject.getString("frameWidth"));
-                        float fh = Float.valueOf(jsonObject.getString("frameHeight"));
-
-//                        int hh = drawView.getHeight();
-                        float wi = w * drawView.getWidth() / fw;
-                        float he = h * drawView.getHeight() / fh;
-
-                        final MovePoint mp = new MovePoint(wi, he);
-
-                        if(isJsonFieldNotNull(jsonObject, "strokeWidth")){
-
-                            float rawWidth = Float.valueOf(jsonObject.getString("strokeWidth"));
-
-                            float strokeWidth =  rawWidth * drawView.getWidth() / fw;
-                            drawView.setStrokeWidth(strokeWidth);
-
-//                            System.out.println("totalHeight: " + fw + "|strokeWidth: " + rawWidth);
-                        }
-
-                        if(isJsonFieldNotNull(jsonObject, "paintColor")){
-                            String color = jsonObject.getString("paintColor");
-                            drawView.setPaintColor(color);
-                        }
-
-                        if(isJsonFieldNotNull(jsonObject, "drawType")){
-                            String drawType = jsonObject.getString("drawType");
-                            drawView.setDrawType(drawType);
-                        }
-
-    //                            System.out.println("x: " + String.valueOf(mp.getX()) + "y: " + String.valueOf(mp.getY()) + "\n");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-//                                int w = wrb.getCurWidth();
-//                                int h = wrb.getCurHeight();
-                                if (drawView.isMoving()) {
-    //                                            System.out.println("movestart");
-                                    drawView.setMoving(false);
-                                    drawView.startDraw(mp.getX(), mp.getY());
-                                } else {
-    //                                            System.out.println("move");
-                                    drawView.drawMove(mp.getX(), mp.getY());
-                                }
-                            }
-                        });
-                    } catch (JSONException e){
-                        e.printStackTrace();
-                    }
-
+                else if(str.contains("clear")){
+                    drawView.clear();
                 }
-            });
-
-            socketClient.setEventListener(SocketClient.EVENT_CONNECTION, new SocketClient.EventListener() {
-                @Override
-                public void onEvent(Object... args) {
-
-                    try {
-                        connectionId = Integer.valueOf(((JSONObject)args[0]).getString("id"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                else if(str.contains("undo")){
+                    drawView.cancel(-1);
                 }
-            });
 
-        }
-        if(!socketClient.isConnected()){
-            socketClient.connect();
-        }
+            }
+
+            @Override
+            public void onMove(MovePoint movePoint) {
+                drawView.setStrokeWidth(movePoint.getStrokeWidth());
+                drawView.setPaintColor(movePoint.getPaintColor());
+                drawView.setDrawType(movePoint.getDrawType());
+
+                if (drawView.isMoving()) {
+                    drawView.setMoving(false);
+                    drawView.startDraw(movePoint.getX(), movePoint.getY());
+                } else {
+                    drawView.drawMove(movePoint.getX(), movePoint.getY());
+                }
+            }
+
+            @Override
+            public void onConnection(String id) {
+            }
+        });
     }
 
-    private boolean isJsonFieldNotNull(JSONObject jsonObject, String key) throws JSONException {
-        return jsonObject.has(key)&&!TextUtils.isEmpty(jsonObject.getString(key))&&!jsonObject.getString(key).equals("null");
-    }
 
 
 }
