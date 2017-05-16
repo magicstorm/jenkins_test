@@ -172,6 +172,7 @@ public class Presentation {
 //            @Override
 //            public void call(final Subscriber<? super Integer> subscriber) {
 
+        presentationFrame.removeAllViews();
         ArrayList<Observable<Integer>> obArray = new ArrayList<>();
 
                 for(int i=0;i<getPresentationCount();i++){
@@ -213,9 +214,17 @@ public class Presentation {
     /**
      * client side codes
      */
+    public void listenPresentationChange(Context context){
+        SocketClient socketClient = socketClientWeakReference.get();
+        if(socketClient!=null&&socketClient.isConnected()){
+            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION, new PresentationListener(context, getPresentationName()));
+        }
+    }
+
     public void initClient(EventObserver eventObserver){
         initClientListeners(eventObserver);
         connect();
+        sendRequest();
     }
 
     public interface EventObserver{
@@ -233,6 +242,7 @@ public class Presentation {
         socketClient.setEventListener(SocketClient.EVENT_PRESENTATION_INIT, new SocketClient.EventListener() {
             @Override
             public void onEvent(Object... args) {
+                if(args[0]==null)return;
                 Gson gson = new Gson();
                 final ScrollStat scrollStat = gson.fromJson((args[0]).toString(), ScrollStat.class);
                 uiHandler.post(new Runnable() {
@@ -326,11 +336,14 @@ public class Presentation {
                     e.printStackTrace();
                 }
                 socketClient.sendEvent(SocketClient.EVENT_SIG, "client");
-                socketClient.sendEvent(SocketClient.EVENT_PRESENTATION_REQUEST, "Test");
                 onReceiveEvent.onConnection(str);
             }
         });
 
+    }
+
+    private void sendRequest(){
+        getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION_REQUEST, "Test");
     }
 
 
@@ -424,12 +437,7 @@ public class Presentation {
     /**
      * client side
      */
-    public void listenPresentationChange(Context context){
-        SocketClient socketClient = socketClientWeakReference.get();
-        if(socketClient!=null&&socketClient.isConnected()){
-            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION, new PresentationListener(context, getPresentationName()));
-        }
-    }
+
 
 
 

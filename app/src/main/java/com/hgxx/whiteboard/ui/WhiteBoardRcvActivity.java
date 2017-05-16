@@ -3,35 +3,24 @@ package com.hgxx.whiteboard.ui;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
-import com.google.gson.Gson;
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Display;
-import com.hgxx.whiteboard.entities.Signal;
 import com.hgxx.whiteboard.models.Presentation;
 import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.entities.MovePoint;
-import com.hgxx.whiteboard.network.SocketClient;
-import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.Socket;
 import java.util.ArrayList;
 
 /**
@@ -41,11 +30,7 @@ import java.util.ArrayList;
 public class WhiteBoardRcvActivity extends AppCompatActivity {
 
 
-    private boolean moveStart = true;
-    private int connectionId;
 
-    private Socket socket;
-    private SocketClient socketClient;
     private DrawViewController drawView;
     private ScrollView scrollView;
     private LinearLayout scrollLl;
@@ -54,17 +39,11 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
     private ArrayList<Target<GlideDrawable>> bmTargets = new ArrayList<>();
     private DrawLayout drawLayout;
 
-    public synchronized void setMoveStart(boolean moveStart) {
-        this.moveStart = moveStart;
-    }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_white_board_rcv);
         findViews();
-        drawView = new DrawViewController(drawLayout);
-        drawView.setDrawable(false);
 
         initDatas();
         initSocketClient();
@@ -87,8 +66,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        socketClient.disconnect();
-        socketClient.close();
 //        callGlideTargetsLifeCycleMethod("onDestroy");
 
 
@@ -119,6 +96,8 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
 
     private void initDatas(){
+        drawView = new DrawViewController(drawLayout);
+        drawView.setDrawable(false);
         presentation = new Presentation("Test");
     }
 
@@ -134,41 +113,34 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
         scrollView.setVerticalScrollBarEnabled(false);
         scrollView.setHorizontalScrollBarEnabled(false);
-        initImageViews(presentation.getPresentationCount(), drawView.getWidth());
 
-
-        if(scrollView.getViewTreeObserver().isAlive()){
-            scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                                                                   @Override
-                                                                   public void onGlobalLayout() {
-                    if(presentation!=null){
-                        presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
-                        presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
-                        drawView.setWidth(presentation.getTotalWidth());
-                        drawView.setHeight(presentation.getTotalHeight());
-                    }
-                }
-            });
-        }
-        else{
-            if(presentation!=null){
-                presentation.setTotalHeight(scrollView.getChildAt(0).getHeight());
-                presentation.setTotalWidth(scrollView.getChildAt(0).getWidth());
-                drawView.setWidth(presentation.getTotalWidth());
+        presentation.setTotalWidth(drawView.getWidth());
+        presentation.setPresentationFrame(scrollLl);
+        presentation.loadPresentation(this, new Presentation.OnLoadPresentationCallBack() {
+            @Override
+            public void onLoadPresentationCompleted() {
                 drawView.setHeight(presentation.getTotalHeight());
             }
-        }
 
+            @Override
+            public void onError(Throwable e) {
 
-        presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {
-                                           //                    int i = 0;
-                                           @Override
-                                           public void onScrollStatChange(ScrollStat scrollStat) {
-                final int scrollTop = (int) scrollStat.getCurrentHeight();
-                scrollView.scrollTo(0, scrollTop);
-                }
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+
+            }
         });
 
+        presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {
+            //int i = 0;
+            @Override
+            public void onScrollStatChange(ScrollStat scrollStat){
+                final int scrollTop = (int) scrollStat.getCurrentHeight();
+                scrollView.scrollTo(0, scrollTop);
+            }
+        });
 
         presentation.listenPresentationChange(WhiteBoardApplication.getContext());
 
@@ -192,27 +164,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         drawLayout = (DrawLayout)findViewById(R.id.drawRcvView);
     }
 
-    private void initImageViews(int count, int width){
-        scrollLl.removeAllViews();
-        for(int i=0;i<count;i++){
-            ImageView imageView = new ImageView(this);
-            LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
-            imageView.setLayoutParams(ivParams);
-            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-
-            String url = Web.protocol+"://"+Web.address+":"+ Web.port + "/Test"+ "/api_"+String.valueOf(i+1)+".png";
-            Target<GlideDrawable> target = Glide.with(WhiteBoardApplication.getContext()).load(url).fitCenter().into(imageView);
-            bmTargets.add(target);
-
-
-            imageView.setAdjustViewBounds(true);
-            scrollLl.addView(imageView);
-        }
-    }
-
-
-
     private void initSocketClient() {
         presentation.initClient(new Presentation.EventObserver() {
             @Override
@@ -232,7 +183,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                     drawView.clear();
                 }
                 else if(str.contains("undo")){
-                    drawView.cancel(-1);
+                    drawView.undo();
                 }
 
             }
