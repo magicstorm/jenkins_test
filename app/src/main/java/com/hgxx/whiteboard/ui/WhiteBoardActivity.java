@@ -24,7 +24,6 @@ import com.hgxx.whiteboard.views.drawview.DrawViewController;
 import com.hgxx.whiteboard.views.menu.ColorPanel;
 import com.hgxx.whiteboard.views.menu.MenuBarController;
 
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -65,8 +64,6 @@ public class WhiteBoardActivity extends AppCompatActivity{
         initDatas();
         initViews();
 
-
-        initSocketClient();
     }
 
 
@@ -91,9 +88,6 @@ public class WhiteBoardActivity extends AppCompatActivity{
         super.onStart();
     }
 
-    private void initSocketClient() {
-
-    }
 
     private void initDatas(){
         dm = getResources().getDisplayMetrics();
@@ -222,11 +216,6 @@ public class WhiteBoardActivity extends AppCompatActivity{
         presentation.loadPresentation(this, new OnPresentationLoaded());
 
     }
-
-
-
-
-
 
 
     private void findViews(){
