@@ -2,57 +2,36 @@ package com.hgxx.whiteboard.models;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Path;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
+import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 import com.google.gson.Gson;
-import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Display;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.entities.ScrollStat;
+import com.hgxx.whiteboard.entities.Signal;
 import com.hgxx.whiteboard.network.SocketClient;
-import com.hgxx.whiteboard.network.WebClient;
 import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.utils.ImageUtils;
-import com.hgxx.whiteboard.utils.ToastSingle;
-import com.hgxx.whiteboard.views.HgScrollView;
 import com.hgxx.whiteboard.views.drawview.DrawControl;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
 
-import okhttp3.ResponseBody;
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.ReplaySubject;
-import rx.subjects.Subject;
 
 /**
  * Created by ly on 04/05/2017.
@@ -83,6 +62,7 @@ public class Presentation {
     public Presentation(String presentationName){
         this.presentationName = presentationName;
         setSocketClient(SocketClient.getInstance());
+        uiHandler = new Handler(Looper.getMainLooper());
     }
 
 
@@ -231,7 +211,133 @@ public class Presentation {
     }
 
     /**
-     * server side
+     * client side codes
+     */
+    public void initClient(EventObserver eventObserver){
+        initClientListeners(eventObserver);
+        connect();
+    }
+
+    public interface EventObserver{
+        void onPresentationInit(ScrollStat scrollStat);
+        void onReceiveSignal(String signal);
+        void onMove(MovePoint movePoint);
+        void onConnection(String id);
+    }
+
+
+    private Handler uiHandler;
+
+    private void initClientListeners(final EventObserver onReceiveEvent){
+        final SocketClient socketClient = getSocketClient();
+        socketClient.setEventListener(SocketClient.EVENT_PRESENTATION_INIT, new SocketClient.EventListener() {
+            @Override
+            public void onEvent(Object... args) {
+                Gson gson = new Gson();
+                final ScrollStat scrollStat = gson.fromJson((args[0]).toString(), ScrollStat.class);
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onReceiveEvent.onPresentationInit(scrollStat);
+                    }
+                });
+
+            }
+        });
+
+
+        socketClient.setEventListener(SocketClient.EVENT_SIG, new SocketClient.EventListener() {
+
+            @Override
+            public void onEvent(Object... args) {
+                final String str = (String)args[0];
+                uiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onReceiveEvent.onReceiveSignal(str);
+                    }
+                });
+
+//                System.out.println(args[0].toString());
+            }
+        });
+
+
+        socketClient.setEventListener(SocketClient.EVENT_PATH, new SocketClient.EventListener() {
+            @Override
+            public void onEvent(Object... args) {
+                try {
+
+                    JSONObject jsonObject = new JSONObject((String)args[0]);
+                    if (jsonObject == null) {
+                        return;
+                    }
+
+                    float w = Float.valueOf(jsonObject.getString("x"));
+                    float h = Float.valueOf(jsonObject.getString("y"));
+                    float fw = Float.valueOf(jsonObject.getString("frameWidth"));
+                    float fh = Float.valueOf(jsonObject.getString("frameHeight"));
+
+//                        int hh = drawView.getHeight();
+                    float wi = w * getTotalWidth() / fw;
+                    float he = h * getTotalHeight() / fh;
+
+                    final MovePoint mp = new MovePoint(wi, he);
+
+                    if(isJsonFieldNotNull(jsonObject, "strokeWidth")){
+                        float rawWidth = Float.valueOf(jsonObject.getString("strokeWidth"));
+                        float strokeWidth =  rawWidth * getTotalWidth() / fw;
+                        mp.setStrokeWidth(strokeWidth);
+//                            System.out.println("totalHeight: " + fw + "|strokeWidth: " + rawWidth);
+                    }
+
+                    if(isJsonFieldNotNull(jsonObject, "paintColor")){
+                        String color = jsonObject.getString("paintColor");
+                        mp.setPaintColor(color);
+                    }
+
+                    if(isJsonFieldNotNull(jsonObject, "drawType")){
+                        String drawType = jsonObject.getString("drawType");
+                        mp.setDrawType(drawType);
+                    }
+
+                    uiHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onReceiveEvent.onMove(mp);
+                        }
+                    });
+
+                } catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        socketClient.setEventListener(SocketClient.EVENT_CONNECTION, new SocketClient.EventListener() {
+            @Override
+            public void onEvent(Object... args) {
+                String str = null;
+                try {
+                    str = ((JSONObject)args[0]).getString("id");
+                    connectionId = Integer.valueOf(str);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                socketClient.sendEvent(SocketClient.EVENT_SIG, "client");
+                socketClient.sendEvent(SocketClient.EVENT_PRESENTATION_REQUEST, "Test");
+                onReceiveEvent.onConnection(str);
+            }
+        });
+
+    }
+
+
+
+
+    /**
+     * server side codes
      */
 
     public void clearPaint(){
@@ -274,22 +380,6 @@ public class Presentation {
             }
         });
     }
-
-
-
-//    public void initScrollMessage(final HgScrollView scrollView){
-////        scrollStat.setTotalHeight(scrollView.getChildAt(0).getHeight());
-//        scrollStat.setTotalHeight(totalHeight);
-//        scrollView.setOnScrollListener(new HgScrollView.OnScrollListener() {
-//            @Override
-//            public void onScrollChanged(int top, int oldt) {
-//                sendScroll(top);
-////                ToastSingle.showCenterToast("top: " + top + "total: " + totalHeight, Toast.LENGTH_SHORT);
-//            }
-//        });
-//    }
-
-
 
     public void initServer() throws IOException {
         initServerListener();
@@ -342,9 +432,15 @@ public class Presentation {
     }
 
 
+
     /**
      * helpers
      */
+
+    private boolean isJsonFieldNotNull(JSONObject jsonObject, String key) throws JSONException {
+        return jsonObject.has(key)&&!TextUtils.isEmpty(jsonObject.getString(key))&&!jsonObject.getString(key).equals("null");
+    }
+
     public int computeCurrentPage(int top, int oldt){
         int delta = top-oldt;
         if(delta==0)return currentPage;

@@ -14,6 +14,7 @@ public class MovePoint {
     float frameHeight;
     String drawType;
 
+
     public MovePoint(float x, float y){
         this.x = x;
         this.y = y;
