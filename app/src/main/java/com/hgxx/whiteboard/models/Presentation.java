@@ -101,12 +101,7 @@ public class Presentation {
 
 
 
-    public void listenPresentationChange(Context context){
-        SocketClient socketClient = socketClientWeakReference.get();
-        if(socketClient!=null&&socketClient.isConnected()){
-            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION, new PresentationListener(context, getPresentationName()));
-        }
-    }
+
 
     class PresentationListener implements SocketClient.EventListener {
         ArrayList<String> presentationNames = new ArrayList<>();
@@ -339,7 +334,12 @@ public class Presentation {
     /**
      * client side
      */
-
+    public void listenPresentationChange(Context context){
+        SocketClient socketClient = socketClientWeakReference.get();
+        if(socketClient!=null&&socketClient.isConnected()){
+            socketClient.setEventListener(SocketClient.EVENT_PRESENTATION, new PresentationListener(context, getPresentationName()));
+        }
+    }
 
 
     /**

@@ -279,7 +279,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
                     }
 
 
-
                     System.out.println(args[0].toString());
                 }
             });
