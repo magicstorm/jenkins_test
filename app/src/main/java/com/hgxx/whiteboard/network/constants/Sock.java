@@ -15,7 +15,6 @@ public class Sock {
         public static final String protocol = "http";
         public static final String serverIP = "180.158.160.73";
         public static final int serverPort = 17015;
-
     }
 
     //    public static String serverIP = "180.158.160.73";
