@@ -121,38 +121,33 @@ public class MenuBarController{
         View.OnClickListener onMenuClickListener = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
-                    case R.id.presentation_btn:
-                        ToastSingle.showCenterToast("测试版只提供一个课件...", Toast.LENGTH_SHORT);
-                        break;
-                    case R.id.clear_btn:
-                        drawControl.clear();
-                        if(onBtnClick!=null){
-                            onBtnClick.onClear();
-                        }
-                        break;
-                    case R.id.color_btn:
-                        if(colorPanel!=null){
-                            togglePanel(colorPanel);
-                        }
-                        break;
-                    case R.id.draw_type_btn:
-                        if(shapePanel!=null){
-                            togglePanel(shapePanel);
-                        }
-                        break;
-                    case R.id.stroke_width_btn:
-                        if(widthPanel!=null){
-                            togglePanel(widthPanel);
-                        }
-                        break;
-                    case R.id.undo_btn:
-                        drawControl.undo();
-                        if(onBtnClick!=null){
-                            onBtnClick.onUndo();
-                        }
-                        break;
+                int viewId = v.getId();
+                if(viewId==R.id.presentation_btn) {
+                    ToastSingle.showCenterToast("测试版只提供一个课件...", Toast.LENGTH_SHORT);
+                }else if (viewId==R.id.clear_btn){
+                    drawControl.clear();
+                    if(onBtnClick!=null){
+                        onBtnClick.onClear();
+                    }
+                }else if(viewId==R.id.color_btn){
+                    if(colorPanel!=null){
+                        togglePanel(colorPanel);
+                    }
+                }else if(viewId==R.id.draw_type_btn) {
+                    if(shapePanel!=null){
+                        togglePanel(shapePanel);
+                    }
+                }else if(viewId==R.id.stroke_width_btn) {
+                    if(widthPanel!=null){
+                        togglePanel(widthPanel);
+                    }
+                }else if(viewId==R.id.undo_btn) {
+                    drawControl.undo();
+                    if(onBtnClick!=null){
+                        onBtnClick.onUndo();
+                    }
                 }
+
 
             }
         };
