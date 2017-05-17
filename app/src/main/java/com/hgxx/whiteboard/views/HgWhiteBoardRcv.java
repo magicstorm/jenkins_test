@@ -1,98 +1,59 @@
-package com.hgxx.whiteboard.ui;
+package com.hgxx.whiteboard.views;
 
-import android.os.Bundle;
+import android.content.Context;
+import android.support.annotation.AttrRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.util.AttributeSet;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.target.Target;
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Display;
-import com.hgxx.whiteboard.models.Presentation;
-import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.entities.MovePoint;
+import com.hgxx.whiteboard.entities.ScrollStat;
+import com.hgxx.whiteboard.models.Presentation;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+
 /**
- * Created by ly on 27/04/2017.
+ * Created by ly on 16/05/2017.
  */
 
-public class WhiteBoardRcvActivity extends AppCompatActivity {
-
-
-
+public class HgWhiteBoardRcv extends FrameLayout{
     private DrawViewController drawView;
     private ScrollView scrollView;
     private LinearLayout scrollLl;
     private Presentation presentation;
 
-    private ArrayList<Target<GlideDrawable>> bmTargets = new ArrayList<>();
     private DrawLayout drawLayout;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_white_board_rcv);
+    public HgWhiteBoardRcv(@NonNull Context context) {
+        this(context, null);
+    }
+
+    public HgWhiteBoardRcv(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public HgWhiteBoardRcv(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    private void init(){
+        inflate(getContext(), R.layout.activity_white_board_rcv, this);
         findViews();
         initDatas();
         initSocketClient();
-
-
-//        initViews();
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-//        callGlideTargetsLifeCycleMethod("onStart");
-    }
-
-    @Override
-    protected void onStop() {
-//        callGlideTargetsLifeCycleMethod("onStop");
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-//        callGlideTargetsLifeCycleMethod("onDestroy");
-
-
-//        new Thread(){
-//            @Override
-//            public void run() {
-//                Glide.get(WhiteBoardApplication.getContext()).clearDiskCache();
-//            }
-//        }.start();
-        super.onDestroy();
-    }
-
-    private void callGlideTargetsLifeCycleMethod(String methodName){
-        try {
-            Method method = Glide.class.getDeclaredMethod(methodName);
-            method.setAccessible(true);
-            for(int i=0;i<bmTargets.size();i++){
-                method.invoke(bmTargets.get(i));
-            }
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     private void initDatas(){
         drawView = new DrawViewController(drawLayout);
@@ -115,7 +76,7 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
 
         presentation.setTotalWidth(drawView.getWidth());
         presentation.setPresentationFrame(scrollLl);
-        presentation.loadPresentation(this, new Presentation.OnLoadPresentationCallBack() {
+        presentation.loadPresentation(getContext(), new Presentation.OnLoadPresentationCallBack() {
             @Override
             public void onLoadPresentationCompleted() {
                 drawView.setHeight(presentation.getTotalHeight());
@@ -207,6 +168,6 @@ public class WhiteBoardRcvActivity extends AppCompatActivity {
         });
     }
 
-
-
 }
+
+

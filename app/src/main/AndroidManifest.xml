@@ -18,10 +18,6 @@
             android:screenOrientation="landscape"
             android:configChanges="screenSize|keyboardHidden|orientation"
             >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".ui.WhiteBoardActivity"
             android:screenOrientation="landscape"
@@ -33,7 +29,15 @@
             >
         </activity>
 
-        <activity android:name=".ui.TestActivity">
+        <activity android:name=".ui.TestActivity"
+
+            android:configChanges="screenSize|keyboardHidden|orientation"
+            android:screenOrientation="landscape"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
