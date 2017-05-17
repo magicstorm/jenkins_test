@@ -13,8 +13,8 @@ public class Sock {
 
     public class Test {
         public static final String protocol = "http";
-        public static final String serverIP = "192.168.100.14";
-        public static final int serverPort = 17011;
+        public static final String serverIP = "180.158.160.73";
+        public static final int serverPort = 17015;
 
     }
 
