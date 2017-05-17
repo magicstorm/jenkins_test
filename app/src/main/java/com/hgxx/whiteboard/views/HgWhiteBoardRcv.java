@@ -1,6 +1,7 @@
 package com.hgxx.whiteboard.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +18,8 @@ import com.hgxx.whiteboard.entities.Display;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.models.Presentation;
+import com.hgxx.whiteboard.network.constants.Sock;
+import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
@@ -45,7 +48,32 @@ public class HgWhiteBoardRcv extends FrameLayout{
 
     public HgWhiteBoardRcv(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        getAttributes(context, attrs, defStyleAttr);
         init();
+    }
+
+     private void getAttributes(Context context, AttributeSet attributeSet, int defStyleAttr){
+        TypedArray ta = context.obtainStyledAttributes(attributeSet, R.styleable.HgWhiteBoard, defStyleAttr, 0);
+        String serverSocketAddress = ta.getString(R.styleable.HgWhiteBoard_serverSocketAddress);
+        int serverSocketPort = ta.getInt(R.styleable.HgWhiteBoard_serverSocketPort, 8081);
+        String serverSocketProtocol = ta.getString(R.styleable.HgWhiteBoard_serverSocketProtocol);
+
+        String serverWebAddress = ta.getString(R.styleable.HgWhiteBoard_serverWebAddress);
+        int serverWebPort = ta.getInt(R.styleable.HgWhiteBoard_serverWebPort, 443);
+        String serverWebProtocol = ta.getString(R.styleable.HgWhiteBoard_serverWebProtocol);
+
+        boolean customSocketServer = ta.getBoolean(R.styleable.HgWhiteBoard_customSocketServer, false);
+        boolean customWebServer = ta.getBoolean(R.styleable.HgWhiteBoard_customWebServer, false);
+        if(customSocketServer){
+            Sock.protocol = serverSocketProtocol;
+            Sock.serverPort = serverSocketPort;
+            Sock.serverIP = serverSocketAddress;
+        }
+        if(customWebServer){
+            Web.protocol = serverWebProtocol;
+            Web.port = serverWebPort;
+            Web.address = serverWebAddress;
+        }
     }
 
     private void init(){

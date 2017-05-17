@@ -1,6 +1,7 @@
 package com.hgxx.whiteboard.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.RectF;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.models.Presentation;
+import com.hgxx.whiteboard.network.constants.Sock;
+import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.utils.ViewHelpers;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
@@ -31,6 +34,7 @@ import java.lang.ref.WeakReference;
 
 public class HgWhiteBoard extends FrameLayout {
 
+    public static final String OPERATION_MODE_CUST = "custom";
     private HgScrollView scrollView;
     private DrawLayout drawLayout;
     private DrawViewController drawView;
@@ -52,7 +56,6 @@ public class HgWhiteBoard extends FrameLayout {
     private EditText pageEt;
     private TextView pageBtn;
 
-
     public HgWhiteBoard(@NonNull Context context) {
         this(context, null);
     }
@@ -63,8 +66,34 @@ public class HgWhiteBoard extends FrameLayout {
 
     public HgWhiteBoard(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        getAttributes(context, attrs, defStyleAttr);
         init();
     }
+
+    private void getAttributes(Context context, AttributeSet attributeSet, int defStyleAttr){
+        TypedArray ta = context.obtainStyledAttributes(attributeSet, R.styleable.HgWhiteBoard, defStyleAttr, 0);
+        String serverSocketAddress = ta.getString(R.styleable.HgWhiteBoard_serverSocketAddress);
+        int serverSocketPort = ta.getInt(R.styleable.HgWhiteBoard_serverSocketPort, 8081);
+        String serverSocketProtocol = ta.getString(R.styleable.HgWhiteBoard_serverSocketProtocol);
+
+        String serverWebAddress = ta.getString(R.styleable.HgWhiteBoard_serverWebAddress);
+        int serverWebPort = ta.getInt(R.styleable.HgWhiteBoard_serverWebPort, 443);
+        String serverWebProtocol = ta.getString(R.styleable.HgWhiteBoard_serverWebProtocol);
+
+        boolean customSocketServer = ta.getBoolean(R.styleable.HgWhiteBoard_customSocketServer, false);
+        boolean customWebServer = ta.getBoolean(R.styleable.HgWhiteBoard_customWebServer, false);
+        if(customSocketServer){
+            Sock.protocol = serverSocketProtocol;
+            Sock.serverPort = serverSocketPort;
+            Sock.serverIP = serverSocketAddress;
+        }
+        if(customWebServer){
+            Web.protocol = serverWebProtocol;
+            Web.port = serverWebPort;
+            Web.address = serverWebAddress;
+        }
+    }
+
 
     private void init(){
         inflate(getContext(), R.layout.activity_white_board, this);

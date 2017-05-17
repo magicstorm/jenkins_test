@@ -30,7 +30,7 @@ public class SocketClient {
     private SocketClient(){
         try {
             if(socket==null){
-                composeServerUrl(true);
+                composeServerUrl();
                 socket = IO.socket(serverUri);
             }
         } catch (URISyntaxException e) {
@@ -38,9 +38,8 @@ public class SocketClient {
         }
     }
 
-    private void composeServerUrl(boolean test) {
-        serverUri = test?(Sock.Test.protocol + "://" + Sock.Test.serverIP + ":" + String.valueOf(Sock.Test.serverPort)):
-                (Sock.Online.protocol + "://" + Sock.Online.serverIP + ":" + String.valueOf(Sock.Online.serverPort));
+    private void composeServerUrl() {
+        serverUri = (Sock.protocol + "://" + Sock.serverIP + ":" + String.valueOf(Sock.serverPort));
     }
 
     public static synchronized SocketClient getInstance(){

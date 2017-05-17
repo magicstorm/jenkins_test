@@ -6,4 +6,38 @@
         <attr name="paintColor" format="string"/>
         <attr name="drawable" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="WhiteBoard" >
+        <attr name="serverSocketAddress" format="string"/>
+        <attr name="serverSocketPort" format="integer"/>
+        <attr name="serverSocketProtocol" format="string"/>
+        <attr name="customSocketServer" format="boolean"/>
+        <attr name="customWebServer" format="boolean"/>
+        <attr name="serverWebAddress" format="string"/>
+        <attr name="serverWebPort" format="integer"/>
+        <attr name="serverWebProtocol" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="HgWhiteBoard">
+        <attr name="serverWebAddress"/>
+        <attr name="serverWebPort"/>
+        <attr name="serverWebProtocol"/>
+        <attr name="serverSocketAddress" />
+        <attr name="serverSocketPort"/>
+        <attr name="serverSocketProtocol"/>
+        <attr name="customSocketServer" />
+        <attr name="customWebServer" />
+    </declare-styleable>
+
+    <declare-styleable name="HgWhiteBoardRcv">
+        <attr name="serverWebAddress"/>
+        <attr name="serverWebPort"/>
+        <attr name="serverWebProtocol"/>
+        <attr name="serverSocketAddress" />
+        <attr name="serverSocketPort" />
+        <attr name="serverSocketProtocol" />
+        <attr name="customSocketServer" />
+        <attr name="customWebServer"/>
+    </declare-styleable>
+
 </resources>
