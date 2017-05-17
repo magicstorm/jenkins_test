@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.models.Presentation;
-import com.hgxx.whiteboard.ui.WhiteBoardActivity;
 import com.hgxx.whiteboard.utils.ViewHelpers;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
@@ -44,7 +43,7 @@ public class HgWhiteBoard extends FrameLayout {
     private static WeakReference<DrawViewController> drawViewWeakReference;
     private static WeakReference<Presentation> presentationWeakReference;
     private static WeakReference<HgScrollView> scrollViewWeakReference;
-    private static WeakReference<HgWhiteBoard> selfActivityWeakReference;
+    private static WeakReference<HgWhiteBoard> selfWeakReference;
     private LinearLayout menull;
     private ColorPanel colorPanel;
     private LinearLayout widthPanel;
@@ -74,7 +73,7 @@ public class HgWhiteBoard extends FrameLayout {
         initViews();
 
     }
-     private void initDatas(){
+    private void initDatas(){
         dm = getResources().getDisplayMetrics();
         screenHeight = dm.heightPixels;
         screenWidth = dm.widthPixels;
@@ -82,7 +81,10 @@ public class HgWhiteBoard extends FrameLayout {
         presentation = new Presentation("Test");
         presentationWeakReference = new WeakReference<>(presentation);
         presentation.setPresentationFrame(docll);
-        selfActivityWeakReference = new WeakReference<>(this);
+        selfWeakReference = new WeakReference<>(this);
+
+        presentation.setPresentationId("1");
+        presentation.setRoomId("1");
 
     }
 
@@ -95,7 +97,7 @@ public class HgWhiteBoard extends FrameLayout {
         public OnPresentationLoaded(){
             this.drawView = drawViewWeakReference.get();
             this.presentation = presentationWeakReference.get();
-            this.whiteBoard = selfActivityWeakReference.get();
+            this.whiteBoard = selfWeakReference.get();
         }
 
         @Override

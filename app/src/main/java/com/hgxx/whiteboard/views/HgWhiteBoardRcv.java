@@ -59,6 +59,7 @@ public class HgWhiteBoardRcv extends FrameLayout{
         drawView = new DrawViewController(drawLayout);
         drawView.setDrawable(false);
         presentation = new Presentation("Test");
+        presentation.setRoomId("1");
     }
 
 

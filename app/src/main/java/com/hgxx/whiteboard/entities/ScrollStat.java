@@ -12,6 +12,8 @@ import com.hgxx.whiteboard.utils.JsonUtils;
 
 public class ScrollStat {
     String presentationName;
+    String roomId;
+    String presentationId;
     float currentHeight = 0;
     float totalHeight = 0;
     Display display;
@@ -65,5 +67,21 @@ public class ScrollStat {
 
     public void setDisplay(Display display) {
         this.display = display;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
+    }
+
+    public String getPresentationId() {
+        return presentationId;
+    }
+
+    public void setPresentationId(String presentationId) {
+        this.presentationId = presentationId;
     }
 }

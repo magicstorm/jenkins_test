@@ -50,6 +50,8 @@ public class Presentation {
     int totalHeight = 0;
     int totalWidth = 0;
     private String imageExt = ".png";
+    private String presentationId;
+    private String roomId;
 
     private ArrayList<Integer> pagePositions = new ArrayList<>();
     private int currentPage = 1;
@@ -343,7 +345,7 @@ public class Presentation {
     }
 
     private void sendRequest(){
-        getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION_REQUEST, "Test");
+        getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION_REQUEST, getRoomId());
     }
 
 
@@ -408,6 +410,8 @@ public class Presentation {
     public void initPresentation(float displayWidth, float displayHeight) throws IOException {
 
         ScrollStat initScrollStat = new ScrollStat(getPresentationName(), 0, 0);
+        initScrollStat.setRoomId(roomId);
+        initScrollStat.setPresentationId(presentationId);
         initScrollStat.setDisplay(new Display(displayWidth, displayHeight));
         this.scrollStat = initScrollStat;
 
@@ -603,5 +607,21 @@ public class Presentation {
 
     public void setPagePositions(ArrayList<Integer> pagePositions) {
         this.pagePositions = pagePositions;
+    }
+
+    public String getPresentationId() {
+        return presentationId;
+    }
+
+    public void setPresentationId(String presentationId) {
+        this.presentationId = presentationId;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
     }
 }
