@@ -67,7 +67,6 @@ public class HgWhiteBoard extends FrameLayout {
     public HgWhiteBoard(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         getAttributes(context, attrs, defStyleAttr);
-        init();
     }
 
     private void getAttributes(Context context, AttributeSet attributeSet, int defStyleAttr){
@@ -95,7 +94,7 @@ public class HgWhiteBoard extends FrameLayout {
     }
 
 
-    private void init(){
+    public void init(){
         inflate(getContext(), R.layout.activity_white_board, this);
         findViews();
         initDatas();

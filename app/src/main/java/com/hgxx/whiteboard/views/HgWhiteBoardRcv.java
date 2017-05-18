@@ -49,7 +49,6 @@ public class HgWhiteBoardRcv extends FrameLayout{
     public HgWhiteBoardRcv(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         getAttributes(context, attrs, defStyleAttr);
-        init();
     }
 
      private void getAttributes(Context context, AttributeSet attributeSet, int defStyleAttr){
@@ -76,7 +75,7 @@ public class HgWhiteBoardRcv extends FrameLayout{
         }
     }
 
-    private void init(){
+    public void init(){
         inflate(getContext(), R.layout.activity_white_board_rcv, this);
         findViews();
         initDatas();
