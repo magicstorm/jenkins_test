@@ -1,24 +1,28 @@
 package com.hgxx.whiteboard.models;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.drawable.Animatable;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.Target;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.controller.ControllerListener;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.image.ImageInfo;
 import com.google.gson.Gson;
 import com.hgxx.whiteboard.entities.Display;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.entities.ScrollStat;
-import com.hgxx.whiteboard.entities.Signal;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.network.constants.Web;
-import com.hgxx.whiteboard.utils.ImageUtils;
 import com.hgxx.whiteboard.views.drawview.DrawControl;
 
 import org.json.JSONException;
@@ -30,8 +34,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import rx.Observable;
-import rx.Observer;
 
 /**
  * Created by ly on 04/05/2017.
@@ -40,7 +42,7 @@ import rx.Observer;
 public class Presentation {
 
 
-    private ArrayList<Target<Bitmap>> bmTargets = new ArrayList<>();
+    private String imageUrl;
     private Integer connectionId;
     ScrollStat scrollStat;
     String presentationName;
@@ -136,82 +138,100 @@ public class Presentation {
     }
 
 
-    public void loadPresentation(Context context, final OnLoadPresentationCallBack onLoadPresentationCallBack){
+    private int loadedCount = 0;
+
+    public void loadPresentation(Context context, String imageUrl, final OnLoadPresentationCallBack onLoadPresentationCallBack){
 //        int displayWidth = presentationFrame.getWidth();
+        if(TextUtils.isEmpty(imageUrl))return;
+        this.imageUrl = imageUrl;
 
         int displayWidth = getTotalWidth();
         presentationFrame.removeAllViews();
         totalHeight = 0;
 
-        getLoadImagesObservable(context, displayWidth).subscribe(new Observer<Integer>() {
-            @Override
-            public void onCompleted() {
-                if(onLoadPresentationCallBack!=null){
-                    onLoadPresentationCallBack.onLoadPresentationCompleted();
-                }
-            }
 
-            @Override
-            public void onError(Throwable e) {
-                if(onLoadPresentationCallBack!=null){
-                    onLoadPresentationCallBack.onError(e);
-                }
-            }
+        for(int j=0;j<getPresentationCount();j++){
+            pagePositions.add(0);
+        }
 
-            @Override
-            public void onNext(Integer integer) {
-                if(onLoadPresentationCallBack!=null){
-                    onLoadPresentationCallBack.onNext(integer);
+        for(int i=0;i<getPresentationCount();i++){
+            final int index = i;
+            SimpleDraweeView simpleDraweeView = new SimpleDraweeView(context);
+            LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(displayWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+            simpleDraweeView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            simpleDraweeView.setLayoutParams(ivParams);
+            simpleDraweeView.setAdjustViewBounds(true);
+
+            presentationFrame.addView(simpleDraweeView);
+
+            ControllerListener controllerListener = new BaseControllerListener<ImageInfo>() {
+                @Override
+                public void onFinalImageSet(
+                        String id,
+                        @Nullable ImageInfo imageInfo,
+                        @Nullable Animatable anim){
+                    if (imageInfo == null) {
+                        return;
+                    }
+
+//                    imageInfo.getWidth();
+                    int height = imageInfo.getHeight();
+                    refreshPresentationHeight(height, index);
+
+                    if(onLoadPresentationCallBack!=null){
+                        onLoadPresentationCallBack.onNext(index);
+                    }
+
+                    if(onLoadPresentationCallBack!=null&&loadedCount==getPresentationCount()){
+                        onLoadPresentationCallBack.onLoadPresentationCompleted();
+                    }
+//                    QualityInfo qualityInfo = imageInfo.getQualityInfo();
+//
+//                            qualityInfo.getQuality(),
+//                            qualityInfo.isOfGoodEnoughQuality(),
+//                            qualityInfo.isOfFullQuality();
                 }
-            }
-        });
+
+                @Override
+                public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
+//                    FLog.d("Intermediate image received");
+                }
+
+                @Override
+                public void onFailure(String id, Throwable throwable) {
+//                    FLog.e(getClass(), throwable, "Error loading %s", id)
+                }
+            };
+
+            Uri uri = Uri.parse(imageUrl+(i+1) + imageExt);
+            DraweeController controller = Fresco.newDraweeControllerBuilder()
+                    .setControllerListener(controllerListener)
+                    .setUri(uri)
+                    .build();
+
+
+            simpleDraweeView.setController(controller);
+
+
+        }
 
     }
 
 
-    public Observable<Integer> getLoadImagesObservable(final Context context, final int displayWidth){
-//        return Observable.create(new Observable.OnSubscribe<Integer>() {
-//            @Override
-//            public void call(final Subscriber<? super Integer> subscriber) {
-
-        presentationFrame.removeAllViews();
-        ArrayList<Observable<Integer>> obArray = new ArrayList<>();
-
-                for(int i=0;i<getPresentationCount();i++){
-                    final int index = i;
-                    ImageView imageView = new ImageView(context);
-                    LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(displayWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    imageView.setLayoutParams(ivParams);
-                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-                    imageView.setAdjustViewBounds(true);
-                    presentationFrame.addView(imageView);
-                    Observable<Integer> imageObservable = ImageUtils.getLoadImageObserve(context, getPresentationUrl(i), imageView, new ImageUtils.OnTargetReadyCallBack<Target<Bitmap>>() {
-                                @Override
-                                public void onTargetReady(Target<Bitmap> target) {
-                                    bmTargets.add(target);
-                                }
-                            }, new ImageUtils.OnImageLoaded<Bitmap, ImageView>() {
-                                @Override
-                                public void onImageLoaded(Bitmap bm, ImageView iv) {
-                                    pagePositions.add(getTotalHeight());
-                                    setTotalHeight(getTotalHeight()+calculateLayoutedImageWidth(iv));
-
-                                }
-                            }, i + 1
-                    );
-
-                    obArray.add(imageObservable);
-                }
-//            }
-//        });
-        return Observable.merge(obArray);
+    private synchronized void refreshPresentationHeight(int height, int position){
+        int nextPos = position+1;
+        for(int i=nextPos;i<pagePositions.size();i++){
+            pagePositions.set(nextPos, pagePositions.get(nextPos)+height);
+        }
+        setTotalHeight(getTotalHeight()+height);
+        loadedCount+=1;
     }
 
-    private int calculateLayoutedImageWidth(ImageView iv){
-        iv.measure(0, 0);
-        return (int)(iv.getMeasuredHeight() * totalWidth/(float)iv.getMeasuredWidth());
-    }
+
+//    private int calculateLayoutedImageWidth(ImageView iv){
+//        iv.measure(0, 0);
+//        return (int)(iv.getMeasuredHeight() * totalWidth/(float)iv.getMeasuredWidth());
+//    }
 
     /**
      * client side codes
@@ -490,21 +510,7 @@ public class Presentation {
         return socketClient;
     }
 
-    private void callGlideTargetsLifeCycleMethod(String methodName){
-        try {
-            Method method = Glide.class.getDeclaredMethod(methodName);
-            method.setAccessible(true);
-            for(int i=0;i<bmTargets.size();i++){
-                method.invoke(bmTargets.get(i));
-            }
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     /**
      * getters & setters
@@ -575,22 +581,13 @@ public class Presentation {
      */
 
     public void onDestroy(final Context context){
-        callGlideTargetsLifeCycleMethod("onDestroy");
-        new Thread(){
-            @Override
-            public void run() {
-                Glide.get(context).clearDiskCache();
-            }
-        }.start();
 
     }
 
     public void onStart(){
-        callGlideTargetsLifeCycleMethod("onStart");
     }
 
     public void onStop(){
-        callGlideTargetsLifeCycleMethod("onStop");
     }
 
     public int getCurrentPage() {

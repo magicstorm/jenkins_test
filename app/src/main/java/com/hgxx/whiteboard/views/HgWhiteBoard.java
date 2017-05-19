@@ -56,6 +56,17 @@ public class HgWhiteBoard extends FrameLayout {
     private EditText pageEt;
     private TextView pageBtn;
 
+
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
     public HgWhiteBoard(@NonNull Context context) {
         this(context, null);
     }
@@ -228,7 +239,7 @@ public class HgWhiteBoard extends FrameLayout {
             e.printStackTrace();
         }
 
-        presentation.loadPresentation(getContext(), new OnPresentationLoaded());
+        presentation.loadPresentation(getContext(), imageUrl, new OnPresentationLoaded());
 
     }
 

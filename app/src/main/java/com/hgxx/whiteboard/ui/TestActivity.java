@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.hgxx.whiteboard.R;
+import com.hgxx.whiteboard.views.HgWhiteBoard;
+import com.hgxx.whiteboard.views.HgWhiteBoardRcv;
 
 /**
  * Created by ly on 04/05/2017.
@@ -15,6 +17,10 @@ public class TestActivity extends Activity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+
+        HgWhiteBoardRcv hgWhiteBoard = (HgWhiteBoardRcv) findViewById(R.id.wb);
+        hgWhiteBoard.setImageUrl("https://tvl.hongguaninfo.com:443/Test/api_");
+        hgWhiteBoard.init();
 
 
 //        Presentation ps = new Presentation();
