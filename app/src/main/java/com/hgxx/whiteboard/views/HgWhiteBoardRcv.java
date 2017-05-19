@@ -10,8 +10,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.target.Target;
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Display;
@@ -23,7 +21,6 @@ import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
 
-import java.util.ArrayList;
 
 
 /**
@@ -37,6 +34,16 @@ public class HgWhiteBoardRcv extends FrameLayout{
     private Presentation presentation;
 
     private DrawLayout drawLayout;
+
+    private String imageUrl;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 
     public HgWhiteBoardRcv(@NonNull Context context) {
         this(context, null);
@@ -104,7 +111,7 @@ public class HgWhiteBoardRcv extends FrameLayout{
 
         presentation.setTotalWidth(drawView.getWidth());
         presentation.setPresentationFrame(scrollLl);
-        presentation.loadPresentation(getContext(), new Presentation.OnLoadPresentationCallBack() {
+        presentation.loadPresentation(getContext(), imageUrl, new Presentation.OnLoadPresentationCallBack() {
             @Override
             public void onLoadPresentationCompleted() {
                 drawView.setHeight(presentation.getTotalHeight());

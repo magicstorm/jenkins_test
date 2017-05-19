@@ -41,10 +41,10 @@ public class HomePageActivity extends AppCompatActivity{
             public void onClick(View v) {
                 Intent intent = null;
                 if(rcvBtn.isChecked()){
-                    intent = new Intent(HomePageActivity.this, WhiteBoardRcvActivity.class);
+//                    intent = new Intent(HomePageActivity.this, WhiteBoardRcvActivity.class);
                 }
                 else{
-                    intent = new Intent(HomePageActivity.this, WhiteBoardActivity.class);
+//                    intent = new Intent(HomePageActivity.this, WhiteBoardActivity.class);
                 }
 
                 HomePageActivity.this.startActivity(intent);
