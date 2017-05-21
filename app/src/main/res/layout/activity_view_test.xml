@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+
+    <LinearLayout
+        android:id="@+id/anchor"
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:background="#ffffff"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_marginTop="80dp"
+            android:layout_width="50dp"
+            android:background="#000000"
+            android:layout_height="50dp">
+            </FrameLayout>
+        <FrameLayout
+            android:id="@+id/anchor_child"
+            android:layout_marginTop="80dp"
+            android:layout_width="50dp"
+            android:background="#ff0000"
+            android:layout_height="50dp">
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_marginTop="80dp"
+            android:layout_width="50dp"
+            android:background="#000000"
+            android:layout_height="50dp">
+        </FrameLayout>
+    </LinearLayout>
+
+
+    <com.hgxx.whiteboard.views.ColorPopoutMenu
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        app:menuElevation="8dp"
+        app:anchor="@+id/anchor"
+        app:anchorChild="@+id/anchor_child"
+        >
+    </com.hgxx.whiteboard.views.ColorPopoutMenu>
+
+    <com.hgxx.whiteboard.views.ColorPointer
+        android:layout_centerInParent="true"
+        android:layout_width="20dp"
+        android:layout_height="20dp" />
+
+
+</RelativeLayout>

@@ -40,4 +40,19 @@
         <attr name="customWebServer"/>
     </declare-styleable>
 
+
+    <declare-styleable name="PopoutMenu">
+        <attr name="anchor" format="reference"/>
+        <attr name="anchorChild" format="reference"/>
+        <attr name="menuCornerRadius" format="dimension"/>
+        <attr name="animationDirection" format="integer">
+            <flag name="left" value="1"/>
+            <flag name="right" value="2"/>
+            <flag name="up" value="3"/>
+            <flag name="down" value="4"/>
+        </attr>
+        <attr name="menuElevation" format="dimension"/>
+    </declare-styleable>
+
+
 </resources>
