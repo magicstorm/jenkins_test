@@ -150,7 +150,7 @@ public class HgWhiteBoard extends FrameLayout {
             }
             presentation.initDrawMessage(drawView);
 
-            whiteBoard.pageNumTv.setText(presentation.getCurrentPage() + "/" + presentation.getPresentationCount());
+//            whiteBoard.pageNumTv.setText(presentation.getCurrentPage() + "/" + presentation.getPresentationCount());
             whiteBoard.scrollView.setOnScrollListener(new HgScrollView.OnScrollListener() {
                 @Override
                 public void onScrollChanged(int top, int oldt) {
@@ -158,7 +158,7 @@ public class HgWhiteBoard extends FrameLayout {
                     presentation.setCurrentPage(curPage);
 
                     //TODO display currentPage
-                    whiteBoard.pageNumTv.setText(curPage + "/" + presentation.getPresentationCount());
+//                    whiteBoard.pageNumTv.setText(curPage + "/" + presentation.getPresentationCount());
 
 //                    ToastSingle.showCenterToast("current page: " + curPage, Toast.LENGTH_SHORT);
 
@@ -166,18 +166,18 @@ public class HgWhiteBoard extends FrameLayout {
                 }
             });
 
-            whiteBoard.pageBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String pageNum = whiteBoard.pageEt.getText().toString();
-                    int no = Integer.parseInt(pageNum);
-                    if(no<=presentation.getPresentationCount()&&no>=1){
-                        int curTop = presentation.getPagePositions().get(no-1);
-                        whiteBoard.scrollView.scrollTo(0, curTop);
-                        presentation.sendScroll(curTop);
-                    }
-                }
-            });
+//            whiteBoard.pageBtn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    String pageNum = whiteBoard.pageEt.getText().toString();
+//                    int no = Integer.parseInt(pageNum);
+//                    if(no<=presentation.getPresentationCount()&&no>=1){
+//                        int curTop = presentation.getPagePositions().get(no-1);
+//                        whiteBoard.scrollView.scrollTo(0, curTop);
+//                        presentation.sendScroll(curTop);
+//                    }
+//                }
+//            });
 
 
             MenuBarController menuBarController = new MenuBarController(whiteBoard.getContext(), whiteBoard.menull);
@@ -230,7 +230,7 @@ public class HgWhiteBoard extends FrameLayout {
         drawView.setDrawable(true);
 
         scrollViewWeakReference = new WeakReference<>(scrollView);
-        int displayWidth = screenWidth - ViewHelpers.dp2px(101*2, getContext());
+        int displayWidth = screenWidth - ViewHelpers.dp2px(101, getContext());
         presentation.setTotalWidth(displayWidth);
 
         try {
@@ -252,9 +252,9 @@ public class HgWhiteBoard extends FrameLayout {
         colorPanel = (ColorPanel)findViewById(R.id.color_panel);
         widthPanel = (LinearLayout)findViewById(R.id.width_panel);
         shapePanel = (LinearLayout)findViewById(R.id.shape_panel);
-        pageNumTv = (TextView)findViewById(R.id.page_number_tv);
-        pageEt = (EditText)findViewById(R.id.page_to_go);
-        pageBtn = (TextView)findViewById(R.id.page_btn);
+//        pageNumTv = (TextView)findViewById(R.id.page_number_tv);
+//        pageEt = (EditText)findViewById(R.id.page_to_go);
+//        pageBtn = (TextView)findViewById(R.id.page_btn);
     }
 
 }

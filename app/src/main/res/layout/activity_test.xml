@@ -2,16 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.hgxx.whiteboard.views.HgWhiteBoardRcv
+    <com.hgxx.whiteboard.views.HgWhiteBoard
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:customSocketServer="true"
         app:serverSocketProtocol="http"
-        app:serverSocketAddress="180.158.160.73"
-        app:serverSocketPort="17015"
+        app:serverSocketAddress="10.0.0.20"
+        app:serverSocketPort="17016"
         >
 
-    </com.hgxx.whiteboard.views.HgWhiteBoardRcv>
+    </com.hgxx.whiteboard.views.HgWhiteBoard>
 </RelativeLayout>

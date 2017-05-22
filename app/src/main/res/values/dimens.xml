@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="sender_side_bar_width">100dp</dimen>
+    <dimen name="sender_side_bar_width">70dp</dimen>
     <dimen name="block_test_height">300dp</dimen>
+    <dimen name="side_bar_icon_width">40dp</dimen>
 
 </resources>

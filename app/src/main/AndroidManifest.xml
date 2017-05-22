@@ -11,6 +11,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
 
         >
         <activity android:name=".ui.HomePageActivity"
@@ -25,13 +26,14 @@
             android:configChanges="screenSize|keyboardHidden|orientation"
             android:screenOrientation="landscape"
             >
-        </activity>
-        <activity android:name=".ui.ViewTestActivity"
-            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.ViewTestActivity"
+            >
 
         </activity>
     </application>

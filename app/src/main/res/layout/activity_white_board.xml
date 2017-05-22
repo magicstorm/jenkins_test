@@ -13,133 +13,125 @@
         android:orientation="vertical"
         android:clickable="true"
         >
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            >
-            <TextView
-                android:id="@+id/page_number_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="34dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/grey_round_rect"
-                android:text="1/50"
-                android:textColor="#ffffff"
-                android:textSize="16sp"
-                android:gravity="center"
-                android:padding="5dp"
-                />
 
-
-
-        </RelativeLayout>
-        <View
-            android:layout_width="match_parent"
-            android:background="#b3b3b3"
-            android:layout_height="1dp"/>
         <LinearLayout
             android:id="@+id/menu"
             android:orientation="vertical"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="5"
+            android:layout_height="match_parent"
+            android:background="#ffffff"
             >
             <LinearLayout
+                android:id="@+id/clear_btn"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:orientation="vertical"
+                android:clickable="true"
                 android:layout_weight="1"
                 android:gravity="center"
                 >
-                <TextView
-                    android:id="@+id/presentation_btn"
-                    style="@style/whiteBoardMenuBtn"
-                    android:text="选择课件"
+                <ImageView
+                    style="@style/sideBarIconImage"
+                    android:src="@drawable/btn_clear"
                     />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                >
                 <TextView
-                    android:id="@+id/color_btn"
-                    style="@style/whiteBoardMenuBtn"
-                    android:text="画笔颜色"
-                    />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                >
-                <TextView
-                    android:id="@+id/stroke_width_btn"
-                    style="@style/whiteBoardMenuBtn"
-                    android:text="线条粗细"
-                    />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                >
-                <TextView
-                    android:id="@+id/undo_btn"
-                    style="@style/whiteBoardMenuBtn"
-                    android:text="撤销"
-                    />
-
-            </LinearLayout>
-             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                >
-                <TextView
-                    android:id="@+id/clear_btn"
-                    style="@style/whiteBoardMenuBtn"
+                    style="@style/sideBarIconText"
                     android:text="清屏"
                     />
-
             </LinearLayout>
-             <LinearLayout
+            <LinearLayout
+                android:id="@+id/undo_btn"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:gravity="center"
+                >
+                <ImageView
+                    style="@style/sideBarIconImage"
+                    android:src="@drawable/btn_undo"
+                    />
+                <TextView
+                    style="@style/sideBarIconText"
+                    android:text="撤销"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/hand_btn"
+                android:layout_width="match_parent"
+                android:clickable="true"
+                android:layout_height="0dp"
+                android:orientation="vertical"
                 android:layout_weight="1"
                 android:gravity="center"
                 >
-                <TextView
-                    android:id="@+id/draw_type_btn"
-                    style="@style/whiteBoardMenuBtn"
-                    android:text="画笔类型"
+                <ImageView
+                    style="@style/sideBarIconImage"
+                    android:src="@drawable/btn_hand"
                     />
-
+                <TextView
+                    style="@style/sideBarIconText"
+                    android:text="拖动"
+                    />
             </LinearLayout>
-
-
+            <LinearLayout
+                android:id="@+id/draw_type_btn"
+                android:layout_width="match_parent"
+                android:clickable="true"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <ImageView
+                    style="@style/sideBarIconImage"
+                    android:src="@drawable/btn_shape"
+                    />
+                <TextView
+                    style="@style/sideBarIconText"
+                    android:text="画笔"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/color_btn"
+                android:clickable="true"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <ImageView
+                    style="@style/sideBarIconImage"
+                    android:src="@drawable/btn_color"
+                    />
+                <TextView
+                    style="@style/sideBarIconText"
+                    android:text="颜色"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/stroke_width_btn"
+                android:clickable="true"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:gravity="center"
+                >
+                <ImageView
+                    style="@style/sideBarIconImage"
+                    android:src="@drawable/btn_width"
+                    />
+                <TextView
+                    style="@style/sideBarIconText"
+                    android:text="粗细"
+                    />
+            </LinearLayout>
         </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#b3b3b3"
-            />
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            ></FrameLayout>
+
+
 
     </LinearLayout>
 
@@ -164,37 +156,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
-                android:id="@+id/ll_scroll"
 
-                android:layout_alignTop="@+id/doc_ll"
-                android:layout_alignBottom="@+id/doc_ll"
-                android:layout_alignParentRight="true"
-                android:background="#ffffff"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_width="@dimen/sender_side_bar_width"
-                android:layout_height="match_parent">
-
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/split_right"
-                android:layout_toLeftOf="@id/ll_scroll"
-                android:layout_alignTop="@+id/doc_ll"
-                android:layout_alignBottom="@+id/doc_ll"
-                android:layout_width="1dp"
-                android:background="#999999"
-                android:layout_height="match_parent"
-                />
 
 
             <LinearLayout
                 android:id="@+id/doc_ll"
                 android:orientation="vertical"
-                android:layout_toLeftOf="@id/split_right"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent">
             </LinearLayout>
             <com.hgxx.whiteboard.views.drawview.DrawLayout
@@ -213,6 +181,42 @@
 
     </com.hgxx.whiteboard.views.HgScrollView>
 
+    <RelativeLayout
+        android:layout_toRightOf="@id/menu_frame"
+        android:id="@+id/top_bar_rl"
+        android:layout_width="match_parent"
+        android:background="#c48f8f8f"
+        android:layout_height="50dp">
+        <ImageView
+            android:id="@+id/top_folder_iv"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_width="30dp"
+            android:src="@drawable/btn_file"
+            android:scaleType="fitCenter"
+            android:layout_height="wrap_content" />
+
+        <FrameLayout
+            android:id="@+id/top_right_rl"
+            android:layout_alignParentRight="true"
+            android:layout_width="60dp"
+            android:layout_height="match_parent">
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/top_title"
+            android:layout_toLeftOf="@id/top_right_rl"
+            android:layout_toRightOf="@id/top_folder_iv"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:text="高中三年级英语提高班"
+            android:textStyle="bold"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            />
+    </RelativeLayout>
 
 
     <com.hgxx.whiteboard.views.menu.ColorPanel
@@ -299,35 +303,6 @@
             />
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:gravity="center_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <EditText
-            android:id="@+id/page_to_go"
-            android:layout_width="50dp"
-            android:gravity="center"
-            android:hint="page"
-            android:background="@drawable/round_rect_frame"
-            android:textSize="14sp"
-            android:layout_height="30dp" />
-        <TextView
-            android:id="@+id/page_btn"
-            android:layout_width="30dp"
-            android:layout_marginLeft="5dp"
-            android:background="@drawable/grey_oval_sel"
-            android:clickable="true"
-            android:textColor="#ffffff"
-            android:text="Go"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:layout_height="30dp" />
 
-    </LinearLayout>
 </RelativeLayout>
 

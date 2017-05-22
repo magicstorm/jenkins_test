@@ -1,6 +1,8 @@
 package com.hgxx.whiteboard.views.menu;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.net.LinkAddress;
 import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -117,14 +119,26 @@ public class MenuBarController{
         this.onBtnClick = onBtnClick;
     }
 
+
+    private void setBtnActive(View v){
+        v.setBackgroundColor(Color.parseColor("#e4e4e4"));
+        for(int i=0;i<menuBar.getChildCount();i++){
+            LinearLayout btn = (LinearLayout)menuBar.getChildAt(i);
+            if(btn!=v){
+                btn.setBackgroundColor(Color.parseColor("#ffffff"));
+            }
+        }
+    }
+
     private void initButons(){
         View.OnClickListener onMenuClickListener = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                setBtnActive(v);
                 int viewId = v.getId();
-                if(viewId==R.id.presentation_btn) {
-                    ToastSingle.showCenterToast("测试版只提供一个课件...", Toast.LENGTH_SHORT);
-                }else if (viewId==R.id.clear_btn){
+//                if(viewId==R.id.presentation_btn) {
+//                    ToastSingle.showCenterToast("测试版只提供一个课件...", Toast.LENGTH_SHORT);
+                /*}else*/ if (viewId==R.id.clear_btn){
                     drawControl.clear();
                     if(onBtnClick!=null){
                         onBtnClick.onClear();
@@ -146,6 +160,8 @@ public class MenuBarController{
                     if(onBtnClick!=null){
                         onBtnClick.onUndo();
                     }
+                }else if(viewId==R.id.hand_btn){
+
                 }
 
 
@@ -153,8 +169,8 @@ public class MenuBarController{
         };
 
         for(int i=0;i< menuBar.getChildCount();i++){
-            LinearLayout ml = (LinearLayout)menuBar.getChildAt(i);
-            TextView btn = (TextView)ml.getChildAt(0);
+            LinearLayout btn = (LinearLayout)menuBar.getChildAt(i);
+//            TextView btn = (TextView)ml.getChildAt(0);
             btn.setOnClickListener(onMenuClickListener);
         }
 

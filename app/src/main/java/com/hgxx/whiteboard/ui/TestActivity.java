@@ -18,7 +18,7 @@ public class TestActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
 
-        HgWhiteBoardRcv hgWhiteBoard = (HgWhiteBoardRcv) findViewById(R.id.wb);
+        HgWhiteBoard hgWhiteBoard = (HgWhiteBoard) findViewById(R.id.wb);
         hgWhiteBoard.setImageUrl("https://tvl.hongguaninfo.com:443/Test/api_");
         hgWhiteBoard.init();
 
