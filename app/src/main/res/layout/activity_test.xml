@@ -2,6 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <Button
+        android:id="@+id/show"
+        android:layout_width="wrap_content"
+        android:text="show"
+        android:textSize="20sp"
+        android:onClick="onClick"
+        android:layout_centerInParent="true"
+        android:textStyle="bold"
+        android:layout_height="wrap_content" />
     <com.hgxx.whiteboard.views.HgWhiteBoard
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wb"

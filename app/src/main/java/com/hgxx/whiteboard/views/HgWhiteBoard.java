@@ -3,20 +3,26 @@ package com.hgxx.whiteboard.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.RectF;
+import android.media.Image;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hgxx.whiteboard.R;
+import com.hgxx.whiteboard.entities.Display;
+import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.models.Presentation;
 import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.network.constants.Web;
@@ -60,12 +66,17 @@ public class HgWhiteBoard extends FrameLayout {
     private EditText pageEt;
     private TextView pageBtn;
 
+    private boolean seek=false;
+    private boolean scrolling=false;
     private boolean startUp=true;
 
     private String imageUrl;
     private RelativeLayout topBar;
     private ColorPointer colorPointer;
     private RectF displayRect;
+    private SeekBar scrollSeekBar;
+    private ImageView closeBtn;
+    private int displayWidth;
 
     public String getImageUrl() {
         return imageUrl;
@@ -120,6 +131,24 @@ public class HgWhiteBoard extends FrameLayout {
         initViews();
 
     }
+
+    public void reload(){
+        drawView.clear();
+
+        presentation.setPresentationId("1");
+        presentation.setRoomId("1");
+
+        try {
+            presentation.initPresentation(displayWidth, screenHeight);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        presentation.setTotalWidth(displayWidth);
+        presentation.loadPresentation(getContext(), imageUrl, new OnPresentationLoaded());
+
+    }
+
     private void initDatas(){
         dm = getResources().getDisplayMetrics();
         screenHeight = dm.heightPixels;
@@ -164,16 +193,22 @@ public class HgWhiteBoard extends FrameLayout {
             whiteBoard.scrollView.setOnScrollListener(new HgScrollView.OnScrollListener() {
                 @Override
                 public void onScrollChanged(int top, int oldt) {
+                    if(whiteBoard.seek)return;
+                    whiteBoard.scrolling=true;
                     int curPage = presentation.computeCurrentPage(top, oldt);
                     presentation.setCurrentPage(curPage);
 
+                    whiteBoard.scrollSeekBar.setProgress((int)(1000*top/(float)presentation.getTotalHeight()));
                     //TODO display currentPage
                     whiteBoard.pageNumTv.setText(curPage + "/" + presentation.getPresentationCount());
+
 
 //                    ToastSingle.showCenterToast("top: " + top + "|oldt: " + oldt, Toast.LENGTH_SHORT);
 //                    ToastSingle.showCenterToast("current page: " + curPage, Toast.LENGTH_SHORT);
 
                     presentation.sendScroll(top);
+
+                    whiteBoard.scrolling=false;
                 }
             });
 
@@ -227,10 +262,53 @@ public class HgWhiteBoard extends FrameLayout {
             TopBarController topBarController = new TopBarController(whiteBoard.topBar);
             topBarController.setPageNumTv(whiteBoard.pageNumTv);
             topBarController.setProgressPanel(whiteBoard.progressPanel);
+            topBarController.setScrollSeekBar(whiteBoard.scrollSeekBar);
+            topBarController.setOnSeek(new TopBarController.OnSeek() {
+                @Override
+                public void onSeek(float posRatio) {
+
+                    if(whiteBoard.scrolling)return;
+                    whiteBoard.seek = true;
+                    int curPage = setCurrentPage(posRatio);
+
+                    int top = presentation.getPagePositions().get(curPage-1);
+                    scrollToDst(top);
+
+                    whiteBoard.seek=false;
+                }
+
+            });
             topBarController.init();
 
+            whiteBoard.closeBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    whiteBoard.setVisibility(GONE);
+                    //TODO close view
+                    presentation.sendEnd();
+                }
+            });
 
 
+        }
+
+        private int setCurrentPage(float posRatio) {
+            int curPage = calculateCurrentPage(posRatio);
+            whiteBoard.pageNumTv.setText(curPage + "/" + presentation.getPresentationCount());
+            presentation.setCurrentPage(curPage);
+            return curPage;
+        }
+
+        private int calculateCurrentPage(float posRatio) {
+            int curPage = (int)((posRatio*(presentation.getPresentationCount()-1)))+1;
+
+            curPage=curPage<0?0:curPage;
+            return curPage;
+        }
+
+        private void scrollToDst(int top) {
+            whiteBoard.scrollView.scrollTo(0, top);
+            presentation.sendScroll(top);
         }
 
         @Override
@@ -264,7 +342,7 @@ public class HgWhiteBoard extends FrameLayout {
         drawView.setDrawable(true);
 
         scrollViewWeakReference = new WeakReference<>(scrollView);
-        int displayWidth = screenWidth - ViewHelpers.dp2px(101, getContext());
+        displayWidth = screenWidth - ViewHelpers.dp2px(71, getContext());
         presentation.setTotalWidth(displayWidth);
 
         try {
@@ -275,6 +353,15 @@ public class HgWhiteBoard extends FrameLayout {
 
         presentation.loadPresentation(getContext(), imageUrl, new OnPresentationLoaded());
     }
+
+
+    /**
+     * interfaces
+     */
+
+//    public void loadPresentation(String imageUrl, int count, String roomId, String presentationId){
+//        presentation.reload(getContext(), imageUrl, count, roomId, presentationId);
+//    }
 
     private void findViews(){
         scrollView = (HgScrollView)findViewById(R.id.sv);
@@ -288,7 +375,8 @@ public class HgWhiteBoard extends FrameLayout {
         pageNumTv = (TextView)findViewById(R.id.page_number_tv);
         topBar = (RelativeLayout)findViewById(R.id.top_bar_rl);
         colorPointer = (ColorPointer)findViewById(R.id.color_pointer);
-
+        scrollSeekBar = (SeekBar)findViewById(R.id.page_scroll_seekbar);
+        closeBtn = (ImageView)findViewById(R.id.btn_close_wb);
 
 //        pageEt = (EditText)findViewById(R.id.page_to_go);
 //        pageBtn = (TextView)findViewById(R.id.page_btn);

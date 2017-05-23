@@ -2,10 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fes="http://schemas.android.com/tools"
     android:fillViewport="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    >
+    xmlns:fresco="http://schemas.android.com/apk/res-auto">
 
     <com.hgxx.whiteboard.views.ShadowLinearLayout
         android:id="@+id/menu_frame"
@@ -148,7 +148,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
 
 
@@ -157,7 +157,7 @@
                 android:id="@+id/doc_ll"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
             </LinearLayout>
             <com.hgxx.whiteboard.views.drawview.DrawLayout
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -192,6 +192,20 @@
             android:src="@drawable/btn_file"
             android:scaleType="fitCenter"
             android:layout_height="wrap_content" />
+        <ImageView
+            android:layout_toRightOf="@id/top_folder_iv"
+            android:layout_marginLeft="15dp"
+            android:padding="5dp"
+            android:layout_width="25dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:background="#ffffff"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:id="@+id/btn_close_wb"
+            android:src="@drawable/btn_close"
+            android:scaleType="fitCenter"
+            />
 
         <FrameLayout
             android:id="@+id/top_right_rl"
@@ -234,14 +248,27 @@
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="24dp"
             android:layout_centerVertical="true"
-            android:layout_width="80dp"
+            android:layout_width="wrap_content"
+            android:minWidth="50dp"
+            android:maxWidth="80dp"
             android:gravity="center"
             android:textSize="16sp"
             android:clickable="true"
-            android:text="070/100"
+            android:text="0/0"
             android:textColor="#fc7453"
             android:textStyle="bold"
             android:layout_height="match_parent" />
+
+        <SeekBar
+            android:id="@+id/page_scroll_seekbar"
+            android:visibility="gone"
+            android:max="1000"
+            android:progress="0"
+            android:layout_marginRight="26dp"
+            android:layout_toRightOf="@id/page_number_tv"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </com.hgxx.whiteboard.views.PopoutMenu>
 
     <com.hgxx.whiteboard.views.ColorPopoutMenu

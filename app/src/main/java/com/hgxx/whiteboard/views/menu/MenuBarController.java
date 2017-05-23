@@ -253,7 +253,6 @@ public class MenuBarController{
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         showColorPointer();
-
                         int left = colorPointer.getLeft();
                         int top = colorPointer.getTop();
                         System.out.println("fuck");
