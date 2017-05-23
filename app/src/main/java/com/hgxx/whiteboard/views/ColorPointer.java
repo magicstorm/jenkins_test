@@ -1,13 +1,17 @@
 package com.hgxx.whiteboard.views;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
+
+import com.hgxx.whiteboard.R;
 
 /**
  * Created by ly on 21/05/2017.
@@ -32,8 +36,21 @@ public class ColorPointer extends View {
 
     public ColorPointer(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+
+        getAttr(context, attrs, defStyleAttr);
         initPaint();
     }
+    private void getAttr(Context context, AttributeSet attributeSet, int defStyleAtt) {
+        TypedArray att = context.obtainStyledAttributes(attributeSet, R.styleable.ColorPointer, defStyleAtt, 0);
+        radius = att.getDimension(R.styleable.ColorPointer_radius, radius);
+        this.setClickable(false);
+    }
+
+    public void setColor(String color){
+        mPaint.setColor(Color.parseColor(color));
+        invalidate();
+    }
+
 
     private void initPaint(){
         mPaint = new Paint();
@@ -78,6 +95,8 @@ public class ColorPointer extends View {
         int msh = MeasureSpec.makeMeasureSpec(viewHeight, MeasureSpec.EXACTLY);
         super.onMeasure(msw, msh);
     }
+
+
 
     private float getTanDeltaY(float radius, float arrowHeight){
         return radius*radius/(radius+arrowHeight);

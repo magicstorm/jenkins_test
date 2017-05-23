@@ -50,6 +50,10 @@ public class HgScrollView extends ScrollView {
         this.excludedRectFs.add(excludedRectF);
     }
 
+    public void clearExcludedRects(){
+        this.excludedRectFs.clear();
+    }
+
     private boolean isExcluded(RectF newRectf){
         boolean isExcluded = false;
         for(RectF rectF:excludedRectFs){

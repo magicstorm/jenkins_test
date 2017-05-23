@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="wrap_content"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp"
+    android:gravity="center"
+    android:layout_height="match_parent">
+
+    <View
+        android:layout_width="16dp"
+        android:layout_height="match_parent"
+        />
+
+    <ImageView
+        android:id="@+id/shape_line"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/draw_type_line"
+        />
+
+    <View
+        android:layout_width="8dp"
+        android:layout_height="match_parent"
+        />
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="#eeeeee"
+        />
+
+    <View
+        android:layout_width="8dp"
+        android:layout_height="match_parent"
+        />
+
+    <ImageView
+        android:id="@+id/shape_oval"
+        android:layout_width="wrap_content"
+        android:clickable="true"
+        android:layout_height="match_parent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/draw_type_oval"
+        />
+
+    <View
+        android:layout_width="8dp"
+        android:layout_height="match_parent"
+        />
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="#eeeeee"
+        />
+
+    <View
+        android:layout_width="8dp"
+        android:layout_height="match_parent"
+        />
+    <ImageView
+        android:id="@+id/shape_rect"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/draw_type_rect"
+        />
+
+</LinearLayout>

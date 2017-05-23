@@ -8,22 +8,25 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hgxx.whiteboard.R;
 import com.hgxx.whiteboard.models.Presentation;
 import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.network.constants.Web;
+import com.hgxx.whiteboard.utils.ToastSingle;
 import com.hgxx.whiteboard.utils.ViewHelpers;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
-import com.hgxx.whiteboard.views.menu.ColorPanel;
 import com.hgxx.whiteboard.views.menu.MenuBarController;
+import com.hgxx.whiteboard.views.menu.ShapePanel;
+import com.hgxx.whiteboard.views.menu.TopBarController;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -49,15 +52,20 @@ public class HgWhiteBoard extends FrameLayout {
     private static WeakReference<HgScrollView> scrollViewWeakReference;
     private static WeakReference<HgWhiteBoard> selfWeakReference;
     private LinearLayout menull;
-    private ColorPanel colorPanel;
-    private LinearLayout widthPanel;
-    private LinearLayout shapePanel;
+    private ColorPopoutMenu colorPanel;
+    private WidthPanel widthPanel;
+    private ShapePanel shapePanel;
+    private PopoutMenu progressPanel;
     private TextView pageNumTv;
     private EditText pageEt;
     private TextView pageBtn;
 
+    private boolean startUp=true;
 
     private String imageUrl;
+    private RelativeLayout topBar;
+    private ColorPointer colorPointer;
+    private RectF displayRect;
 
     public String getImageUrl() {
         return imageUrl;
@@ -127,6 +135,8 @@ public class HgWhiteBoard extends FrameLayout {
 
     }
 
+
+
     static class OnPresentationLoaded implements Presentation.OnLoadPresentationCallBack{
 
         private DrawViewController drawView;
@@ -150,7 +160,7 @@ public class HgWhiteBoard extends FrameLayout {
             }
             presentation.initDrawMessage(drawView);
 
-//            whiteBoard.pageNumTv.setText(presentation.getCurrentPage() + "/" + presentation.getPresentationCount());
+            whiteBoard.pageNumTv.setText(presentation.getCurrentPage() + "/" + presentation.getPresentationCount());
             whiteBoard.scrollView.setOnScrollListener(new HgScrollView.OnScrollListener() {
                 @Override
                 public void onScrollChanged(int top, int oldt) {
@@ -158,8 +168,9 @@ public class HgWhiteBoard extends FrameLayout {
                     presentation.setCurrentPage(curPage);
 
                     //TODO display currentPage
-//                    whiteBoard.pageNumTv.setText(curPage + "/" + presentation.getPresentationCount());
+                    whiteBoard.pageNumTv.setText(curPage + "/" + presentation.getPresentationCount());
 
+//                    ToastSingle.showCenterToast("top: " + top + "|oldt: " + oldt, Toast.LENGTH_SHORT);
 //                    ToastSingle.showCenterToast("current page: " + curPage, Toast.LENGTH_SHORT);
 
                     presentation.sendScroll(top);
@@ -192,14 +203,31 @@ public class HgWhiteBoard extends FrameLayout {
                 public void onUndo() {
                     presentation.undoPaint();
                 }
+
+                @Override
+                public void onEnableScroll() {
+                    whiteBoard.scrollView.clearExcludedRects();
+                    drawView.setDrawable(false);
+                }
+
+                @Override
+                public void onDisableScroll() {
+                    whiteBoard.scrollView.addExcludedRectFs(whiteBoard.displayRect);
+                    drawView.setDrawable(true);
+                }
             });
 
             menuBarController.setColorPanel(whiteBoard.colorPanel);
             menuBarController.setWidthPanel(whiteBoard.widthPanel);
-            menuBarController.setShapePanel(whiteBoard.shapePanel);;
-
+            menuBarController.setShapePanel(whiteBoard.shapePanel);
+            menuBarController.setColorPointer(whiteBoard.colorPointer);
 
             menuBarController.init();
+
+            TopBarController topBarController = new TopBarController(whiteBoard.topBar);
+            topBarController.setPageNumTv(whiteBoard.pageNumTv);
+            topBarController.setProgressPanel(whiteBoard.progressPanel);
+            topBarController.init();
 
 
 
@@ -216,11 +244,17 @@ public class HgWhiteBoard extends FrameLayout {
     }
 
     private void initViews(){
+
+
         docll.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                int docWidth = docll.getWidth();
-                scrollView.addExcludedRectFs(new RectF(0, 0, docWidth, screenHeight));
+                if(startUp){
+                    startUp=false;
+                    int docWidth = docll.getWidth();
+                    displayRect = new RectF(0, 0, docWidth, screenHeight);
+                    scrollView.addExcludedRectFs(displayRect);
+                }
             }
         });
 
@@ -240,19 +274,22 @@ public class HgWhiteBoard extends FrameLayout {
         }
 
         presentation.loadPresentation(getContext(), imageUrl, new OnPresentationLoaded());
-
     }
-
 
     private void findViews(){
         scrollView = (HgScrollView)findViewById(R.id.sv);
         drawLayout = (DrawLayout)findViewById(R.id.draw_sender_view);
         docll = (LinearLayout)findViewById(R.id.doc_ll);
-        menull = (LinearLayout)findViewById(R.id.menu);
-        colorPanel = (ColorPanel)findViewById(R.id.color_panel);
-        widthPanel = (LinearLayout)findViewById(R.id.width_panel);
-        shapePanel = (LinearLayout)findViewById(R.id.shape_panel);
-//        pageNumTv = (TextView)findViewById(R.id.page_number_tv);
+        menull = (LinearLayout) findViewById(R.id.menu_frame);
+        colorPanel = (ColorPopoutMenu) findViewById(R.id.color_panel);
+        widthPanel = (WidthPanel) findViewById(R.id.width_panel);
+        shapePanel = (ShapePanel)findViewById(R.id.shape_panel);
+        progressPanel = (PopoutMenu)findViewById(R.id.progress_bar);
+        pageNumTv = (TextView)findViewById(R.id.page_number_tv);
+        topBar = (RelativeLayout)findViewById(R.id.top_bar_rl);
+        colorPointer = (ColorPointer)findViewById(R.id.color_pointer);
+
+
 //        pageEt = (EditText)findViewById(R.id.page_to_go);
 //        pageBtn = (TextView)findViewById(R.id.page_btn);
     }

@@ -31,6 +31,14 @@ public class ColorPopoutMenu extends PopoutMenu {
     private Paint mPaint;
     private RectF contentRect;
     private float barRight;
+    private int pointerSize=20;
+
+    private float cpPosX = 0;
+    private String cpColor;
+    private float cpPosY;
+    private float cpMoveEnd;
+    private float cpMoveStart;
+
 
     public ColorPopoutMenu(Context context) {
         this(context, null);
@@ -46,6 +54,12 @@ public class ColorPopoutMenu extends PopoutMenu {
         initPaint();
     }
 
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+    }
+
+
     private void setDefaultColors(){
         String[] colorStrings  = new String[]{
                 "#999999",
@@ -59,6 +73,7 @@ public class ColorPopoutMenu extends PopoutMenu {
                 "#000000",
         };
         setColors(colorStrings);
+        cpColor = colorStrings[0];
 
         for(int i=0;i<colorStrings.length;i++){
             colorRects.add(null);
@@ -95,6 +110,23 @@ public class ColorPopoutMenu extends PopoutMenu {
 
         blockWidth = colorBarWidth/colors.size();
 
+
+
+        for(int i=0;i<colors.size();i++){
+            float blockLeft = barLeft +i*blockWidth;
+            float blockRight = blockLeft+blockWidth;
+            colorRects.set(i, new RectF(blockLeft, contentRect.top, blockRight, contentRect.bottom));
+        }
+
+        cpMoveStart = colorRects.get(0).left;
+        cpMoveEnd = colorRects.get(colorRects.size()-1).right;
+
+        if(cpPosX==0){
+            cpPosX = colorRects.get(0).centerX();
+        }
+        cpPosY = barTop;
+
+
     }
 
     @Override
@@ -102,22 +134,24 @@ public class ColorPopoutMenu extends PopoutMenu {
         super.dispatchDraw(canvas);
         for(int i=0;i<colors.size();i++){
             mPaint.setColor(Color.parseColor(colors.get(i)));
-            float blockLeft = barLeft +i*blockWidth;
-            float blockRight = blockLeft+blockWidth;
             Path path = new Path();
-            path.moveTo(blockLeft, barTop);
-            path.addRect(blockLeft, barTop, blockRight, barBottom, Path.Direction.CCW);
-
-
-            colorRects.set(i, new RectF(blockLeft, contentRect.top, blockRight, contentRect.bottom));
-
+            path.moveTo(colorRects.get(i).left, barTop);
+            path.addRect(colorRects.get(i).left, barTop, colorRects.get(i).right, barBottom, Path.Direction.CCW);
             canvas.drawPath(path, mPaint);
         }
     }
 
-    private void initPointer(){
-
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
     }
+
+
+
+
+
+
+
 
     @Override
     public boolean onInterceptHoverEvent(MotionEvent event) {
@@ -125,17 +159,29 @@ public class ColorPopoutMenu extends PopoutMenu {
 //        return super.onInterceptHoverEvent(event);
     }
 
+    public interface OnColorMoveListener{
+        void onColorMove(float cpPosX, String color);
+    }
+
+    private OnColorMoveListener onColorMoveListener;
+
+    public void setOnColorMoveListener(OnColorMoveListener onColorMoveListener) {
+        this.onColorMoveListener = onColorMoveListener;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         if(action==MotionEvent.ACTION_DOWN){
             float x = event.getX();
-            float y = event.getY();
+            colorMove(x);
             //TODO move pointer here && change color
 
 
         }else if (action==MotionEvent.ACTION_MOVE){
             //TODO move pointer here && change color
+            float x = event.getX();
+            colorMove(x);
 
         }else if(action==MotionEvent.ACTION_UP){
 
@@ -144,6 +190,43 @@ public class ColorPopoutMenu extends PopoutMenu {
         }
 
 
-        return super.onTouchEvent(event);
+        return true;
+//        return super.onTouchEvent(event);
+    }
+
+    public void colorMove(float x) {
+        if(x<=cpMoveEnd&&x>=cpMoveStart){
+            setCpPosX(x);
+            for(int i=0;i<colorRects.size();i++){
+                if(colorRects.get(i).contains(x, colorRects.get(i).centerY())){
+                    cpColor = colors.get(i);
+                    break;
+                }
+            }
+
+            if(onColorMoveListener!=null){
+                onColorMoveListener.onColorMove(cpPosX, cpColor);
+            }
+        }
+    }
+
+    private float dp2px(float dp){
+        return (int)(dp*getContext().getResources().getDisplayMetrics().density+0.5f);
+    }
+
+    public synchronized float getCpPosX() {
+        return cpPosX;
+    }
+
+    public synchronized void setCpPosX(float cpPosX) {
+        this.cpPosX = cpPosX;
+    }
+
+    public float getCpPosY() {
+        return cpPosY;
+    }
+
+    public String getCpColor() {
+        return cpColor;
     }
 }

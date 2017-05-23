@@ -3,30 +3,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     >
-    <LinearLayout
+
+    <com.hgxx.whiteboard.views.ShadowLinearLayout
         android:id="@+id/menu_frame"
         android:layout_width="@dimen/sender_side_bar_width"
-        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
+        app:elevationSize="5dp"
         android:orientation="vertical"
-        android:clickable="true"
-        >
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/menu"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#ffffff"
-            >
+
             <LinearLayout
                 android:id="@+id/clear_btn"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="vertical"
+                android:background="@drawable/wb_btn_sel"
                 android:clickable="true"
+                android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 >
@@ -44,7 +41,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="vertical"
+                android:layout_marginRight="5dp"
                 android:layout_weight="1"
+                android:background="@drawable/wb_btn_sel"
                 android:clickable="true"
                 android:gravity="center"
                 >
@@ -63,6 +62,7 @@
                 android:clickable="true"
                 android:layout_height="0dp"
                 android:orientation="vertical"
+                android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 >
@@ -81,6 +81,7 @@
                 android:clickable="true"
                 android:layout_height="0dp"
                 android:orientation="vertical"
+                android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 >
@@ -97,6 +98,7 @@
                 android:id="@+id/color_btn"
                 android:clickable="true"
                 android:layout_width="match_parent"
+                android:layout_marginRight="5dp"
                 android:layout_height="0dp"
                 android:orientation="vertical"
                 android:layout_weight="1"
@@ -117,6 +119,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:orientation="vertical"
+                android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:gravity="center"
                 >
@@ -129,22 +132,13 @@
                     android:text="粗细"
                     />
             </LinearLayout>
-        </LinearLayout>
+
+    </com.hgxx.whiteboard.views.ShadowLinearLayout>
 
 
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/split_left"
-        android:layout_width="1dp"
-        android:layout_toRightOf="@id/menu_frame"
-        android:background="#999999"
-        android:layout_height="match_parent"
-        />
 
     <com.hgxx.whiteboard.views.HgScrollView
-        android:layout_toRightOf="@id/split_left"
+        android:layout_toRightOf="@id/menu_frame"
         android:id="@+id/sv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -183,8 +177,10 @@
 
     <RelativeLayout
         android:layout_toRightOf="@id/menu_frame"
+        android:layout_marginLeft="-5dp"
         android:id="@+id/top_bar_rl"
         android:layout_width="match_parent"
+        android:clickable="true"
         android:background="#c48f8f8f"
         android:layout_height="50dp">
         <ImageView
@@ -200,7 +196,9 @@
         <FrameLayout
             android:id="@+id/top_right_rl"
             android:layout_alignParentRight="true"
-            android:layout_width="60dp"
+            android:layout_width="110dp"
+            android:background="@android:color/transparent"
+            android:clickable="true"
             android:layout_height="match_parent">
         </FrameLayout>
 
@@ -216,93 +214,164 @@
             android:textColor="#ffffff"
             android:textSize="20sp"
             />
+
     </RelativeLayout>
+    <com.hgxx.whiteboard.views.PopoutMenu
+        android:id="@+id/progress_bar"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        app:menuElevation="8dp"
+        app:animationDirection="left"
+        app:anchor="@id/top_bar_rl"
+        app:anchorChild="@id/top_right_rl"
+        app:anchorDirectioon="horizontal"
+        app:addAnchorListener="false"
+        app:animationDistance="110dp"
+        app:stayTop="true"
+        >
+        <TextView
+            android:id="@+id/page_number_tv"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="24dp"
+            android:layout_centerVertical="true"
+            android:layout_width="80dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:clickable="true"
+            android:text="070/100"
+            android:textColor="#fc7453"
+            android:textStyle="bold"
+            android:layout_height="match_parent" />
+    </com.hgxx.whiteboard.views.PopoutMenu>
 
-
-    <com.hgxx.whiteboard.views.menu.ColorPanel
+    <com.hgxx.whiteboard.views.ColorPopoutMenu
         android:id="@+id/color_panel"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"
-        android:layout_width="500dp"
-        android:background="#cc999999"
-        android:padding="8dp"
-        android:layout_centerHorizontal="true"
-        android:layout_height="56dp">
-    </com.hgxx.whiteboard.views.menu.ColorPanel>
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        app:menuElevation="8dp"
+        app:anchor="@id/menu_frame"
+        app:adjustSize="true"
+        app:addAnchorListener="false"
+        app:anchorChild="@id/color_btn"
+        >
+    </com.hgxx.whiteboard.views.ColorPopoutMenu>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"
-        android:id="@+id/width_panel"
-        android:background="#f21717"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-        <TextView
-            android:id="@+id/stroke_width_1"
-            style="@style/whiteBoardStrokeWidthText"
-            android:text="1点"
-            />
-        <TextView
-            android:id="@+id/stroke_width_5"
-            style="@style/whiteBoardStrokeWidthText"
-            android:text="5点"
-            />
-        <TextView
-            android:id="@+id/stroke_width_10"
-            style="@style/whiteBoardStrokeWidthText"
-            android:text="10点"
-            />
-        <TextView
-            android:id="@+id/stroke_width_15"
-            style="@style/whiteBoardStrokeWidthText"
-            android:text="15点"
-            />
-        <TextView
-            android:id="@+id/stroke_width_20"
-            style="@style/whiteBoardStrokeWidthText"
-            android:text="20点"
-            />
-        <TextView
-            android:id="@+id/stroke_width_25"
-            style="@style/whiteBoardStrokeWidthText"
-            android:text="25点"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_alignParentBottom="true"
+    <com.hgxx.whiteboard.views.menu.ShapePanel
         android:id="@+id/shape_panel"
-        android:background="#f21717"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-        <TextView
-            android:id="@+id/shape_line_btn"
-            style="@style/whiteBoardStrokeWidthText"
-            android:clickable="true"
-            android:tag="line"
-            android:text="线条"
-            />
-        <TextView
-            android:id="@+id/shape_oval_btn"
-            style="@style/whiteBoardStrokeWidthText"
-            android:clickable="true"
-            android:tag="oval"
-            android:text="椭圆"
-            />
-        <TextView
-            android:id="@+id/shape_rect_btn"
-            style="@style/whiteBoardStrokeWidthText"
-            android:clickable="true"
-            android:tag="rect"
-            android:text="长方形"
-            />
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        app:adjustSize="true"
+        app:menuElevation="8dp"
+        app:anchor="@id/menu_frame"
+        app:addAnchorListener="false"
+        app:anchorChild="@id/draw_type_btn"
+        >
 
-            />
-    </LinearLayout>
+    </com.hgxx.whiteboard.views.menu.ShapePanel>
 
+    <com.hgxx.whiteboard.views.WidthPanel
+        android:id="@+id/width_panel"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        app:adjustSize="true"
+        app:menuElevation="8dp"
+        app:anchor="@id/menu_frame"
+        app:addAnchorListener="false"
+        app:anchorChild="@id/stroke_width_btn"
+        >
+    </com.hgxx.whiteboard.views.WidthPanel>
+    <!--<com.hgxx.whiteboard.views.menu.ColorPanel-->
+        <!--android:id="@+id/color_panel"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_width="500dp"-->
+        <!--android:background="#cc999999"-->
+        <!--android:padding="8dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_height="56dp">-->
+    <!--</com.hgxx.whiteboard.views.menu.ColorPanel>-->
+
+    <!--<LinearLayout-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:visibility="gone"-->
+        <!--android:id="@+id/width_panel"-->
+        <!--android:background="#f21717"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp">-->
+        <!--<TextView-->
+            <!--android:id="@+id/stroke_width_1"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:text="1点"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/stroke_width_5"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:text="5点"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/stroke_width_10"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:text="10点"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/stroke_width_15"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:text="15点"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/stroke_width_20"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:text="20点"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/stroke_width_25"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:text="25点"-->
+            <!--/>-->
+    <!--</LinearLayout>-->
+
+    <!--<LinearLayout-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:id="@+id/shape_panel"-->
+        <!--android:background="#f21717"-->
+        <!--android:visibility="gone"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="50dp">-->
+        <!--<TextView-->
+            <!--android:id="@+id/shape_line_btn"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:clickable="true"-->
+            <!--android:tag="line"-->
+            <!--android:text="线条"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/shape_oval_btn"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:clickable="true"-->
+            <!--android:tag="oval"-->
+            <!--android:text="椭圆"-->
+            <!--/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/shape_rect_btn"-->
+            <!--style="@style/whiteBoardStrokeWidthText"-->
+            <!--android:clickable="true"-->
+            <!--android:tag="rect"-->
+            <!--android:text="长方形"-->
+            <!--/>-->
+
+            <!--/>-->
+    <!--</LinearLayout>-->
+
+
+
+    <com.hgxx.whiteboard.views.ColorPointer
+        android:id="@+id/color_pointer"
+        android:clickable="true"
+        app:radius="10dp"
+        android:layout_width="10dp"
+        android:layout_height="10dp" />
 
 </RelativeLayout>
 

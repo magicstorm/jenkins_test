@@ -76,6 +76,7 @@ public class DrawViewController implements DrawControl{
         mDv.getLayoutParams().height = height;
     }
 
+
     public void setDrawType(String drawType){
         if(Arrays.asList(DrawLayout.DRAW_TYPES).contains(drawType)){
             mDv.setDrawType(drawType);

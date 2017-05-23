@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.controller.BaseControllerListener;
@@ -23,6 +24,7 @@ import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.network.constants.Web;
+import com.hgxx.whiteboard.utils.ToastSingle;
 import com.hgxx.whiteboard.views.drawview.DrawControl;
 
 import org.json.JSONException;
@@ -221,7 +223,7 @@ public class Presentation {
     private synchronized void refreshPresentationHeight(int height, int position){
         int nextPos = position+1;
         for(int i=nextPos;i<pagePositions.size();i++){
-            pagePositions.set(nextPos, pagePositions.get(nextPos)+height);
+            pagePositions.set(i, pagePositions.get(nextPos)+height);
         }
         setTotalHeight(getTotalHeight()+height);
         loadedCount+=1;
@@ -481,6 +483,7 @@ public class Presentation {
         int searchInterval = 1;
 
         int currentPage = getCurrentPage();
+        ToastSingle.showCenterToast("curPage: " + currentPage, Toast.LENGTH_SHORT);
 
         while (currentPage>=1&&currentPage<=getPresentationCount()){
             int nextPage = currentPage + searchInterval*searchDir;
@@ -490,9 +493,12 @@ public class Presentation {
 
             int nextTop = getPagePositions().get(nextPage-1);
 
+//            ToastSingle.showCenterToast("nexttop: " + nextTop, Toast.LENGTH_SHORT);
             if(searchDir*top>=searchDir*nextTop){
                 currentPage=nextPage;
+//                ToastSingle.showCenterToast("next", Toast.LENGTH_SHORT);
             } else{
+//                ToastSingle.showCenterToast("current", Toast.LENGTH_SHORT);
                 return currentPage;
             }
         }

@@ -3,5 +3,8 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorWhiteBoardOringe">#fc7d61</color>
+    <drawable name="wb_btn_bg">#ffffff</drawable>
+    <drawable name="wb_btn_bg_active">#e4e4e4</drawable>
 
 </resources>

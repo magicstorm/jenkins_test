@@ -51,7 +51,31 @@
             <flag name="up" value="3"/>
             <flag name="down" value="4"/>
         </attr>
+        <attr name="animationDistance" format="dimension"/>
         <attr name="menuElevation" format="dimension"/>
+        <attr name="anchorDirectioon" format="integer">
+            <flag name="vertical" value="1"/>
+            <flag name="horizontal" value="2"/>
+        </attr>
+        <attr name="stayTop" format="boolean"/>
+        <attr name="addAnchorListener" format="boolean"/>
+        <attr name="adjustSize" format="boolean"/>
+    </declare-styleable>
+
+
+    <declare-styleable name="ShadowLinearLayout">
+        <attr name="elevationSize" format="dimension"/>
+        <attr name="elevationPos" format="integer">
+            <flag name="left" value="1"/>
+            <flag name="right" value="2"/>
+            <flag name="top" value="3"/>
+            <flag name="bottom" value="4"/>
+        </attr>
+
+    </declare-styleable>
+
+    <declare-styleable name="ColorPointer">
+        <attr name="radius" format="dimension"/>
     </declare-styleable>
 
 
