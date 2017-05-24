@@ -139,12 +139,17 @@ public class HgWhiteBoardRcv extends FrameLayout{
         scrollView.setVerticalScrollBarEnabled(false);
         scrollView.setHorizontalScrollBarEnabled(false);
 
+
         presentation.setTotalWidth(drawView.getWidth());
         presentation.setPresentationFrame(scrollLl);
         presentation.loadPresentation(getContext(), imageUrl, new Presentation.OnLoadPresentationCallBack() {
             @Override
             public void onLoadPresentationCompleted() {
                 drawView.setHeight(presentation.getTotalHeight());
+
+                presentation.setScrollStat(presentation.getScrollStat());
+
+
             }
 
             @Override
@@ -223,6 +228,10 @@ public class HgWhiteBoardRcv extends FrameLayout{
 
 //                        setImageUrl(imageUrl);
 //                        init();
+
+                        scrollStat.computeLocalScrollStat(presentation.getTotalHeight());
+                        scrollStat.getDisplay().computeLocalDisplaySize(getContext());
+                        presentation.setScrollStat(scrollStat);
 
                         initViews(scrollStat.getDisplay());
                     }

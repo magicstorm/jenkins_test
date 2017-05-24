@@ -93,11 +93,12 @@ public class Presentation {
     }
 
 
+    ArrayList<String> presentationNames = new ArrayList<>();
     class PresentationListener implements SocketClient.EventListener {
-        ArrayList<String> presentationNames = new ArrayList<>();
         Context mContext;
 
         public PresentationListener(Context context, String name){
+            presentationNames.clear();
             presentationNames.add(name);
             this.mContext = context;
         }
@@ -105,36 +106,39 @@ public class Presentation {
         public void onEvent(Object... args) {
             Gson gson = new Gson();
             ScrollStat scrollStat = gson.fromJson((String)args[0], ScrollStat.class);
-            boolean isChanged = false;
-
-            if(isScrollStatChanged(scrollStat)){
-                scrollStat.computeLocalScrollStat(totalHeight);
-                isChanged = true;
-            }
-            if(isDisplayChanged(scrollStat)){
-                scrollStat.getDisplay().computeLocalDisplaySize(mContext);
-                isChanged = true;
-            }
-
-
-
-            if(isChanged){
-                setScrollStat(scrollStat);
-            }
+            scrollToPosition(scrollStat, mContext);
         }
 
-        private boolean isScrollStatChanged(ScrollStat scrollStat) {
-            return presentationNames.contains(scrollStat.getPresentationName().trim())&&
-                    ((getScrollStat()==null)||!getScrollStat().equals(scrollStat));
+
+    }
+
+    public void scrollToPosition(ScrollStat scrollStat, Context context) {
+        boolean isChanged = false;
+
+        if(isScrollStatChanged(scrollStat)){
+            scrollStat.computeLocalScrollStat(totalHeight);
+            isChanged = true;
+        }
+        if(isDisplayChanged(scrollStat)){
+            scrollStat.getDisplay().computeLocalDisplaySize(context);
+            isChanged = true;
         }
 
-        private boolean isDisplayChanged(ScrollStat scrollStat){
-            return presentationNames.contains(scrollStat.getPresentationName().trim())&&
-                    ((getScrollStat()==null)||!getScrollStat().getDisplay().equals(scrollStat.getDisplay()));
+
+        if(isChanged){
+            setScrollStat(scrollStat);
         }
     }
 
+    private boolean isScrollStatChanged(ScrollStat scrollStat) {
+        return presentationNames.contains(scrollStat.getPresentationName().trim())&&
+                ((getScrollStat()==null)||!getScrollStat().equals(scrollStat));
+    }
 
+    private boolean isDisplayChanged(ScrollStat scrollStat){
+        return presentationNames.contains(scrollStat.getPresentationName().trim())&&
+                ((getScrollStat()==null)||!getScrollStat().getDisplay().equals(scrollStat.getDisplay()));
+    }
 
 
     public interface OnLoadPresentationCallBack{
