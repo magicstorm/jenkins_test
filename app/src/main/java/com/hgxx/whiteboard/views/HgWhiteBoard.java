@@ -1,9 +1,11 @@
 package com.hgxx.whiteboard.views;
 
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.RectF;
-import android.media.Image;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,15 +20,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hgxx.whiteboard.R;
-import com.hgxx.whiteboard.entities.Display;
-import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.models.Presentation;
+import com.hgxx.whiteboard.models.PresentationInfo;
 import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.network.constants.Web;
-import com.hgxx.whiteboard.utils.ToastSingle;
 import com.hgxx.whiteboard.utils.ViewHelpers;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
 import com.hgxx.whiteboard.views.drawview.DrawViewController;
@@ -77,6 +76,30 @@ public class HgWhiteBoard extends FrameLayout {
     private SeekBar scrollSeekBar;
     private ImageView closeBtn;
     private int displayWidth;
+    private FrameLayout chooseFl;
+    private PresentationSelectFragment chooseFragment;
+
+    private String sesstionTitle;
+    private PresentationAdapter presentationAdapter;
+    private WeakReference<Activity> activityWeakReference;
+    private ImageView choosePresentationBtn;
+    private static MenuBarController menuBarController;
+
+    public String getSesstionTitle() {
+        return sesstionTitle;
+    }
+
+    public void setSesstionTitle(String sesstionTitle) {
+        this.sesstionTitle = sesstionTitle;
+    }
+
+    public PresentationAdapter getPresentationAdapter() {
+        return presentationAdapter;
+    }
+
+    public void setPresentationAdapter(PresentationAdapter presentationAdapter) {
+        this.presentationAdapter = presentationAdapter;
+    }
 
     public String getImageUrl() {
         return imageUrl;
@@ -124,9 +147,56 @@ public class HgWhiteBoard extends FrameLayout {
     }
 
 
-    public void init(){
+    public void initPresInfo(Activity activity){
         inflate(getContext(), R.layout.activity_white_board, this);
         findViews();
+        activityWeakReference = new WeakReference<>(activity);
+        initChoosePresentationFragment(false);
+
+
+    }
+
+    private void initChoosePresentationFragment(boolean canReturn){
+
+        presentation = new Presentation(presentationAdapter.getPresentationName());
+        presentationWeakReference = new WeakReference<>(presentation);
+        presentation.setRoomId(presentationAdapter.getRoomId());
+
+        chooseFl.setVisibility(VISIBLE);
+        chooseFl.bringToFront();
+        Activity activity = activityWeakReference.get();
+        if(activity==null)return;
+
+        chooseFragment = new PresentationSelectFragment();
+        chooseFragment.setPresentationAdapter(presentationAdapter);
+        chooseFragment.setTitle(sesstionTitle);
+        chooseFragment.setCanReturn(canReturn);
+        chooseFragment.setOnPresentationSelectPageClose(new PresentationSelectFragment.OnPresentationSelectPageClose() {
+            @Override
+            public void onPresentationSelected(PresentationInfo pi) {
+                //TODO set initial presentation params
+                if(drawView!=null){
+                    drawView.clear();
+                }
+                chooseFl.setVisibility(GONE);
+                setImageUrl(pi.getUrl());
+                presentation.setPresentationId(pi.getPresentationId());
+                init();
+            }
+
+            @Override
+            public void onPresentationSelectPageClose() {
+                chooseFl.setVisibility(GONE);
+            }
+        });
+
+        FragmentManager fm = activity.getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.choose_fl, chooseFragment);
+        ft.commit();
+    }
+
+    public void init(){
         initDatas();
         initViews();
 
@@ -135,8 +205,7 @@ public class HgWhiteBoard extends FrameLayout {
     public void reload(){
         drawView.clear();
 
-        presentation.setPresentationId("1");
-        presentation.setRoomId("1");
+        presentation.setRoomId(presentationAdapter.getRoomId());
 
         try {
             presentation.initPresentation(displayWidth, screenHeight);
@@ -154,13 +223,14 @@ public class HgWhiteBoard extends FrameLayout {
         screenHeight = dm.heightPixels;
         screenWidth = dm.widthPixels;
 
-        presentation = new Presentation("Test");
-        presentationWeakReference = new WeakReference<>(presentation);
+//        presentation = new Presentation(presentationAdapter.getPresentationName());
+//        presentationWeakReference = new WeakReference<>(presentation);
+
         presentation.setPresentationFrame(docll);
         selfWeakReference = new WeakReference<>(this);
 
-        presentation.setPresentationId("1");
-        presentation.setRoomId("1");
+//        presentation.setPresentationId("1");
+//        presentation.setRoomId(presentationAdapter.getRoomId());
 
     }
 
@@ -226,7 +296,7 @@ public class HgWhiteBoard extends FrameLayout {
 //            });
 
 
-            MenuBarController menuBarController = new MenuBarController(whiteBoard.getContext(), whiteBoard.menull);
+            menuBarController = new MenuBarController(whiteBoard.getContext(), whiteBoard.menull);
             menuBarController.setDrawControl(drawView);
             menuBarController.setOnBtnClick(new MenuBarController.OnMenuBtnClick() {
                 @Override
@@ -285,12 +355,19 @@ public class HgWhiteBoard extends FrameLayout {
                 public void onClick(View v) {
                     whiteBoard.setVisibility(GONE);
                     //TODO close view
-                    presentation.sendEnd();
+                    presentation.sendClose();
                 }
             });
 
 
         }
+
+        public void endSession(){
+            if(presentation!=null){
+                presentation.sendEnd();
+            }
+        }
+
 
         private int setCurrentPage(float posRatio) {
             int curPage = calculateCurrentPage(posRatio);
@@ -329,9 +406,7 @@ public class HgWhiteBoard extends FrameLayout {
             public void onGlobalLayout() {
                 if(startUp){
                     startUp=false;
-                    int docWidth = docll.getWidth();
-                    displayRect = new RectF(0, 0, docWidth, screenHeight);
-                    scrollView.addExcludedRectFs(displayRect);
+                    setExcludedRect();
                 }
             }
         });
@@ -339,7 +414,13 @@ public class HgWhiteBoard extends FrameLayout {
         //init controller
         drawView = new DrawViewController(drawLayout);
         drawViewWeakReference = new WeakReference<>(drawView);
+
+        if(!startUp){
+            setExcludedRect();
+            menuBarController.clearActives(null);
+        }
         drawView.setDrawable(true);
+
 
         scrollViewWeakReference = new WeakReference<>(scrollView);
         displayWidth = screenWidth - ViewHelpers.dp2px(71, getContext());
@@ -352,6 +433,12 @@ public class HgWhiteBoard extends FrameLayout {
         }
 
         presentation.loadPresentation(getContext(), imageUrl, new OnPresentationLoaded());
+    }
+
+    private void setExcludedRect() {
+        int docWidth = docll.getWidth();
+        displayRect = new RectF(0, 0, docWidth, screenHeight);
+        scrollView.addExcludedRectFs(displayRect);
     }
 
 
@@ -377,7 +464,15 @@ public class HgWhiteBoard extends FrameLayout {
         colorPointer = (ColorPointer)findViewById(R.id.color_pointer);
         scrollSeekBar = (SeekBar)findViewById(R.id.page_scroll_seekbar);
         closeBtn = (ImageView)findViewById(R.id.btn_close_wb);
+        chooseFl = (FrameLayout)findViewById(R.id.choose_fl);
+        choosePresentationBtn = (ImageView)findViewById(R.id.top_folder_iv);
 
+        choosePresentationBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initChoosePresentationFragment(true);
+            }
+        });
 //        pageEt = (EditText)findViewById(R.id.page_to_go);
 //        pageBtn = (TextView)findViewById(R.id.page_btn);
     }

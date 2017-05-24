@@ -145,10 +145,10 @@ public class MenuBarController{
 
     }
 
-    private void clearActives(View v){
+    public void clearActives(View v){
         for(int i=2;i<menuBar.getChildCount();i++){
             LinearLayout btn = (LinearLayout)menuBar.getChildAt(i);
-            if(btn!=v){
+            if(v==null||btn!=v){
                 btn.setBackgroundColor(Color.parseColor("#ffffff"));
             }
         }
@@ -183,6 +183,7 @@ public class MenuBarController{
 
                 }
                 else if(viewId==R.id.draw_type_btn) {
+//                    drawControl.setDrawable(true);
                     disableScroll();
                     setBtnActive(v);
                     if(shapePanel!=null){

@@ -2,6 +2,8 @@ package com.hgxx.whiteboard.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +18,7 @@ import com.hgxx.whiteboard.entities.Display;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.models.Presentation;
+import com.hgxx.whiteboard.models.PresentationInfo;
 import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.views.drawview.DrawLayout;
@@ -36,7 +39,12 @@ public class HgWhiteBoardRcv extends FrameLayout{
     private DrawLayout drawLayout;
 
     private String imageUrl;
+    private String psId;
+    private String roomId;
+    private int presentationCount;
+    private String presentationName;
 
+    private PresentationAdapter presentationAdapter;
     public String getImageUrl() {
         return imageUrl;
     }
@@ -89,11 +97,33 @@ public class HgWhiteBoardRcv extends FrameLayout{
         initSocketClient();
     }
 
+//    public void setPresentationId(String presentationId){
+//        psId = presentationId;
+//    }
+//
+//    public void setRoomId(String roomId){
+//        this.roomId = roomId;
+//    }
+//
+//    public void setPresentationCount(int count){
+//        presentationCount = count;
+//    }
+//
+//    public void setPresentationName(String presentationName){
+//        this.presentationName = presentationName;
+//    }
+
+
+
+
+
     private void initDatas(){
         drawView = new DrawViewController(drawLayout);
         drawView.setDrawable(false);
-        presentation = new Presentation("Test");
-        presentation.setRoomId("1");
+        presentation = new Presentation(presentationAdapter.getPresentationName());
+        presentation.setRoomId(presentationAdapter.getRoomId());
+        presentation.setPresentationId("0");
+        presentation.setPresentationCount(presentationAdapter.getCount());
     }
 
 
@@ -159,11 +189,44 @@ public class HgWhiteBoardRcv extends FrameLayout{
         drawLayout = (DrawLayout)findViewById(R.id.drawRcvView);
     }
 
+
+    public void close(){
+        this.setVisibility(GONE);
+    }
+
+    public void open(){
+        this.setVisibility(VISIBLE);
+
+    }
+
+
     private void initSocketClient() {
         presentation.initClient(new Presentation.EventObserver() {
             @Override
-            public void onPresentationInit(ScrollStat scrollStat) {
-                initViews(scrollStat.getDisplay());
+            public void onPresentationInit(final ScrollStat scrollStat) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+
+
+                        if(!scrollStat.getPresentationId().equals(presentation.getPresentationId())){
+                            PresentationInfo pi = presentationAdapter.getPresentationInfo(presentation.getPresentationId());
+                            if(pi!=null){
+                                setImageUrl(pi.getUrl());
+                                presentation.setPresentationId(pi.getPresentationId());
+                                presentation.setPresentationName(pi.getPresentationName());
+                            }
+                        }
+
+
+                        open();
+
+//                        setImageUrl(imageUrl);
+//                        init();
+
+                        initViews(scrollStat.getDisplay());
+                    }
+                });
             }
 
             @Override
@@ -200,9 +263,45 @@ public class HgWhiteBoardRcv extends FrameLayout{
             @Override
             public void onConnection(String id) {
             }
+
+            @Override
+            public void onEnd(String id) {
+                if(onEndSession!=null){
+                    onEndSession.onEndSession();
+                }
+            }
+
+            @Override
+            public void onClose(String presentationId) {
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        close();
+                    }
+                });
+            }
         });
     }
 
+
+    public interface OnEndSession{
+        void onEndSession();
+    }
+
+    private OnEndSession onEndSession;
+
+    public void setOnEndSession(OnEndSession onEndSession) {
+        this.onEndSession = onEndSession;
+    }
+
+    public PresentationAdapter getPresentationAdapter() {
+        return presentationAdapter;
+    }
+
+    public void setPresentationAdapter(PresentationAdapter presentationAdapter) {
+        this.presentationAdapter = presentationAdapter;
+    }
 }
+
 
 

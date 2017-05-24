@@ -4,13 +4,13 @@ package com.hgxx.whiteboard.views;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,10 +28,13 @@ public class PresentationSelectFragment extends Fragment{
 
     private View contentView;
     private TextView title;
+    private String titleText;
     private ImageView backBtn;
     private PresentationAdapter presentationAdapter;
     private ListView list;
     private BaseAdapter adapter;
+    private boolean backEnabled = true;
+
 
     @Nullable
     @Override
@@ -63,37 +66,68 @@ public class PresentationSelectFragment extends Fragment{
     /**
      * public interfaces
      */
+    public void notifyDataChanges(){
+        setTitle(titleText);
+        adapter.notifyDataSetChanged();
+    }
 
     public void setPresentationAdapter(PresentationAdapter presentationAdapter) {
         this.presentationAdapter = presentationAdapter;
+        if(adapter!=null){
+            notifyDataChanges();
+        }
     }
     public void setOnBackPressed(OnBackPressed onBackPressed) {
         this.onBackPressed = onBackPressed;
     }
     public void setTitle(String title){
-        this.title.setText(title);
+        this.titleText = title;
+        if(adapter!=null){
+            notifyDataChanges();
+        }
     }
 
 
+    public void setCanReturn(boolean canReturn){
+        backEnabled=canReturn;
+    }
+
+    private boolean getCanReturn(){
+        return backEnabled;
+    }
 
     private void initViews(){
+
+        title.setText(titleText);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(!getCanReturn())return;
                 if(onBackPressed!=null){
                     onBackPressed.onBackPressed();
                 }
                 closeSelf();
             }
-
         });
     }
 
+
+
+
     private void closeSelf(){
-        FragmentManager fm = getActivity().getFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.remove(this);
-        ft.commit();
+        if(getActivity()!=null){
+            FragmentManager fm = getActivity().getFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.remove(this);
+            ft.commit();
+        }else{
+            ((ViewGroup)contentView.getParent()).removeView(contentView);
+        }
+
+        if(onPresentationSelectPageClose!=null){
+            onPresentationSelectPageClose.onPresentationSelectPageClose();
+        }
+
     }
 
     private void initViewDatas(){
@@ -126,7 +160,6 @@ public class PresentationSelectFragment extends Fragment{
                     v=View.inflate(WhiteBoardApplication.getContext(), R.layout.presentation_cell, null);
                     vh = new ViewHolder();
                     setTag(v, vh);
-
                 }
 
                 fillContent(vh, position);
@@ -136,9 +169,31 @@ public class PresentationSelectFragment extends Fragment{
         };
         list.setAdapter(adapter);
 
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                PresentationInfo pi = presentationAdapter.getPresentationInfo(position);
+                if(onPresentationSelectPageClose !=null){
+                    onPresentationSelectPageClose.onPresentationSelected(pi);
+                }
+                closeSelf();
+            }
+        });
+    }
+
+    public interface OnPresentationSelectPageClose {
+        void onPresentationSelected(PresentationInfo pi);
+        void onPresentationSelectPageClose();
+    }
+
+    private OnPresentationSelectPageClose onPresentationSelectPageClose;
+
+    public void setOnPresentationSelectPageClose(OnPresentationSelectPageClose onPresentationSelectPageClose) {
+        this.onPresentationSelectPageClose = onPresentationSelectPageClose;
     }
 
     private void clearInfo(ViewHolder vh){
+        if(vh==null)return;
         vh.thumb.setImageResource(R.drawable.openfile);
         vh.title.setText("");
         vh.info.setText("");
@@ -146,7 +201,7 @@ public class PresentationSelectFragment extends Fragment{
 
     private void setTag(View v, ViewHolder vh) {
         vh.thumb = (ImageView)v.findViewById(R.id.presentation_thumb);
-        vh.title = (TextView)v.findViewById(R.id.bgsel_title_text);
+        vh.title = (TextView)v.findViewById(R.id.presentation_title);
         vh.info = (TextView)v.findViewById(R.id.presentation_info);
         v.setTag(vh);
     }
@@ -161,7 +216,7 @@ public class PresentationSelectFragment extends Fragment{
 
         if(presentationAdapter==null)return;
         PresentationInfo pi = presentationAdapter.getPresentationInfo(position);
-        if(pi!=null)return;
+        if(pi==null)return;
 
         if(pi.getThumb()!=null){
             vh.thumb.setImageBitmap(pi.getThumb());

@@ -11,9 +11,19 @@ public class PresentationInfo {
     private String presentationName;
     private String uploadTime;
     private String size;
+    private String url;
+    private String presentationId;
 
     public PresentationInfo(String name){
         this.presentationName = name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public Bitmap getThumb() {
@@ -46,5 +56,13 @@ public class PresentationInfo {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public String getPresentationId() {
+        return presentationId;
+    }
+
+    public void setPresentationId(String presentationId) {
+        this.presentationId = presentationId;
     }
 }

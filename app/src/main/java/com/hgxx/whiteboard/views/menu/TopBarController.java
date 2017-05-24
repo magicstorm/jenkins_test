@@ -2,6 +2,7 @@ package com.hgxx.whiteboard.views.menu;
 
 import android.animation.Animator;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -19,6 +20,9 @@ public class TopBarController {
     TextView pageNumTv;
     SeekBar scrollSeekBar;
     int maxProgress = 1000;
+    ImageView choosePresentationBtn;
+
+
 
     public SeekBar getScrollSeekBar() {
         return scrollSeekBar;
@@ -115,6 +119,8 @@ public class TopBarController {
                 }
             });
         }
+
+
     }
 
     public RelativeLayout getTopBar() {
@@ -139,5 +145,13 @@ public class TopBarController {
 
     public void setPageNumTv(TextView pageNumTv) {
         this.pageNumTv = pageNumTv;
+    }
+
+    public ImageView getChoosePresentationBtn() {
+        return choosePresentationBtn;
+    }
+
+    public void setChoosePresentationBtn(ImageView choosePresentationBtn) {
+        this.choosePresentationBtn = choosePresentationBtn;
     }
 }

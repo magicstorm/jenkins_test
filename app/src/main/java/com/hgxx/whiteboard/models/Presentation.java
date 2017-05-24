@@ -24,6 +24,7 @@ import com.hgxx.whiteboard.entities.Display;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.entities.ScrollStat;
 import com.hgxx.whiteboard.network.SocketClient;
+import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.utils.ToastSingle;
 import com.hgxx.whiteboard.views.drawview.DrawControl;
@@ -287,10 +288,14 @@ public class Presentation {
         void onReceiveSignal(String signal);
         void onMove(MovePoint movePoint);
         void onConnection(String id);
+        void onEnd(String id);
+        void onClose(String presentationId);
     }
 
 
     private Handler uiHandler;
+
+
 
     private void initClientListeners(final EventObserver onReceiveEvent){
         final SocketClient socketClient = getSocketClient();
@@ -300,6 +305,8 @@ public class Presentation {
                 if(args[0]==null)return;
                 Gson gson = new Gson();
                 final ScrollStat scrollStat = gson.fromJson((args[0]).toString(), ScrollStat.class);
+
+
                 uiHandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -391,10 +398,31 @@ public class Presentation {
                     e.printStackTrace();
                 }
                 socketClient.sendEvent(SocketClient.EVENT_SIG, "client");
-                onReceiveEvent.onConnection(str);
+                if(onReceiveEvent!=null){
+                    onReceiveEvent.onConnection(str);
+                }
             }
         });
 
+        socketClient.setEventListener(SocketClient.EVENT_PRESENTATION_END, new SocketClient.EventListener() {
+            @Override
+            public void onEvent(Object... args) {
+                final String str = (String)args[0];
+                if(onReceiveEvent!=null){
+                    onReceiveEvent.onEnd(str);
+                }
+            }
+        });
+
+        socketClient.setEventListener(SocketClient.EVENT_PRESENTATION_CLOSE, new SocketClient.EventListener() {
+            @Override
+            public void onEvent(Object... args) {
+                final String str = (String)args[0];
+                if(onReceiveEvent!=null){
+                    onReceiveEvent.onClose(str);
+                }
+            }
+        });
     }
 
     private void sendRequest(){
@@ -472,6 +500,10 @@ public class Presentation {
 
     public void sendEnd(){
         getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION_END, roomId);
+    }
+
+    public void sendClose(){
+        getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION_CLOSE, presentationId);
     }
 
 

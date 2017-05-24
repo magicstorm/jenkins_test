@@ -19,5 +19,6 @@ public interface DrawControl {
     void setPaintColor(String color);
     void setStrokeWidth(float strokeWidth);
     void setDrawType(String drawType);
+    void setDrawable(boolean drawable);
 
 }

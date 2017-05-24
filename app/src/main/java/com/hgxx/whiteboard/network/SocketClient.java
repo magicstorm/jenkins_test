@@ -22,6 +22,8 @@ public class SocketClient {
     public static final String EVENT_PRESENTATION_INIT = "presentation_init";
     public static final String EVENT_PRESENTATION_REQUEST = "presentation_request";
     public static final String EVENT_PRESENTATION_END = "presentation_end";
+    public static final String EVENT_PRESENTATION_CLOSE = "presentation_close";
+
 
 
     private String serverUri;

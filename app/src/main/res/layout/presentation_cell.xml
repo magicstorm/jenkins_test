@@ -21,22 +21,22 @@
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/presentation_title"
-            android:textSize="22sp"
+            android:textSize="18sp"
             android:textColor="#000000"
             android:textStyle="bold"
             android:text="高中二年级英语提高班"
-            android:gravity="center"
+            android:gravity="bottom"
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="30dp" />
 
         <TextView
             android:id="@+id/presentation_info"
-            android:textSize="22sp"
+            android:textSize="18sp"
             android:textColor="#dddddd"
             android:textStyle="bold"
             android:text="2017年5月8日，200KB"
-            android:gravity="center"
+            android:gravity="top"
             android:layout_gravity="center_vertical"
             android:layout_width="wrap_content"
             android:layout_height="30dp" />

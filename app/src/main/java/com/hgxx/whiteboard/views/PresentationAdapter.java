@@ -9,4 +9,7 @@ import com.hgxx.whiteboard.models.PresentationInfo;
 public abstract class PresentationAdapter {
     public abstract int getCount();
     public abstract PresentationInfo getPresentationInfo(int pos);
+    public abstract PresentationInfo getPresentationInfo(String presentationId);
+    public abstract String getRoomId();
+    public abstract String getPresentationName();
 }
