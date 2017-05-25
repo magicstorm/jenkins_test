@@ -181,6 +181,9 @@ public class HgWhiteBoard extends FrameLayout {
                 setImageUrl(pi.getUrl());
                 presentation.setPresentationId(pi.getPresentationId());
                 presentation.setPresentationCount(pi.getCount());
+                if(presentation.getScrollStat()!=null){
+                    presentation.getScrollStat().setPresentationId(pi.getPresentationId());
+                }
                 init();
             }
 

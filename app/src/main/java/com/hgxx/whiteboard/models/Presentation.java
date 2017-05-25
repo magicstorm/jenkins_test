@@ -65,6 +65,7 @@ public class Presentation {
     private OnLoadPresentationCallBack onLoad;
     private ImagePipeline imagePipeline;
 
+    public static final String PRESENTATION_TYPE_WHITEBOARD = "-1";
 
 //    public void reload(Context context, String imageUrl, int count, String roomId, String presentationId){
 //        setPresentationCount(count);
@@ -134,12 +135,12 @@ public class Presentation {
     }
 
     private boolean isScrollStatChanged(ScrollStat scrollStat) {
-        return presentationNames.contains(scrollStat.getPresentationName().trim())&&
+        return !presentationId.equals(scrollStat.getPresentationId())||
                 ((getScrollStat()==null)||!getScrollStat().equals(scrollStat));
     }
 
     private boolean isDisplayChanged(ScrollStat scrollStat){
-        return presentationNames.contains(scrollStat.getPresentationName().trim())&&
+        return !presentationId.equals(scrollStat.getPresentationId())||
                 ((getScrollStat()==null)||!getScrollStat().getDisplay().equals(scrollStat.getDisplay()));
     }
 

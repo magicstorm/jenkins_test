@@ -12,15 +12,15 @@
         android:textStyle="bold"
         android:layout_height="wrap_content" />
 
-    <com.hgxx.whiteboard.views.HgWhiteBoard
+    <com.hgxx.whiteboard.views.HgWhiteBoardRcv
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:customSocketServer="true"
         app:serverSocketProtocol="http"
-        app:serverSocketAddress="192.168.8.125"
-        app:serverSocketPort="17018"
+        app:serverSocketAddress="192.168.8.118"
+        app:serverSocketPort="17016"
         >
-    </com.hgxx.whiteboard.views.HgWhiteBoard>
+    </com.hgxx.whiteboard.views.HgWhiteBoardRcv>
 </RelativeLayout>

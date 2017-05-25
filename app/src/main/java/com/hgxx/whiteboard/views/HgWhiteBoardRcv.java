@@ -217,16 +217,40 @@ public class HgWhiteBoardRcv extends FrameLayout{
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
+                        boolean fuck = scrollStat.getPresentationId().equals(presentation.getPresentationId());
 
+                        if(scrollStat.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD)){
+                            PresentationInfo pi = new PresentationInfo("wb");
+                            pi.setPresentationId("-1");
+                            if(pi!=null){
+                                setImageUrl(null);
+                                presentation.setPresentationId(pi.getPresentationId());
 
-                        if(!scrollStat.getPresentationId().equals(presentation.getPresentationId())){
-                            PresentationInfo pi = presentationAdapter.getPresentationInfo(presentation.getPresentationId());
+                                int height = getResources().getDisplayMetrics().heightPixels;
+                                presentation.setTotalHeight(height);
+                                scrollStat.computeLocalScrollStat(presentation.getTotalHeight());
+                                scrollStat.getDisplay().computeLocalDisplaySize(getContext());
+                                scrollStat.getDisplay().setDisplayHeight(presentation.getTotalHeight());;
+                                scrollStat.getDisplay().setDisplayWidth(presentation.getTotalWidth());
+                            }
+
+                        }
+                        else if(!scrollStat.getPresentationId().equals(presentation.getPresentationId())){
+                            PresentationInfo pi = presentationAdapter.getPresentationInfo(scrollStat.getPresentationId());
                             if(pi!=null){
                                 setImageUrl(pi.getUrl());
                                 presentation.setPresentationId(pi.getPresentationId());
                                 presentation.setPresentationName(pi.getPresentationName());
+
+                                scrollStat.computeLocalScrollStat(presentation.getTotalHeight());
+                                scrollStat.getDisplay().computeLocalDisplaySize(getContext());
+                                scrollStat.getDisplay().setDisplayHeight(scrollStat.getTotalHeight());;
+                                int width = getResources().getDisplayMetrics().widthPixels;
+                                presentation.setTotalWidth(width);
+                                scrollStat.getDisplay().setDisplayWidth(width);
                             }
                         }
+
 
 
                         open();
@@ -234,8 +258,6 @@ public class HgWhiteBoardRcv extends FrameLayout{
 //                        setImageUrl(imageUrl);
 //                        init();
 
-                        scrollStat.computeLocalScrollStat(presentation.getTotalHeight());
-                        scrollStat.getDisplay().computeLocalDisplaySize(getContext());
                         presentation.setScrollStat(scrollStat);
 
                         initViews(scrollStat.getDisplay());
