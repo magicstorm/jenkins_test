@@ -13,6 +13,7 @@ public class PresentationInfo {
     private String size;
     private String url;
     private String presentationId;
+    private int count;
 
     public PresentationInfo(String name){
         this.presentationName = name;
@@ -64,5 +65,13 @@ public class PresentationInfo {
 
     public void setPresentationId(String presentationId) {
         this.presentationId = presentationId;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

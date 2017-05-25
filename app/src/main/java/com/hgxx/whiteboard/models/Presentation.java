@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -64,12 +65,14 @@ public class Presentation {
     private OnLoadPresentationCallBack onLoad;
     private ImagePipeline imagePipeline;
 
+
 //    public void reload(Context context, String imageUrl, int count, String roomId, String presentationId){
 //        setPresentationCount(count);
 //        setPresentationId(this.presentationId);
 //        setRoomId(this.roomId);
 //        loadPresentation(context, imageUrl, onLoad);
 //    }
+
 
     public Presentation(){
         this(null);
@@ -145,6 +148,7 @@ public class Presentation {
         void onLoadPresentationCompleted();
         void onError(Throwable e);
         void onNext(Integer integer);
+        void onWhiteBoard(int height);
     }
 
 
@@ -153,7 +157,28 @@ public class Presentation {
     public void loadPresentation(Context context, String imageUrl, final OnLoadPresentationCallBack onLoadPresentationCallBack){
 //        onLoad = onLoadPresentationCallBack;
 //        int displayWidth = presentationFrame.getWidth();
-        if(TextUtils.isEmpty(imageUrl))return;
+
+        presentationFrame.removeAllViews();
+        pagePositions.clear();
+        loadedCount = 0;
+        totalHeight = 0;
+        if(TextUtils.isEmpty(imageUrl)){
+            int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+            setTotalHeight(screenHeight);
+            presentationFrame.getLayoutParams().height = screenHeight;
+
+            if(imagePipeline!=null){
+                imagePipeline.clearCaches();
+            }
+            onLoadPresentationCallBack.onNext(0);
+            onLoadPresentationCallBack.onLoadPresentationCompleted();
+
+            return;
+        }
+        else{
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            presentationFrame.setLayoutParams(params);
+        }
         this.imageUrl = imageUrl;
 
         final int displayWidth = getTotalWidth();
@@ -162,10 +187,6 @@ public class Presentation {
             imagePipeline.clearCaches();
         }
 
-        presentationFrame.removeAllViews();
-        pagePositions.clear();
-        loadedCount = 0;
-        totalHeight = 0;
 
 
         for(int j=0;j<getPresentationCount();j++){

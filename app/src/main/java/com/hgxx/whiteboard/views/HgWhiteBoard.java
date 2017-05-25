@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -152,8 +153,6 @@ public class HgWhiteBoard extends FrameLayout {
         findViews();
         activityWeakReference = new WeakReference<>(activity);
         initChoosePresentationFragment(false);
-
-
     }
 
     private void initChoosePresentationFragment(boolean canReturn){
@@ -181,6 +180,7 @@ public class HgWhiteBoard extends FrameLayout {
                 chooseFl.setVisibility(GONE);
                 setImageUrl(pi.getUrl());
                 presentation.setPresentationId(pi.getPresentationId());
+                presentation.setPresentationCount(pi.getCount());
                 init();
             }
 
@@ -395,6 +395,11 @@ public class HgWhiteBoard extends FrameLayout {
 
         @Override
         public void onNext(Integer integer) {
+        }
+
+        @Override
+        public void onWhiteBoard(int height) {
+            drawView.setHeight(height);
         }
     }
 

@@ -161,6 +161,11 @@ public class HgWhiteBoardRcv extends FrameLayout{
             public void onNext(Integer integer) {
 
             }
+
+            @Override
+            public void onWhiteBoard(int height) {
+
+            }
         });
 
         presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {

@@ -134,7 +134,7 @@ public class PresentationSelectFragment extends Fragment{
         adapter = new BaseAdapter() {
             @Override
             public int getCount() {
-                return presentationAdapter==null?0:presentationAdapter.getCount();
+                return presentationAdapter==null?1:presentationAdapter.getCount()+1;
             }
 
             @Override
@@ -149,6 +149,8 @@ public class PresentationSelectFragment extends Fragment{
 
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
+
+
                 View v;
                 ViewHolder vh;
                 if(convertView!=null){
@@ -172,7 +174,16 @@ public class PresentationSelectFragment extends Fragment{
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                PresentationInfo pi = presentationAdapter.getPresentationInfo(position);
+                PresentationInfo pi=null;
+                if(position==presentationAdapter.getCount()){
+                    pi = new PresentationInfo("白板");
+                    pi.setPresentationId("-1");
+                    pi.setCount(1);
+                }
+                else{
+                    pi = presentationAdapter.getPresentationInfo(position);
+                }
+
                 if(onPresentationSelectPageClose !=null){
                     onPresentationSelectPageClose.onPresentationSelected(pi);
                 }
@@ -214,7 +225,12 @@ public class PresentationSelectFragment extends Fragment{
 
     private void fillContent(ViewHolder vh, int position){
 
-        if(presentationAdapter==null)return;
+        if(presentationAdapter==null||position==presentationAdapter.getCount()){
+            vh.thumb.setImageResource(R.drawable.openfile);
+            vh.title.setText("白板");
+            return;
+        }
+
         PresentationInfo pi = presentationAdapter.getPresentationInfo(position);
         if(pi==null)return;
 
