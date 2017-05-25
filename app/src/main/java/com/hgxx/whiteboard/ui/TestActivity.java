@@ -90,7 +90,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
 //            }
 //        });
 //        hgWhiteBoard.setSesstionTitle("高中二年级的课");
-//        hgWhiteBoard.initPresInfo(this);
+        hgWhiteBoard.initPresInfo(this);
 
 
         /**

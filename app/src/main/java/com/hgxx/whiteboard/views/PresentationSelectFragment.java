@@ -157,7 +157,7 @@ public class PresentationSelectFragment extends Fragment{
                     clearInfo(vh);
                 }
                 else{
-                    v=View.inflate(WhiteBoardApplication.getContext(), R.layout.presentation_cell, null);
+                    v=View.inflate(getActivity(), R.layout.presentation_cell, null);
                     vh = new ViewHolder();
                     setTag(v, vh);
                 }
