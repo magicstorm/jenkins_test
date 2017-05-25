@@ -56,57 +56,11 @@ public class TestActivity extends Activity implements View.OnClickListener{
         /**
          * sender
          */
-//        hgWhiteBoard = (HgWhiteBoard) findViewById(R.id.wb);
-//        hgWhiteBoard.setPresentationAdapter(new PresentationAdapter() {
-//            @Override
-//            public int getCount() {
-//                return pis.size();
-//            }
-//
-//            @Override
-//            public PresentationInfo getPresentationInfo(int pos) {
-//                if(pos>=pis.size())return null;
-//                return pis.get(pos);
-//            }
-//
-//            @Override
-//            public PresentationInfo getPresentationInfo(String presentationId) {
-//
-//                for(int i=0;i<pis.size();i++){
-//                    String psId = pis.get(i).getPresentationId();
-//                    if(psId.equals(presentationId)){
-//                        return pis.get(i);
-//                    }
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            public String getRoomId() {
-//                return "1";
-//            }
-//
-//            @Override
-//            public String getPresentationName() {
-//                return "Test";
-//            }
-//        });
-//        hgWhiteBoard.setSesstionTitle("高中二年级的课");
-//        hgWhiteBoard.initPresInfo(this);
-
-
-        /**
-         * receiver
-         */
-
-        hgWhiteBoardRcv = (HgWhiteBoardRcv)findViewById(R.id.wb);
-        hgWhiteBoardRcv.setImageUrl("https://tvl.hongguaninfo.com:443/Test/api_");
-
-        PresentationAdapter presentationAdapter = new PresentationAdapter() {
-
+        hgWhiteBoard = (HgWhiteBoard) findViewById(R.id.wb);
+        hgWhiteBoard.setPresentationAdapter(new PresentationAdapter() {
             @Override
             public int getCount() {
-                return 50;
+                return pis.size();
             }
 
             @Override
@@ -117,6 +71,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
 
             @Override
             public PresentationInfo getPresentationInfo(String presentationId) {
+
                 for(int i=0;i<pis.size();i++){
                     String psId = pis.get(i).getPresentationId();
                     if(psId.equals(presentationId)){
@@ -135,10 +90,55 @@ public class TestActivity extends Activity implements View.OnClickListener{
             public String getPresentationName() {
                 return "Test";
             }
-        };
-        hgWhiteBoardRcv.setPresentationAdapter(presentationAdapter);
+        });
+        hgWhiteBoard.setSesstionTitle("高中二年级的课");
+        hgWhiteBoard.initPresInfo(this);
 
-        hgWhiteBoardRcv.init();
+
+        /**
+         * receiver
+         */
+
+//        hgWhiteBoardRcv = (HgWhiteBoardRcv)findViewById(R.id.wb);
+////        hgWhiteBoardRcv.setImageUrl("https://tvl.hongguaninfo.com:443/Test/api_");
+//
+//        PresentationAdapter presentationAdapter = new PresentationAdapter() {
+//
+//            @Override
+//            public int getCount() {
+//                return 50;
+//            }
+//
+//            @Override
+//            public PresentationInfo getPresentationInfo(int pos) {
+//                if(pos>=pis.size())return null;
+//                return pis.get(pos);
+//            }
+//
+//            @Override
+//            public PresentationInfo getPresentationInfo(String presentationId) {
+//                for(int i=0;i<pis.size();i++){
+//                    String psId = pis.get(i).getPresentationId();
+//                    if(psId.equals(presentationId)){
+//                        return pis.get(i);
+//                    }
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            public String getRoomId() {
+//                return "1";
+//            }
+//
+//            @Override
+//            public String getPresentationName() {
+//                return "Test";
+//            }
+//        };
+//        hgWhiteBoardRcv.setPresentationAdapter(presentationAdapter);
+//
+//        hgWhiteBoardRcv.init();
 
 
 
