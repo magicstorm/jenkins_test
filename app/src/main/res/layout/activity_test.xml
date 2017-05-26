@@ -18,9 +18,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:customSocketServer="true"
+
+        app:serverSocketAddress="tvl.hongguaninfo.com"
+        app:serverSocketPort="8081"
         app:serverSocketProtocol="http"
-        app:serverSocketAddress="192.168.8.118"
-        app:serverSocketPort="17016"
         >
     </com.hgxx.whiteboard.views.HgWhiteBoard>
 </RelativeLayout>

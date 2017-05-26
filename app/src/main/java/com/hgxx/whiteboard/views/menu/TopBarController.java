@@ -18,6 +18,7 @@ public class TopBarController {
     RelativeLayout topBar;
     PopoutMenu progressPanel;
     TextView pageNumTv;
+    TextView topTitle;
     SeekBar scrollSeekBar;
     int maxProgress = 1000;
     ImageView choosePresentationBtn;
@@ -153,5 +154,13 @@ public class TopBarController {
 
     public void setChoosePresentationBtn(ImageView choosePresentationBtn) {
         this.choosePresentationBtn = choosePresentationBtn;
+    }
+
+    public TextView getTopTitle() {
+        return topTitle;
+    }
+
+    public void setTopTitle(TextView topTitle) {
+        this.topTitle = topTitle;
     }
 }
