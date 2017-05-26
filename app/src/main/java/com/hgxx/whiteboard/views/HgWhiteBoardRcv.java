@@ -123,13 +123,13 @@ public class HgWhiteBoardRcv extends FrameLayout{
         presentation = new Presentation(presentationAdapter.getPresentationName());
         presentation.setRoomId(presentationAdapter.getRoomId());
         presentation.setPresentationId("0");
-        presentation.setPresentationCount(presentationAdapter.getCount());
+        presentation.setPresentationCount(presentationAdapter.getPresentationInfo(0).getCount());
     }
 
 
     private void initViews(Display display){
 
-        adjustDisplayArea(display.computeLocalDisplaySize(WhiteBoardApplication.getContext()));
+        adjustDisplayArea(display.computeLocalDisplaySize(getContext()));
 
         drawView.setWidth((int)display.getDisplayWidth());
         drawView.setHeight((int)display.getDisplayHeight());
@@ -177,7 +177,7 @@ public class HgWhiteBoardRcv extends FrameLayout{
             }
         });
 
-        presentation.listenPresentationChange(WhiteBoardApplication.getContext());
+        presentation.listenPresentationChange(getContext());
 
     }
 
@@ -218,9 +218,9 @@ public class HgWhiteBoardRcv extends FrameLayout{
                     @Override
                     public void run() {
                         boolean fuck = scrollStat.getPresentationId().equals(presentation.getPresentationId());
-
+                        PresentationInfo pi = null;
                         if(scrollStat.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD)){
-                            PresentationInfo pi = new PresentationInfo("wb");
+                            pi = new PresentationInfo("wb");
                             pi.setPresentationId("-1");
                             if(pi!=null){
                                 setImageUrl(null);
@@ -236,7 +236,7 @@ public class HgWhiteBoardRcv extends FrameLayout{
 
                         }
                         else if(!scrollStat.getPresentationId().equals(presentation.getPresentationId())){
-                            PresentationInfo pi = presentationAdapter.getPresentationInfo(scrollStat.getPresentationId());
+                            pi = presentationAdapter.getPresentationInfo(scrollStat.getPresentationId());
                             if(pi!=null){
                                 setImageUrl(pi.getUrl());
                                 presentation.setPresentationId(pi.getPresentationId());
@@ -258,7 +258,12 @@ public class HgWhiteBoardRcv extends FrameLayout{
 //                        setImageUrl(imageUrl);
 //                        init();
 
-                        presentation.setScrollStat(scrollStat);
+                        if(presentation!=null){
+                            if(!scrollStat.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD)){
+                                presentation.setPresentationCount(presentationAdapter.getPresentationInfo(scrollStat.getPresentationId()).getCount());
+                            }
+                            presentation.setScrollStat(scrollStat);
+                        }
 
                         initViews(scrollStat.getDisplay());
                     }

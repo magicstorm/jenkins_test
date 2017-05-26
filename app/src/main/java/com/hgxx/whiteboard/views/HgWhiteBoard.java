@@ -85,6 +85,7 @@ public class HgWhiteBoard extends FrameLayout {
     private WeakReference<Activity> activityWeakReference;
     private ImageView choosePresentationBtn;
     private static MenuBarController menuBarController;
+    private TextView titleTv;
 
     public String getSesstionTitle() {
         return sesstionTitle;
@@ -334,13 +335,14 @@ public class HgWhiteBoard extends FrameLayout {
             menuBarController.setWidthPanel(whiteBoard.widthPanel);
             menuBarController.setShapePanel(whiteBoard.shapePanel);
             menuBarController.setColorPointer(whiteBoard.colorPointer);
-
             menuBarController.init();
 
             TopBarController topBarController = new TopBarController(whiteBoard.topBar);
             topBarController.setPageNumTv(whiteBoard.pageNumTv);
             topBarController.setProgressPanel(whiteBoard.progressPanel);
             topBarController.setScrollSeekBar(whiteBoard.scrollSeekBar);
+            topBarController.setTopTitle(whiteBoard.titleTv);
+
             topBarController.setOnSeek(new TopBarController.OnSeek() {
                 @Override
                 public void onSeek(float posRatio) {
@@ -370,11 +372,7 @@ public class HgWhiteBoard extends FrameLayout {
 
         }
 
-        public void endSession(){
-            if(presentation!=null){
-                presentation.sendEnd();
-            }
-        }
+
 
 
         private int setCurrentPage(float posRatio) {
@@ -411,6 +409,22 @@ public class HgWhiteBoard extends FrameLayout {
         }
     }
 
+    public void open(){
+        setVisibility(VISIBLE);
+        presentation.sendInitialMessage();
+    }
+
+    public void close(){
+        setVisibility(GONE);
+    }
+
+    public void endSession(){
+        if(presentation!=null){
+            presentation.sendEnd();
+        }
+    }
+
+
     private void initViews(){
 
 
@@ -424,6 +438,9 @@ public class HgWhiteBoard extends FrameLayout {
             }
         });
 
+        if(presentationAdapter!=null&&!TextUtils.isEmpty(presentationAdapter.getPresentationName())){
+            titleTv.setText(presentationAdapter.getPresentationName());
+        }
         //init controller
         drawView = new DrawViewController(drawLayout);
         drawViewWeakReference = new WeakReference<>(drawView);
@@ -479,6 +496,7 @@ public class HgWhiteBoard extends FrameLayout {
         closeBtn = (ImageView)findViewById(R.id.btn_close_wb);
         chooseFl = (FrameLayout)findViewById(R.id.choose_fl);
         choosePresentationBtn = (ImageView)findViewById(R.id.top_folder_iv);
+        titleTv = (TextView)findViewById(R.id.top_title);
 
         choosePresentationBtn.setOnClickListener(new OnClickListener() {
             @Override

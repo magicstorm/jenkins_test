@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="#dddddd"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/show"
-        android:layout_width="wrap_content"
-        android:text="show"
-        android:textSize="20sp"
-        android:onClick="onClick"
-        android:layout_centerInParent="true"
-        android:textStyle="bold"
-        android:layout_height="wrap_content" />
+    <!--<Button-->
+        <!--android:id="@+id/show"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:text="show"-->
+        <!--android:textSize="20sp"-->
+        <!--android:onClick="onClick"-->
+        <!--android:layout_centerInParent="true"-->
+        <!--android:textStyle="bold"-->
+        <!--android:layout_height="wrap_content" />-->
 
-    <com.hgxx.whiteboard.views.HgWhiteBoard
+
+    <com.hgxx.whiteboard.views.HgWhiteBoardRcv
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wb"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:customSocketServer="true"
+
+        app:serverSocketAddress="192.168.8.121"
+        app:serverSocketPort="17018"
         app:serverSocketProtocol="http"
-        app:serverSocketAddress="192.168.8.118"
-        app:serverSocketPort="17016"
         >
-    </com.hgxx.whiteboard.views.HgWhiteBoard>
+    </com.hgxx.whiteboard.views.HgWhiteBoardRcv>
+
+
 </RelativeLayout>
