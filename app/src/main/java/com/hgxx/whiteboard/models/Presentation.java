@@ -262,10 +262,11 @@ public class Presentation {
                 @Override
                 public void onFailure(String id, Throwable throwable) {
 //                    FLog.e(getClass(), throwable, "Error loading %s", id)
+                    refreshPresentationHeight(0, index);
                 }
             };
 
-            Uri uri = Uri.parse(imageUrl+(i+1) + imageExt);
+            Uri uri = Uri.parse(imageUrl+(i) + imageExt);
             DraweeController controller = Fresco.newDraweeControllerBuilder()
                     .setControllerListener(controllerListener)
                     .setUri(uri)
@@ -280,6 +281,9 @@ public class Presentation {
 
     }
 
+    private synchronized int getLoadedCount(){
+        return loadedCount;
+    }
 
     private synchronized void refreshPresentationHeight(int height, int position){
         int nextPos = position+1;
