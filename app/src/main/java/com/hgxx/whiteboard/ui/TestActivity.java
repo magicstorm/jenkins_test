@@ -47,7 +47,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
         testPI1.setSize("20MB");
         testPI1.setUrl("http://192.168.8.118:8500/Test/api_");
         testPI1.setPresentationId("1");
-        testPI.setCount(50);
+        testPI1.setCount(50);
 //
         pis.add(testPI);
         pis.add(testPI1);
@@ -106,7 +106,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
 
             @Override
             public int getCount() {
-                return 50;
+                return pis.size();
             }
 
             @Override

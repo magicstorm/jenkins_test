@@ -372,11 +372,7 @@ public class HgWhiteBoard extends FrameLayout {
 
         }
 
-        public void endSession(){
-            if(presentation!=null){
-                presentation.sendEnd();
-            }
-        }
+
 
 
         private int setCurrentPage(float posRatio) {
@@ -412,6 +408,22 @@ public class HgWhiteBoard extends FrameLayout {
             drawView.setHeight(height);
         }
     }
+
+    public void open(){
+        setVisibility(VISIBLE);
+        presentation.sendInitialMessage();
+    }
+
+    public void close(){
+        setVisibility(GONE);
+    }
+
+    public void endSession(){
+        if(presentation!=null){
+            presentation.sendEnd();
+        }
+    }
+
 
     private void initViews(){
 
