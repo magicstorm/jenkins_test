@@ -205,6 +205,12 @@ public class HgWhiteBoard extends FrameLayout {
 
     }
 
+    public void notifyPresentationListDataChanges(){
+        if(chooseFragment!=null&&chooseFragment.isVisible()){
+            chooseFragment.notifyDataChanges();
+        }
+    }
+
     public void reload(){
         drawView.clear();
 
@@ -274,7 +280,6 @@ public class HgWhiteBoard extends FrameLayout {
                     whiteBoard.scrollSeekBar.setProgress((int)(1000*top/(float)presentation.getTotalHeight()));
                     //TODO display currentPage
                     whiteBoard.pageNumTv.setText(curPage + "/" + presentation.getPresentationCount());
-
 
 //                    ToastSingle.showCenterToast("top: " + top + "|oldt: " + oldt, Toast.LENGTH_SHORT);
 //                    ToastSingle.showCenterToast("current page: " + curPage, Toast.LENGTH_SHORT);
