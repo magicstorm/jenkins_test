@@ -180,6 +180,8 @@ public class HgWhiteBoard extends FrameLayout {
                 }
                 chooseFl.setVisibility(GONE);
                 setImageUrl(pi.getUrl());
+                progressPanel.hide();
+                progressPanel.canAnimate(pi.getPresentationId().equals("-1")?false:true);
                 presentation.setPresentationId(pi.getPresentationId());
                 presentation.setPresentationCount(pi.getCount());
                 if(presentation.getScrollStat()!=null){
@@ -368,7 +370,12 @@ public class HgWhiteBoard extends FrameLayout {
                     presentation.sendClose();
                 }
             });
-
+            ((View)whiteBoard.choosePresentationBtn.getParent()).setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    whiteBoard.initChoosePresentationFragment(true);
+                }
+            });
 
         }
 
@@ -498,12 +505,7 @@ public class HgWhiteBoard extends FrameLayout {
         choosePresentationBtn = (ImageView)findViewById(R.id.top_folder_iv);
         titleTv = (TextView)findViewById(R.id.top_title);
 
-        choosePresentationBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initChoosePresentationFragment(true);
-            }
-        });
+
 //        pageEt = (EditText)findViewById(R.id.page_to_go);
 //        pageBtn = (TextView)findViewById(R.id.page_btn);
     }

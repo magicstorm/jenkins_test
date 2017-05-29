@@ -99,7 +99,7 @@ public class PresentationSelectFragment extends Fragment{
     private void initViews(){
 
         title.setText(titleText);
-        backBtn.setOnClickListener(new View.OnClickListener() {
+        ((View)backBtn.getParent()).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!getCanReturn())return;

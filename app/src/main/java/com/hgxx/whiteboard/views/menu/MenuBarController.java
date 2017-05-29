@@ -71,7 +71,7 @@ public class MenuBarController{
         if(shapePanel!=null) {
             shapePanel.setOnShapeSelected(new ShapePanel.OnShapeSelected() {
                 @Override
-                public void onShapSeleted(String shape) {
+                public void onShapeSeleted(String shape) {
                     drawControl.setDrawType(shape);
                 }
             });

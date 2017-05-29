@@ -8,17 +8,27 @@
         android:background="#fc7d61"
         android:layout_width="match_parent"
         android:layout_height="60dp">
-        <ImageView
-            android:id="@+id/bgsel_title_back_btn"
-            android:layout_width="33dp"
-            android:layout_height="33dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
+        <LinearLayout
+            android:layout_width="53dp"
+            android:paddingLeft="10dp"
+            android:gravity="center"
             android:clickable="true"
-            android:src="@drawable/left_arrow_white_wb"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="10dp"
-            />
+            android:paddingRight="10dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/bgsel_title_back_btn"
+                android:layout_width="33dp"
+                android:layout_height="33dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:clickable="true"
+                android:src="@drawable/left_arrow_white_wb"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/bgsel_title_text"
             android:textSize="24sp"

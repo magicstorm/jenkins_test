@@ -1,6 +1,9 @@
 package com.hgxx.whiteboard.views.menu;
 
+import android.animation.Animator;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -22,6 +25,8 @@ public class ShapePanel extends PopoutMenu {
     private ImageView oval;
     private ImageView rect;
     private ImageView line;
+
+    private boolean isClosing = false;
 
     public ShapePanel(Context context) {
         this(context, null);
@@ -54,7 +59,7 @@ public class ShapePanel extends PopoutMenu {
     }
 
     public interface OnShapeSelected{
-        void onShapSeleted(String shape);
+        void onShapeSeleted(String shape);
     }
     private OnShapeSelected onShapeSelected;
 
@@ -77,8 +82,41 @@ public class ShapePanel extends PopoutMenu {
                 }
                 activeView(v, shape);
 
+//                if(!isClosing){
+//                    isClosing = true;
+//                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            hide(new Animator.AnimatorListener() {
+//                                @Override
+//                                public void onAnimationStart(Animator animation) {
+//                                }
+//
+//                                @Override
+//                                public void onAnimationEnd(Animator animation) {
+//                                    isClosing = false;
+//                                }
+//
+//                                @Override
+//                                public void onAnimationCancel(Animator animation) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onAnimationRepeat(Animator animation) {
+//
+//                                }
+//                            });
+//                        }
+//                    }, 200);
+//                }
+//                else{
+//
+//
+//                }
+
                 if(onShapeSelected!=null){
-                    onShapeSelected.onShapSeleted(shape);
+                    onShapeSelected.onShapeSeleted(shape);
                 }
 
             }

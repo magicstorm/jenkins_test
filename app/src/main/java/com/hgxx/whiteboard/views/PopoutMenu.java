@@ -70,6 +70,7 @@ public class PopoutMenu extends RelativeLayout {
 
     private boolean stayTop = false;
     private boolean addAnchorListener;
+    private boolean canAnimate = true;
 
     public PopoutMenu(Context context) {
         this(context, null);
@@ -84,6 +85,11 @@ public class PopoutMenu extends RelativeLayout {
         getAttr(context, attrs, defStyleAttr);
         initPaint();
     }
+
+    public synchronized void canAnimate(boolean canAnimate){
+        this.canAnimate = canAnimate;
+    }
+
 
     private void initListener(View v){
         if(!addAnchorListener)return;
@@ -134,6 +140,7 @@ public class PopoutMenu extends RelativeLayout {
     }
 
     public void emit(Animator.AnimatorListener animatorListener){
+        if(!canAnimate)return;
         hide=false;
         if(direction==DIRECTION_RIGHT){
             this.animate().translationX(animateDistance).setDuration(animationDuration).setListener(animatorListener).start();
@@ -146,6 +153,7 @@ public class PopoutMenu extends RelativeLayout {
         hide(null);
     }
     public void hide(Animator.AnimatorListener animatorListener){
+        if(!canAnimate)return;
         hide=true;
         if(direction==DIRECTION_RIGHT){
             this.animate().translationX(0).setDuration(animationDuration).setListener(animatorListener).start();
