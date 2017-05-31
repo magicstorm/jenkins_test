@@ -41,6 +41,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
         testPI.setUrl("https://tvl.hongguaninfo.com:443/Test/api_");
         testPI.setPresentationId("1");
         testPI.setCount(50);
+        testPI.setSizeRatio(8f/9f);
 
         PresentationInfo testPI1 = new PresentationInfo("Swift Programming Language Local");
         testPI1.setUploadTime("2017年5月5日 17:00");
@@ -48,6 +49,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
         testPI1.setUrl("http://192.168.8.118:8500/Test/api_");
         testPI1.setPresentationId("1");
         testPI1.setCount(50);
+        testPI.setSizeRatio(8f/9f);
 //
         pis.add(testPI);
         pis.add(testPI1);
@@ -90,6 +92,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
             public String getPresentationName() {
                 return "Test";
             }
+
         });
         hgWhiteBoard.setSesstionTitle("高中二年级的课");
         hgWhiteBoard.initPresInfo(this);

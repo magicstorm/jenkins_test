@@ -13,6 +13,7 @@ public class PresentationInfo {
     private String size;
     private String url;
     private String presentationId;
+    private float sizeRatio;
     private int count;
 
     public PresentationInfo(String name){
@@ -73,5 +74,13 @@ public class PresentationInfo {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public float getSizeRatio() {
+        return sizeRatio;
+    }
+
+    public void setSizeRatio(float sizeRatio) {
+        this.sizeRatio = sizeRatio;
     }
 }
