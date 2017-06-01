@@ -14,7 +14,7 @@
         android:layout_height="wrap_content" />
 
 
-    <com.hgxx.whiteboard.views.HgWhiteBoard
+    <com.hgxx.whiteboard.views.HgWhiteBoardRcv
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wb"
         android:layout_width="match_parent"
@@ -24,10 +24,10 @@
         android:visibility="gone"
 
         app:serverSocketAddress="192.168.100.43"
-        app:serverSocketPort="17016"
+        app:serverSocketPort="17020"
         app:serverSocketProtocol="http"
         >
-    </com.hgxx.whiteboard.views.HgWhiteBoard>
+    </com.hgxx.whiteboard.views.HgWhiteBoardRcv>
 
 
 </RelativeLayout>

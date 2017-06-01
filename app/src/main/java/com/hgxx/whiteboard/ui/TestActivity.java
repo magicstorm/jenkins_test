@@ -39,13 +39,21 @@ public class TestActivity extends Activity implements View.OnClickListener{
         setContentView(R.layout.activity_test);
 
 
-        PresentationInfo testPI = new PresentationInfo("Swift Programming Language");
+//        PresentationInfo testPI = new PresentationInfo("Swift Programming Language");
+//        testPI.setUploadTime("2017年5月5日 17:00");
+//        testPI.setSize("20MB");
+//        testPI.setUrl("https://tvl.hongguaninfo.com:443/Test/api_");
+//        testPI.setPresentationId("1");
+//        testPI.setCount(50);
+//        testPI.setSizeRatio(8f/9f);
+
+        PresentationInfo testPI = new PresentationInfo("fuck随便啦");
         testPI.setUploadTime("2017年5月5日 17:00");
         testPI.setSize("20MB");
-        testPI.setUrl("https://tvl.hongguaninfo.com:443/Test/api_");
+        testPI.setUrl("http://114.55.8.60/3dd6e1eb-cfff-4fa4-8713-c08bc024fa5e_");
         testPI.setPresentationId("1");
-        testPI.setCount(50);
-        testPI.setSizeRatio(8f/9f);
+        testPI.setCount(19);
+        testPI.setSizeRatio(1190f/1683f);
 
         PresentationInfo testPI1 = new PresentationInfo("Swift Programming Language Local");
         testPI1.setUploadTime("2017年5月5日 17:00");
@@ -62,14 +70,14 @@ public class TestActivity extends Activity implements View.OnClickListener{
         /**
          * sender
          */
-        initSender();
+//        initSender();
 
 
         /**
          * receiver
          */
 
-//        initReceiver();
+        initReceiver();
 
 
 
@@ -155,12 +163,12 @@ public class TestActivity extends Activity implements View.OnClickListener{
 
             @Override
             public String getRoomId() {
-                return "1";
+                return "3419";
             }
 
             @Override
             public String getPresentationName() {
-                return "Test";
+                return "课件名";
             }
 
             @Override
@@ -217,12 +225,12 @@ public class TestActivity extends Activity implements View.OnClickListener{
 
             @Override
             public String getRoomId() {
-                return "1";
+                return "3419";
             }
 
             @Override
             public String getPresentationName() {
-                return "Test";
+                return "课件名";
             }
 
             @Override
@@ -247,7 +255,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
             }
 
         });
-        hgWhiteBoard.setSesstionTitle("高中二年级的课");
+        hgWhiteBoard.setSesstionTitle("不知道什么课");
         hgWhiteBoard.initPresInfo(this);
     }
 
