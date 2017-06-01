@@ -13,7 +13,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
 import com.hgxx.whiteboard.R;
-import com.hgxx.whiteboard.WhiteBoardApplication;
 import com.hgxx.whiteboard.entities.Display;
 import com.hgxx.whiteboard.entities.MovePoint;
 import com.hgxx.whiteboard.entities.ScrollStat;
@@ -127,9 +126,9 @@ public class HgWhiteBoardRcv extends FrameLayout{
     }
 
 
-    private void initViews(Display display){
+    private void initViews(final Display display){
 
-        adjustDisplayArea(display.computeLocalDisplaySize(getContext()));
+//        adjustDisplayArea(display.computeLocalDisplaySize(getContext()));
 
         drawView.setWidth((int)display.getDisplayWidth());
         drawView.setHeight((int)display.getDisplayHeight());
@@ -147,32 +146,40 @@ public class HgWhiteBoardRcv extends FrameLayout{
             public void onLoadPresentationCompleted() {
                 drawView.setHeight(presentation.getTotalHeight());
 
+                presentation.getScrollStat().computeLocalScrollStat(presentation.getTotalHeight());
+
                 presentation.setScrollStat(presentation.getScrollStat());
 
 
             }
 
-            @Override
-            public void onError(Throwable e) {
 
-            }
 
             @Override
             public void onNext(Integer integer) {
 
             }
 
-            @Override
-            public void onWhiteBoard(int height) {
-
-            }
-        });
+        }, presentationAdapter);
 
         presentation.setOnScrollStatChangeListener(new Presentation.OnScrollStatChange() {
             //int i = 0;
             @Override
             public void onScrollStatChange(ScrollStat scrollStat){
-                final int scrollTop = (int) scrollStat.getCurrentHeight();
+                int scrollTop = (int) scrollStat.getCurrentHeight();
+
+                if(presentation.getActHeight()==0)return;
+                int curPage = scrollTop/presentation.getActHeight();
+
+
+                if((presentation.getCurrentPage()-1)!=curPage){
+                    if(!presentation.getPresentationId().equals("-1")){
+                        presentation.removeImages(curPage);
+                        presentation.loadNearByImages(getContext(), curPage, getPresentationAdapter());
+                    }
+                    presentation.setCurrentPage(curPage+1);
+                }
+
                 scrollView.scrollTo(0, scrollTop);
             }
         });
@@ -222,6 +229,7 @@ public class HgWhiteBoardRcv extends FrameLayout{
                         if(scrollStat.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD)){
                             pi = new PresentationInfo("wb");
                             pi.setPresentationId("-1");
+                            pi.setSizeRatio(getResources().getDisplayMetrics().widthPixels/getResources().getDisplayMetrics().heightPixels);
                             if(pi!=null){
                                 setImageUrl(null);
                                 presentation.setPresentationId(pi.getPresentationId());
@@ -235,14 +243,16 @@ public class HgWhiteBoardRcv extends FrameLayout{
                             }
 
                         }
-                        else if(!scrollStat.getPresentationId().equals(presentation.getPresentationId())){
+                        else /*if(!scrollStat.getPresentationId().equals(presentation.getPresentationId()))*/{
                             pi = presentationAdapter.getPresentationInfo(scrollStat.getPresentationId());
                             if(pi!=null){
                                 setImageUrl(pi.getUrl());
                                 presentation.setPresentationId(pi.getPresentationId());
                                 presentation.setPresentationName(pi.getPresentationName());
 
-                                scrollStat.computeLocalScrollStat(presentation.getTotalHeight());
+                                if(presentation.getTotalHeight()!=0){
+                                    scrollStat.computeLocalScrollStat(presentation.getTotalHeight());
+                                }
                                 scrollStat.getDisplay().computeLocalDisplaySize(getContext());
                                 scrollStat.getDisplay().setDisplayHeight(scrollStat.getTotalHeight());;
                                 int width = getResources().getDisplayMetrics().widthPixels;
@@ -258,13 +268,12 @@ public class HgWhiteBoardRcv extends FrameLayout{
 //                        setImageUrl(imageUrl);
 //                        init();
 
-                        if(presentation!=null){
-                            if(!scrollStat.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD)){
-                                presentation.setPresentationCount(presentationAdapter.getPresentationInfo(scrollStat.getPresentationId()).getCount());
-                            }
-                            presentation.setScrollStat(scrollStat);
+                        presentation.setSizeRatio(pi.getSizeRatio());
+                        if(!scrollStat.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD)){
+                            presentation.setPresentationCount(presentationAdapter.getPresentationInfo(scrollStat.getPresentationId()).getCount());
                         }
 
+                        presentation.setScrollStat(scrollStat);
                         initViews(scrollStat.getDisplay());
                     }
                 });

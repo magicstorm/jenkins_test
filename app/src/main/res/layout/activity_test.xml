@@ -21,8 +21,8 @@
         android:layout_height="match_parent"
         app:customSocketServer="true"
 
-        app:serverSocketAddress="192.168.8.121"
-        app:serverSocketPort="17018"
+        app:serverSocketAddress="192.168.100.43"
+        app:serverSocketPort="17016"
         app:serverSocketProtocol="http"
         >
     </com.hgxx.whiteboard.views.HgWhiteBoard>

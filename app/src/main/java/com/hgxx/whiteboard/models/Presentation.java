@@ -1,13 +1,17 @@
 package com.hgxx.whiteboard.models;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -29,6 +33,8 @@ import com.hgxx.whiteboard.network.SocketClient;
 import com.hgxx.whiteboard.network.constants.Sock;
 import com.hgxx.whiteboard.network.constants.Web;
 import com.hgxx.whiteboard.utils.ToastSingle;
+import com.hgxx.whiteboard.views.PageLoadListener;
+import com.hgxx.whiteboard.views.PresentationAdapter;
 import com.hgxx.whiteboard.views.drawview.DrawControl;
 
 import org.json.JSONException;
@@ -63,12 +69,15 @@ public class Presentation {
     private String presentationId;
     private String roomId;
 
+    private float sizeRatio;
     private ArrayList<Integer> pagePositions = new ArrayList<>();
     private int currentPage = 1;
     private OnLoadPresentationCallBack onLoad;
     private ImagePipeline imagePipeline;
 
     public static final String PRESENTATION_TYPE_WHITEBOARD = "-1";
+    private int actHeight;
+    private int wbHeight;
 
 //    public void reload(Context context, String imageUrl, int count, String roomId, String presentationId){
 //        setPresentationCount(count);
@@ -150,15 +159,13 @@ public class Presentation {
 
     public interface OnLoadPresentationCallBack{
         void onLoadPresentationCompleted();
-        void onError(Throwable e);
         void onNext(Integer integer);
-        void onWhiteBoard(int height);
     }
 
 
     private int loadedCount = 0;
 
-    public void loadPresentation(Context context, String imageUrl, final OnLoadPresentationCallBack onLoadPresentationCallBack){
+    public void loadPresentation(Context context, String imageUrl, final OnLoadPresentationCallBack onLoadPresentationCallBack, PresentationAdapter presentationAdapter){
 //        onLoad = onLoadPresentationCallBack;
 //        int displayWidth = presentationFrame.getWidth();
 
@@ -166,14 +173,17 @@ public class Presentation {
         pagePositions.clear();
         loadedCount = 0;
         totalHeight = 0;
+        currentPage = 1;
         if(TextUtils.isEmpty(imageUrl)){
             int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+            int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
             setTotalHeight(screenHeight);
-            presentationFrame.getLayoutParams().height = screenHeight;
+            wbHeight = screenHeight * 3;
+            presentationFrame.getLayoutParams().height = wbHeight;
+            actHeight = screenHeight;
+            setTotalHeight(wbHeight);
+            setTotalWidth(screenWidth);
 
-            if(imagePipeline!=null){
-                imagePipeline.clearCaches();
-            }
             onLoadPresentationCallBack.onNext(0);
             onLoadPresentationCallBack.onLoadPresentationCompleted();
 
@@ -187,9 +197,9 @@ public class Presentation {
 
         final int displayWidth = getTotalWidth();
 
-        if(imagePipeline!=null){
-            imagePipeline.clearCaches();
-        }
+//        if(imagePipeline!=null){
+//            imagePipeline.clearCaches();
+//        }
 
 
 
@@ -199,86 +209,181 @@ public class Presentation {
 
         for(int i=0;i<getPresentationCount();i++){
             final int index = i;
-            final SimpleDraweeView simpleDraweeView = new SimpleDraweeView(context);
-            LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(displayWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
-            simpleDraweeView.setLayoutParams(ivParams);
+            actHeight = (int)(getTotalWidth()/sizeRatio+0.5f);
+            LinearLayout.LayoutParams frameParams = new LinearLayout.LayoutParams(displayWidth, actHeight);
+
+            FrameLayout frameLayout = new FrameLayout(context);
+            frameLayout.setLayoutParams(frameParams);
+
 //            simpleDraweeView.setAdjustViewBounds(true);
-            presentationFrame.addView(simpleDraweeView);
+            presentationFrame.addView(frameLayout);
+            refreshPresentationHeight(actHeight, index);
 
-
-            ControllerListener controllerListener = new BaseControllerListener<ImageInfo>() {
-                @Override
-                public void onFinalImageSet(
-                        String id,
-                        @Nullable ImageInfo imageInfo,
-                        @Nullable Animatable anim){
-                    if (imageInfo == null) {
-                        return;
-                    }
-
-//                    imageInfo.getWidth();
-                    int height = imageInfo.getHeight();
-
-                    int wid = getTotalWidth();
-                    int actHeight = (int)(height*wid/(float)imageInfo.getWidth()+0.5f);
-
-
-                    LinearLayout.LayoutParams dvLayout = (LinearLayout.LayoutParams)simpleDraweeView.getLayoutParams();
-                    dvLayout.width = displayWidth;
-                    dvLayout.height = actHeight;
-                    simpleDraweeView.setLayoutParams(dvLayout);
-
-//                    simpleDraweeView.getLayoutParams().height = actHeight;
-                    refreshPresentationHeight(actHeight, index);
-
-                    if(onLoadPresentationCallBack!=null){
-                        onLoadPresentationCallBack.onNext(index);
-                    }
-
-                    if(onLoadPresentationCallBack!=null&&loadedCount==getPresentationCount()){
+            setLoadedCount(loadedCount + 1);
+            if (onLoadPresentationCallBack != null) {
+                onLoadPresentationCallBack.onNext(index);
+            }
+            if (onLoadPresentationCallBack != null && getLoadedCount() == getPresentationCount()) {
 //                        int totalHeight = getTotalHeight();
-                        onLoadPresentationCallBack.onLoadPresentationCompleted();
+                onLoadPresentationCallBack.onLoadPresentationCompleted();
+            }
 
 
-//                        presentationFrame.getLayoutParams().height = getTotalHeight();
-//                        presentationFrame.measure(0,0);
+            if(i<3){
+                loadImageView(context, index, presentationAdapter);
+            }
+
+
+//            ControllerListener controllerListener = new BaseControllerListener<ImageInfo>() {
+//                @Override
+//                public void onFinalImageSet(
+//                        String id,
+//                        @Nullable ImageInfo imageInfo,
+//                        @Nullable Animatable anim){
+//                    if (imageInfo == null) {
+//                        return;
+//                    }
 //
-//                        int w = presentationFrame.getMeasuredWidth();
-//                        int h = presentationFrame.getMeasuredHeight();
-//                        System.out.println("fuck");
-                    }
-//                    QualityInfo qualityInfo = imageInfo.getQualityInfo();
+////                    simpleDraweeView.getLayoutParams().height = actHeight;
 //
-//                            qualityInfo.getQuality(),
-//                            qualityInfo.isOfGoodEnoughQuality(),
-//                            qualityInfo.isOfFullQuality();
-                }
-
-                @Override
-                public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
-//                    FLog.d("Intermediate image received");
-                }
-
-                @Override
-                public void onFailure(String id, Throwable throwable) {
-//                    FLog.e(getClass(), throwable, "Error loading %s", id)
-                    refreshPresentationHeight(0, index);
-                }
-            };
-
-            Uri uri = Uri.parse(imageUrl+(i) + imageExt);
-            DraweeController controller = Fresco.newDraweeControllerBuilder()
-                    .setControllerListener(controllerListener)
-                    .setUri(uri)
-                    .build();
-
-            simpleDraweeView.setController(controller);
-
+//
+//
+//
+////                        presentationFrame.getLayoutParams().height = getTotalHeight();
+////                        presentationFrame.measure(0,0);
+////
+////                        int w = presentationFrame.getMeasuredWidth();
+////                        int h = presentationFrame.getMeasuredHeight();
+////                        System.out.println("fuck");
+//                    }
+////                    QualityInfo qualityInfo = imageInfo.getQualityInfo();
+////
+////                            qualityInfo.getQuality(),
+////                            qualityInfo.isOfGoodEnoughQuality(),
+////                            qualityInfo.isOfFullQuality();
+//
+//                }
+//
+//                @Override
+//                public void onIntermediateImageSet(String id, @Nullable ImageInfo imageInfo) {
+////                    FLog.d("Intermediate image received");
+//                }
+//
+//                @Override
+//                public void onFailure(String id, Throwable throwable) {
+////                    FLog.e(getClass(), throwable, "Error loading %s", id)
+//                }
+//            };
 
         }
 
-        imagePipeline = Fresco.getImagePipeline();
 
+    }
+
+
+    private ImageView convertView;
+
+    public void removeImageView(int index){
+        FrameLayout frame = ((FrameLayout)presentationFrame.getChildAt(index));
+        if(frame==null)return;
+        ImageView newConvert = (ImageView)frame.getChildAt(0);
+        setConvertView(newConvert);
+        if(newConvert!=null){
+            releaseImageViewResouce(newConvert);
+            frame.removeView(newConvert);
+        }
+//        newConvert.setImageBitmap(null);
+//        System.gc();
+    }
+
+    public synchronized void setConvertView(ImageView convertView) {
+        this.convertView = convertView;
+    }
+
+    public synchronized void releaseImageViewResouce(ImageView imageView) {
+        if (imageView == null) return;
+        Drawable drawable = imageView.getDrawable();
+        if (drawable != null && drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+            if (bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+        }
+        imageView.setImageBitmap(null);
+    }
+
+    public synchronized void removeImages(int curPage) {
+
+        int curPageIndex = getCurrentPage()-1;
+        int pageDelta = curPage-curPageIndex;
+
+        if(pageDelta>0){
+            int searchStart = curPage-2;
+            if(searchStart>=0){
+                int searchBound = (curPageIndex-1)>=0?(curPageIndex-1):0;
+                for(int i=searchStart;i>=searchBound;i--){
+                    System.out.println("currentPage: "+curPage+"|remove: "+i);
+                    removeImageView(i);
+                }
+            }
+        }
+        else{
+            int seachStart = curPage+2;
+            if(seachStart<=(getPresentationCount()-1)){
+                int searchBound = (curPageIndex+1)<=(getPresentationCount()-1)?(curPageIndex+1):(getPresentationCount()-1);
+                for(int i=seachStart;i<=searchBound;i++){
+                    System.out.println("currentPage: "+curPage+"|remove: "+i);
+                    removeImageView(i);
+                }
+            }
+        }
+
+
+    }
+
+
+    public synchronized void loadNearByImages(Context context, int curPage, PresentationAdapter presentationAdapter){
+        //TODO load use local diskCache
+        System.out.println("load:" + (curPage-1));
+        System.out.println("load:" + curPage);
+        System.out.println("load:" + (curPage+1));
+        loadImageView(context, curPage-1, presentationAdapter);
+        loadImageView(context, curPage, presentationAdapter);
+        loadImageView(context, curPage+1, presentationAdapter);
+    }
+
+    public void loadImageView(Context context, int index, PresentationAdapter presentationAdapter){
+        FrameLayout frame = (FrameLayout)presentationFrame.getChildAt(index);
+        if(frame==null||frame.getChildCount()>0)return;
+        final ImageView  imageView;
+        if(convertView!=null){
+            imageView = convertView;
+            convertView=null;
+            System.out.println("load convertView: " + index);
+        }
+        else{
+            imageView = new ImageView(context);
+            LinearLayout.LayoutParams ivParams = new LinearLayout.LayoutParams(getTotalWidth(), actHeight);
+            imageView.setLayoutParams(ivParams);
+            System.out.println("load new view");
+        }
+        if(imageView.getTag()!=null){
+            System.out.println("妈比就你崩:" + imageView.getTag());
+        }
+        frame.addView(imageView);
+
+        imageView.setTag(String.valueOf(index));
+
+        presentationAdapter.loadImage(imageUrl+String.valueOf(index)+imageExt, imageView, String.valueOf(index), new PageLoadListener() {
+            @Override
+            public void onLoaded(){
+            }
+
+            @Override
+            public void onFail() {
+            }
+        });
     }
 
     private synchronized int getLoadedCount(){
@@ -291,7 +396,6 @@ public class Presentation {
             pagePositions.set(i, pagePositions.get(i)+height);
         }
         setTotalHeight(getTotalHeight()+height);
-        loadedCount+=1;
     }
 
 
@@ -632,9 +736,16 @@ public class Presentation {
 
     public void setScrollStat(ScrollStat scrollStat) {
         this.scrollStat = scrollStat;
-        if(onScrollStatChangeListener!=null){
-            onScrollStatChangeListener.onScrollStatChange(this.scrollStat);
-        }
+
+        final ScrollStat sc = scrollStat;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                if(onScrollStatChangeListener!=null){
+                    onScrollStatChangeListener.onScrollStatChange(sc);
+                }
+            }
+        });
     }
 
     public String getPresentationName() {
@@ -660,9 +771,9 @@ public class Presentation {
 
     public void setTotalHeight(int totalHeight) {
         this.totalHeight = totalHeight;
-        if(scrollStat!=null){
-            scrollStat.setTotalHeight(totalHeight);
-        }
+//        if(scrollStat!=null){
+//            scrollStat.setTotalHeight(totalHeight);
+//        }
     }
 
     public int getTotalWidth() {
@@ -727,5 +838,25 @@ public class Presentation {
 
     public void setRoomId(String roomId) {
         this.roomId = roomId;
+    }
+
+    public float getSizeRatio() {
+        return sizeRatio;
+    }
+
+    public void setSizeRatio(float sizeRatio) {
+        this.sizeRatio = sizeRatio;
+    }
+
+    public synchronized void setLoadedCount(int loadedCount) {
+        this.loadedCount = loadedCount;
+    }
+
+    public int getActHeight() {
+        return actHeight;
+    }
+
+    public void setActHeight(int actHeight) {
+        this.actHeight = actHeight;
     }
 }

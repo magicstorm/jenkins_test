@@ -176,6 +176,8 @@ public class PresentationSelectFragment extends Fragment{
                 if(position==presentationAdapter.getCount()){
                     pi = new PresentationInfo("白板");
                     pi.setPresentationId("-1");
+
+
                     pi.setCount(1);
                 }
                 else{
