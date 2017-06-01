@@ -391,9 +391,14 @@ public class HgWhiteBoard extends FrameLayout {
             whiteBoard.closeBtn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    presentation.sendClose();
+//                    presentation = null;
+//                    whiteBoard.chooseFragment=null;
+
+                    whiteBoard.removeAllViews();
                     whiteBoard.setVisibility(GONE);
                     //TODO close view
-                    presentation.sendClose();
                 }
             });
             ((View)whiteBoard.choosePresentationBtn.getParent()).setOnClickListener(new OnClickListener() {

@@ -3,15 +3,15 @@
     android:layout_width="match_parent"
     android:background="#dddddd"
     android:layout_height="match_parent">
-    <!--<Button-->
-        <!--android:id="@+id/show"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:text="show"-->
-        <!--android:textSize="20sp"-->
-        <!--android:onClick="onClick"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--android:textStyle="bold"-->
-        <!--android:layout_height="wrap_content" />-->
+    <Button
+        android:id="@+id/show"
+        android:layout_width="wrap_content"
+        android:text="show"
+        android:textSize="20sp"
+        android:onClick="onClick"
+        android:layout_centerInParent="true"
+        android:textStyle="bold"
+        android:layout_height="wrap_content" />
 
 
     <com.hgxx.whiteboard.views.HgWhiteBoard
@@ -20,6 +20,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:customSocketServer="true"
+
+        android:visibility="gone"
 
         app:serverSocketAddress="192.168.100.43"
         app:serverSocketPort="17016"

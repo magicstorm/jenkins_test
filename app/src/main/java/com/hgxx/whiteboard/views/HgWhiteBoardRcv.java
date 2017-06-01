@@ -224,6 +224,7 @@ public class HgWhiteBoardRcv extends FrameLayout{
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
+                        open();
                         boolean fuck = scrollStat.getPresentationId().equals(presentation.getPresentationId());
                         PresentationInfo pi = null;
                         if(scrollStat.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD)){
@@ -263,7 +264,6 @@ public class HgWhiteBoardRcv extends FrameLayout{
 
 
 
-                        open();
 
 //                        setImageUrl(imageUrl);
 //                        init();
@@ -316,9 +316,13 @@ public class HgWhiteBoardRcv extends FrameLayout{
 
             @Override
             public void onEnd(String id) {
-                if(onEndSession!=null){
-                    onEndSession.onEndSession();
-                }
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        close();
+                    }
+                });
             }
 
             @Override

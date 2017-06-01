@@ -622,6 +622,7 @@ public class Presentation {
 
     public void sendInitialMessage() {
         Gson gson = new Gson();
+        getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION_CLOSE, roomId);
         getSocketClient().sendEvent(SocketClient.EVENT_PRESENTATION_INIT, gson.toJson(this.scrollStat));
     }
 
