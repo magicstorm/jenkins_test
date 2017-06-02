@@ -70,14 +70,14 @@ public class TestActivity extends Activity implements View.OnClickListener{
         /**
          * sender
          */
-//        initSender();
+        initSender();
 
 
         /**
          * receiver
          */
 
-        initReceiver();
+//        initReceiver();
 
 
 
@@ -102,7 +102,6 @@ public class TestActivity extends Activity implements View.OnClickListener{
 
 //        Presentation ps = new Presentation();
 //        ps.setPresentationName("test");
-
 
 
 

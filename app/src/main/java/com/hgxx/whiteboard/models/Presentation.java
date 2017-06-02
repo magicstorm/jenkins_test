@@ -291,8 +291,8 @@ public class Presentation {
         if(newConvert!=null){
             releaseImageViewResouce(newConvert);
             frame.removeView(newConvert);
+            newConvert.setImageBitmap(null);
         }
-//        newConvert.setImageBitmap(null);
 //        System.gc();
     }
 
