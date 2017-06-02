@@ -78,6 +78,7 @@ public class Presentation {
     public static final String PRESENTATION_TYPE_WHITEBOARD = "-1";
     private int actHeight;
     private int wbHeight;
+    private int wbWidth;
 
 //    public void reload(Context context, String imageUrl, int count, String roomId, String presentationId){
 //        setPresentationCount(count);
@@ -175,14 +176,18 @@ public class Presentation {
         totalHeight = 0;
         currentPage = 1;
         if(TextUtils.isEmpty(imageUrl)){
-            int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
-            int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-            setTotalHeight(screenHeight);
-            wbHeight = screenHeight * 3;
-            presentationFrame.getLayoutParams().height = wbHeight;
-            actHeight = screenHeight;
+            wbWidth = (int)scrollStat.getDisplay().getDisplayWidth();
+
+            wbHeight = (int)(scrollStat.getDisplay().getDisplayHeight() * 3);
+
+
+
             setTotalHeight(wbHeight);
-            setTotalWidth(screenWidth);
+            presentationFrame.getLayoutParams().height = wbHeight;
+            actHeight = (int)(scrollStat.getDisplay().getDisplayHeight());
+            setTotalHeight(wbHeight);
+            setTotalWidth(wbWidth);
+
 
             onLoadPresentationCallBack.onNext(0);
             onLoadPresentationCallBack.onLoadPresentationCompleted();
@@ -599,7 +604,7 @@ public class Presentation {
             public void onDrawMove(float x, float y) {
                 MovePoint mp = new MovePoint(x, y);
                 mp.setDrawType(drawControl.getDrawType());
-                mp.setFrameHeight(scrollStat.getTotalHeight());
+                mp.setFrameHeight(getTotalHeight());
                 mp.setFrameWidth(getTotalWidth());
                 mp.setStrokeWidth(drawControl.getStrokeWidth());
                 mp.setDrawType(drawControl.getDrawType());

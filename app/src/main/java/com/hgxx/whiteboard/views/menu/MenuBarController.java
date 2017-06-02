@@ -214,7 +214,11 @@ public class MenuBarController{
 
     }
 
-    private void toggleScroll(View v){
+    public void toggleScroll(){
+        toggleScroll(menuBar.findViewById(R.id.hand_btn));
+    }
+
+    public void toggleScroll(View v){
         if(onBtnClick==null)return;
         if(isScrollEnable()){
             clearActive(v);

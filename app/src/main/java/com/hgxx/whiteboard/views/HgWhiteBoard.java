@@ -408,6 +408,14 @@ public class HgWhiteBoard extends FrameLayout {
                 }
             });
 
+
+            //set default behaviors
+            if(presentation.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD)){
+                whiteBoard.drawView.setPaintColor("#000000");
+            }
+            else{
+                whiteBoard.drawView.setPaintColor("#ff0000");
+            }
         }
 
 
@@ -462,7 +470,9 @@ public class HgWhiteBoard extends FrameLayout {
             public void onGlobalLayout() {
                 if(startUp){
                     startUp=false;
+                    //default scroll
                     setExcludedRect();
+                    menuBarController.toggleScroll();
                 }
             }
         });

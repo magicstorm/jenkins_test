@@ -145,11 +145,12 @@ public class HgWhiteBoardRcv extends FrameLayout{
             @Override
             public void onLoadPresentationCompleted() {
                 drawView.setHeight(presentation.getTotalHeight());
+                drawView.setWidth(presentation.getTotalWidth());
 
                 presentation.getScrollStat().computeLocalScrollStat(presentation.getTotalHeight());
 
                 presentation.setScrollStat(presentation.getScrollStat());
-
+                drawView.switchParams(presentation.getPresentationId().equals(Presentation.PRESENTATION_TYPE_WHITEBOARD));
 
             }
 
@@ -239,8 +240,6 @@ public class HgWhiteBoardRcv extends FrameLayout{
                                 presentation.setTotalHeight(height);
                                 scrollStat.computeLocalScrollStat(presentation.getTotalHeight());
                                 scrollStat.getDisplay().computeLocalDisplaySize(getContext());
-                                scrollStat.getDisplay().setDisplayHeight(presentation.getTotalHeight());;
-                                scrollStat.getDisplay().setDisplayWidth(presentation.getTotalWidth());
                             }
 
                         }

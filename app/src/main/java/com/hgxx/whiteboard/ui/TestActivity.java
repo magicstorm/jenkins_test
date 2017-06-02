@@ -70,14 +70,14 @@ public class TestActivity extends Activity implements View.OnClickListener{
         /**
          * sender
          */
-        initSender();
+//        initSender();
 
 
         /**
          * receiver
          */
 
-//        initReceiver();
+        initReceiver();
 
 
 
@@ -162,7 +162,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
 
             @Override
             public String getRoomId() {
-                return "3419";
+                return "3420";
             }
 
             @Override
@@ -224,7 +224,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
 
             @Override
             public String getRoomId() {
-                return "3419";
+                return "3420";
             }
 
             @Override

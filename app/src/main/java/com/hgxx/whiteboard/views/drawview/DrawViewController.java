@@ -2,6 +2,9 @@ package com.hgxx.whiteboard.views.drawview;
 
 
 
+import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+
 import java.util.Arrays;
 
 /**
@@ -11,6 +14,8 @@ import java.util.Arrays;
 public class DrawViewController implements DrawControl{
     private boolean isMoving = false;
     private DrawLayout mDv;
+    private int mWidth;
+    private int mHeight;
 
 
     public void setDrawListener(final DrawListener drawListener){
@@ -36,7 +41,9 @@ public class DrawViewController implements DrawControl{
 
     public DrawViewController(DrawLayout dv){
         mDv = dv;
+
     }
+
 
     public void undo(){
         if(mDv==null)return;
@@ -68,12 +75,14 @@ public class DrawViewController implements DrawControl{
         if(mDv==null)return;
         mDv.setCurWidth(width);
         mDv.getLayoutParams().width = width;
+        mWidth = width;
     }
 
     public void setHeight(int height){
         if(mDv==null)return;
         mDv.setCurHeight(height);
         mDv.getLayoutParams().height = height;
+        mHeight = height;
     }
 
 
@@ -85,6 +94,21 @@ public class DrawViewController implements DrawControl{
             mDv.setDrawType(DrawLayout.DRAW_TYPE_LINE);
         }
     }
+
+    public void switchParams(boolean wb){
+        RelativeLayout.LayoutParams params=null;
+        if(!wb){
+            params  =(RelativeLayout.LayoutParams)mDv.getLayoutParams();
+        }
+        else{
+
+            params = new RelativeLayout.LayoutParams(mWidth, mHeight);
+            params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        }
+        mDv.setLayoutParams(params);
+    }
+
+
 
     public String getDrawType(){
         return mDv.getDrawType();
