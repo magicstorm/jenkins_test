@@ -23,7 +23,7 @@
 
         android:visibility="gone"
 
-        app:serverSocketAddress="192.168.100.43"
+        app:serverSocketAddress="101.224.191.115"
         app:serverSocketPort="17030"
         app:serverSocketProtocol="http"
         >
