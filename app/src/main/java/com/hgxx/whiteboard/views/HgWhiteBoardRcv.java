@@ -214,8 +214,8 @@ public class HgWhiteBoardRcv extends FrameLayout{
 
     public void open(){
         this.setVisibility(VISIBLE);
-
     }
+
 
 
     private void initSocketClient() {
@@ -262,6 +262,9 @@ public class HgWhiteBoardRcv extends FrameLayout{
                         }
 
 
+                        if(sessionObserver!=null){
+                            sessionObserver.onSessionStart();
+                        }
 
 
 //                        setImageUrl(imageUrl);
@@ -320,6 +323,9 @@ public class HgWhiteBoardRcv extends FrameLayout{
                     @Override
                     public void run() {
                         close();
+                        if(sessionObserver!=null){
+                            sessionObserver.onSessionEnd();
+                        }
                     }
                 });
             }
@@ -330,6 +336,9 @@ public class HgWhiteBoardRcv extends FrameLayout{
                     @Override
                     public void run() {
                         close();
+                        if(sessionObserver!=null){
+                            sessionObserver.onSessionEnd();
+                        }
                     }
                 });
             }
@@ -337,14 +346,15 @@ public class HgWhiteBoardRcv extends FrameLayout{
     }
 
 
-    public interface OnEndSession{
-        void onEndSession();
+    public interface sessionObserver {
+        void onSessionEnd();
+        void onSessionStart();
     }
 
-    private OnEndSession onEndSession;
+    private sessionObserver sessionObserver;
 
-    public void setOnEndSession(OnEndSession onEndSession) {
-        this.onEndSession = onEndSession;
+    public void setSessionObserver(sessionObserver sessionObserver) {
+        this.sessionObserver = sessionObserver;
     }
 
     public PresentationAdapter getPresentationAdapter() {
