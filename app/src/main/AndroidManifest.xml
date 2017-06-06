@@ -12,6 +12,8 @@
         android:supportsRtl="true"
 
 
+        android:name=".WhiteBoardApplication"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
 
         >
         <activity android:name=".ui.HomePageActivity"
@@ -26,6 +28,10 @@
             android:configChanges="screenSize|keyboardHidden|orientation"
             android:screenOrientation="landscape"
             >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
 
         </activity>
         <activity android:name=".ui.ViewTestActivity"
