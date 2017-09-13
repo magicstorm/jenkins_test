@@ -47,7 +47,7 @@ public class TestActivity extends Activity implements View.OnClickListener{
 //        testPI.setCount(50);
 //        testPI.setSizeRatio(8f/9f);
 
-        PresentationInfo testPI = new PresentationInfo("一个好课程");
+        PresentationInfo testPI = new PresentationInfo("Algrithms");
         testPI.setUploadTime("2017年5月5日 17:00");
         testPI.setSize("20MB");
         testPI.setUrl("http://114.55.8.60/3dd6e1eb-cfff-4fa4-8713-c08bc024fa5e_");
@@ -70,14 +70,14 @@ public class TestActivity extends Activity implements View.OnClickListener{
         /**
          * sender
          */
-        initSender();
+//        initSender();
 
 
         /**
          * receiver
          */
 
-//        initReceiver();
+        initReceiver();
 
 
 

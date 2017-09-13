@@ -3,18 +3,10 @@
     android:layout_width="match_parent"
     android:background="#dddddd"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/show"
-        android:layout_width="wrap_content"
-        android:text="show"
-        android:textSize="20sp"
-        android:onClick="onClick"
-        android:layout_centerInParent="true"
-        android:textStyle="bold"
-        android:layout_height="wrap_content" />
 
 
-    <com.hgxx.whiteboard.views.HgWhiteBoard
+
+    <com.hgxx.whiteboard.views.HgWhiteBoardRcv
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/wb"
         android:layout_width="match_parent"
@@ -23,11 +15,11 @@
 
         android:visibility="gone"
 
-        app:serverSocketAddress="10.0.0.20"
-        app:serverSocketPort="17030"
+        app:serverSocketAddress="101.224.191.115"
+        app:serverSocketPort="17032"
         app:serverSocketProtocol="http"
         >
-    </com.hgxx.whiteboard.views.HgWhiteBoard>
+    </com.hgxx.whiteboard.views.HgWhiteBoardRcv>
 
 
 </RelativeLayout>
